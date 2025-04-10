@@ -49,7 +49,7 @@ export default function HomeScreen() {
       <View style={[styles.row, {marginTop: 25}]}>
         <Text style={[styles.text, {fontSize: 28}]}>Groups</Text>
         <TouchableOpacity onPress={addGroup} activeOpacity={0.8}>
-          <IconSymbol name="plus" size={28} color="black" style={{ marginTop: 5 }} />
+          <IconSymbol name="plus" size={32} color="black" style={{ marginTop: 5 }} />
         </TouchableOpacity>
       </View>
       {groups.map((group) => (
