@@ -43,8 +43,8 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.container}>
       <Collapsible title="Goals">
-        <GoalContainer activity="Swim" progress={960} target={800} days={2} icon="ant.fill"/>
-        <GoalContainer activity="Bike" progress={3.8} target={10} days={2} icon="ant"/>
+        <GoalContainer activity="Swim" unit="kcal" progress={960} target={800} days={2} icon="ant.fill"/>
+        <GoalContainer activity="Bike" unit="km" progress={3.8} target={10} days={2} icon="ant"/>
       </Collapsible>
       <View style={[styles.row, {marginTop: 25}]}>
         <Text style={[styles.text, {fontSize: 28}]}>Groups</Text>
