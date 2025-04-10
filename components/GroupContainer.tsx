@@ -16,7 +16,7 @@ export function GroupContainer({
             </View>
             <Text style={[styles.text, {fontSize: 16}]}>{days} days left</Text>
         </View>
-        <hr style={{width: "100%", border: "1px solid black", opacity: "50%"}}/>
+        <hr style={{width: "100%", border: "1px solid black", opacity: "50%", marginTop: 10, marginBottom: 0}}/>
         <ProgressBar progress={groupProgress} target={groupTarget} icon="person.3.fill" />
         <ProgressBar progress={individualProgress} target={individualTarget} icon="person.fill" />
     </Container>
