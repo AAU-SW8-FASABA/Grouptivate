@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text } from "react-native";
+import { SFSymbols6_0 } from "sf-symbols-typescript";
 import { Container } from "./Container";
 import { ProgressBar } from "./ProgressBar";
-import { SFSymbols6_0 } from "sf-symbols-typescript";
 
 export function GoalContainer({
     activity, unit, progress, target, days, icon
