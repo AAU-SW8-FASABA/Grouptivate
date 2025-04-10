@@ -43,6 +43,6 @@ const styles = StyleSheet.create({
       fontSize: 16,
       position: "absolute",
       top: "50%",
-      transform: [{ translateX: -50 }, { translateY: -50 }]
+      transform: [{ translateX: "-50%" }, { translateY: "-50%" }]
     }
 });

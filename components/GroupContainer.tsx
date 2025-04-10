@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 import { Container } from "./Container";
 import { ProgressBar } from "./ProgressBar";
 
