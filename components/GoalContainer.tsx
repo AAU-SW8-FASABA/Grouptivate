@@ -11,9 +11,9 @@ export function GoalContainer({
   return (
     <Container>
         <View style={styles.row}>
-            <Text style={[styles.text, {fontSize: 24}]}>{activity}</Text>
-            <Text style={[styles.text, {fontSize: 16}]}>{progress} / {target} {unit}</Text>
-            <Text style={[styles.text, {fontSize: 16}]}>{days} days left</Text>
+            <View style={styles.box}><Text style={[styles.text, {fontSize: 24, marginRight: "auto"}]}>{activity}</Text></View>
+            <View style={styles.box}><Text style={[styles.text, {fontSize: 16}]}>{progress} / {target} {unit}</Text></View>
+            <View style={styles.box}><Text style={[styles.text, {fontSize: 16, marginLeft: "auto"}]}>{days} days left</Text></View>
         </View>
         <ProgressBar {...{ progress, target, icon }} />
     </Container>
@@ -24,10 +24,16 @@ const styles = StyleSheet.create({
       text: {
         fontFamily: "Roboto",
         fontWeight: 500,
+        textAlign: "center"
+      },
+      box: {
+          display: "flex",
+          justifyContent: "center",
+          flex: 1,
       },
       row: {
+        display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
       },
 });
