@@ -11,7 +11,7 @@ export function GroupContainer({
     <Container>
         <View style={styles.row}>
             <View style={{flexDirection: "row"}}>
-                <img src={image} style={{width: 32, height: 32, borderRadius: 100}} />
+                <Image source={{ uri: image }} style={{ width: 32, height: 32, borderRadius: 100 }} />
                 <Text style={[styles.text, {fontSize: 24, marginLeft: 10}]}>{name}</Text>
             </View>
             <Text style={[styles.text, {fontSize: 16}]}>{days} days left</Text>
