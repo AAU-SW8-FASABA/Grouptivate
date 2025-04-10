@@ -4,7 +4,6 @@ import { SFSymbols6_0 } from "sf-symbols-typescript";
 
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
-
 export function ProgressBar({ progress, target, icon }: { progress: number, target: number, icon: SFSymbols6_0 }) {
     const progressPercentage = Math.min((progress / target) * 100, 100);
     const isRightAligned = progressPercentage < 90;
