@@ -18,7 +18,7 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
           size={32}
           weight="medium"
           color="black"
-          style={{ transform: [{ rotate: isOpen ? '90deg' : '270deg' }] }}
+          style={{ transform: [{ rotate: isOpen ? '270deg' : '90deg' }] }}
         />
       </TouchableOpacity>
       {isOpen && <View style={styles.content}>{children}</View>}
