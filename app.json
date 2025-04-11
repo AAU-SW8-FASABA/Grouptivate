@@ -16,7 +16,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fasaba.Grouptivate"
     },
     "web": {
       "bundler": "metro",
@@ -24,6 +25,8 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "react-native-health",
+      "expo-dev-client",
       "expo-router",
       [
         "expo-splash-screen",
