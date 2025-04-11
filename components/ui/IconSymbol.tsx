@@ -12,11 +12,13 @@ const MAPPING = {
   'house.fill': 'home',
   'person.fill': 'person',
   'chevron.left.forwardslash.chevron.right': 'code',
+  'chevron.left': 'chevron-left',
   'chevron.right': 'chevron-right',
   'ant.fill': 'pool',
   'ant': 'directions-bike',
   'plus': 'add',
-  'person.3.fill': 'groups'
+  'person.3.fill': 'groups',
+  'gear': 'settings',
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],

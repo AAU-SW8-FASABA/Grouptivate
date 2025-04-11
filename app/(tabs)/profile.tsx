@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
+
 import { Container } from '@/components/Container';
 
-export default function HomeScreen() {
+export default function Profile() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.center}>

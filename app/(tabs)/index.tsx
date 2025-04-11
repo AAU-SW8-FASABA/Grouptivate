@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { Collapsible } from '@/components/Collapsible';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -7,6 +8,8 @@ import { GoalContainer } from '@/components/GoalContainer';
 import { GroupContainer } from '@/components/GroupContainer';
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   const [groups, setGroups] = useState([
     {
       name: 'The Bongers',
@@ -26,7 +29,7 @@ export default function HomeScreen() {
       individualProgress: 7,
       individualTarget: 100,
     },
-  ])
+  ]);
 
   function addGroup() {
     setGroups(prev => [...prev, {
@@ -37,7 +40,7 @@ export default function HomeScreen() {
       groupTarget: 100,
       individualProgress: Math.random() * 100,
       individualTarget: 100,
-    }])
+    }]);
   }
 
   return (
@@ -53,15 +56,20 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
       {groups.map((group) => (
-        <GroupContainer
-          name={group.name}
-          image={group.image}
-          days={group.days}
-          groupProgress={group.groupProgress}
-          groupTarget={group.groupTarget}
-          individualProgress={group.individualProgress}
-          individualTarget={group.individualTarget}
-        />
+        <TouchableOpacity onPress={() => router.push({
+          pathname: "/group",
+          params: { name: group.name },
+        })}>
+          <GroupContainer
+            name={group.name}
+            image={group.image}
+            days={group.days}
+            groupProgress={group.groupProgress}
+            groupTarget={group.groupTarget}
+            individualProgress={group.individualProgress}
+            individualTarget={group.individualTarget}
+          />
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );

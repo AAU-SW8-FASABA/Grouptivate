@@ -9,9 +9,9 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 export default function TabLayout() {
   return (
     <Tabs
+      backBehavior='history'
       screenOptions={{
         tabBarActiveTintColor: "#1E4E8C",
-        headerTitle: "Grouptivate",
         headerTitleAlign: "center",
         tabBarLabelStyle: {
           fontFamily: "Roboto",
@@ -45,6 +45,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
+          headerTitle: "Grouptivate",
           tabBarIcon: ({ color }) => <IconSymbol size={32} name="house.fill" color={color} />,
         }}
       />
@@ -52,7 +53,20 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
+          headerTitle: "Grouptivate",
           tabBarIcon: ({ color }) => <IconSymbol size={32} name="person.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="group/index"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="group/settings"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
