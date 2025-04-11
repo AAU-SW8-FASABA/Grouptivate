@@ -13,13 +13,9 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: "column",
         backgroundColor: "#EFEFF3",
+        width: "100%",
         borderRadius: 5,
         marginTop: 10,
         padding: 10,
     },
-    row: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    }
 });
