@@ -1,11 +1,27 @@
 import { StyleSheet, View, Text } from "react-native";
 import { Bar } from "react-native-progress";
 
-export function ProgressBarText({ progress, target = 100, unit }: { progress: number, target?: number, unit: string }) {
+export function ProgressBarText({ progress, target = 100, unit }: { progress: number, target?: number, unit: string}) {
+    const progressPercentage = Math.min((progress / target) * 100, 100);
+    const isRightAligned = progressPercentage < 60;
+    const indent = 5;
+
     return (
         <View style={styles.progress}>
             <Bar progress={progress / target} width={null} height={32} borderWidth={0} color="#2B70CA" unfilledColor="#FFFFFF"></Bar>
-            <Text style={styles.progressText}>{progress} / {target} {unit}</Text>
+            <Text style={[
+                styles.progressText,
+                isRightAligned ? {
+                  left: `${progressPercentage}%`,
+                  transform: [{ translateX: indent }, { translateY: "-50%" }],
+                  color: "#2B70CA",
+                } : {
+                  right: `${100 - progressPercentage}%`,
+                  transform: [{ translateX: -indent }, { translateY: "-50%" }],
+                  color: "#FFFFFF",
+                }]}>
+                    {progress} / {target} {unit}
+            </Text>
         </View>
     );
 }
@@ -24,9 +40,6 @@ const styles = StyleSheet.create({
       fontWeight: 500,
       fontSize: 16,
       position: "absolute",
-      color: "black", // No React Native solution to the HiFi thing
       top: "50%",
-      left: "50%",
-      transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
     }
 });
