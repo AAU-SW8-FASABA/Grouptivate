@@ -9,27 +9,25 @@ export function CollapsibleContainer({ children }: { children: React.ReactNode }
   const [child1, child2] = React.Children.toArray(children);
 
   return (
-    <>
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.collapse}
-          onPress={() => setIsOpen((value) => !value)}
-          activeOpacity={0.8}>
-          <IconSymbol
-            name="chevron.right"
-            size={32}
-            weight="medium"
-            color="black"
-            style={{ transform: [{ rotate: isOpen ? '270deg' : '90deg' }] }}
-          />
-        </TouchableOpacity>
-          {child1}
-          {isOpen && <>
-            <HR/>
-            <View>{child2}</View>
-          </>}
-      </View>
-    </>
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.collapse}
+        onPress={() => setIsOpen((value) => !value)}
+        activeOpacity={0.8}>
+        <IconSymbol
+          name="chevron.right"
+          size={32}
+          weight="medium"
+          color="black"
+          style={{ transform: [{ rotate: isOpen ? '270deg' : '90deg' }] }}
+        />
+      </TouchableOpacity>
+        {child1}
+        {isOpen && <>
+          <HR/>
+          <View>{child2}</View>
+        </>}
+    </View>
   );
 }
 
