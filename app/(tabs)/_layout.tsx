@@ -18,10 +18,11 @@ export default function TabLayout() {
         },
         headerTitleStyle: {
           fontFamily: "Roboto",
+          color: "white",
           fontSize: 32,
         },
         headerStyle: {
-          height: 50,
+          height: 100,
           backgroundColor: "#1E4E8C",
         },
         tabBarButton: HapticTab,

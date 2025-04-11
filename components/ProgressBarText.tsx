@@ -24,8 +24,7 @@ const styles = StyleSheet.create({
       fontWeight: 500,
       fontSize: 16,
       position: "absolute",
-      color: "#2B70CA",
-      mixBlendMode: "multiply", // Don't know how to do this better in React Native
+      color: "black", // No React Native solution to the HiFi thing
       top: "50%",
       left: "50%",
       transform: [{ translateX: "-50%" }, { translateY: "-50%" }],

@@ -12,6 +12,7 @@ export default function Main() {
 
   const [groups, setGroups] = useState([
     {
+      key: Math.random().toString(),
       name: 'The Bongers',
       image: 'https://placehold.co/32x32',
       days: 2,
@@ -21,6 +22,7 @@ export default function Main() {
       individualTarget: 100,
     },
     {
+      key: Math.random().toString(),
       name: 'The Gulops',
       image: 'https://placehold.co/32x32',
       days: 28,
@@ -33,6 +35,7 @@ export default function Main() {
 
   function addGroup() {
     setGroups(prev => [...prev, {
+      key: Math.random().toString(),
       name: 'New Group',
       image: 'https://placehold.co/32x32',
       days: 2,
@@ -56,12 +59,11 @@ export default function Main() {
         </TouchableOpacity>
       </View>
       {groups.map((group) => (
-        <TouchableOpacity onPress={() => router.push({
+        <TouchableOpacity key={group.key} onPress={() => router.push({
           pathname: "/group",
           params: { name: group.name },
         })}>
           <GroupContainer
-            key={group.name}
             name={group.name}
             image={group.image}
             days={group.days}

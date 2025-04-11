@@ -113,8 +113,8 @@ export default function Group() {
                   </View>
                 </View>
                 <View>
-                  {member.activities!.map((activity) => (
-                    <ProgressBarTextIcon progress={activity.progress} target={activity.target} icon={activity.icon} unit={activity.unit} />
+                  {member.activities!.map((activity, index) => (
+                    <ProgressBarTextIcon key={index} progress={activity.progress} target={activity.target} icon={activity.icon} unit={activity.unit} />
                   ))}
                 </View>
               </CollapsibleContainer>
