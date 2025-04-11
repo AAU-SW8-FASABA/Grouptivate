@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text } from "react-native";
 import { SFSymbols6_0 } from "sf-symbols-typescript";
 import { Container } from "./Container";
-import { ProgressBar } from "./ProgressBar";
+import { ProgressBarIcon } from "./ProgressBarIcon";
 
 export function GoalContainer({
     activity, unit, progress, target, days, icon
@@ -15,25 +15,25 @@ export function GoalContainer({
             <View style={styles.box}><Text style={[styles.text, {fontSize: 16}]}>{progress} / {target} {unit}</Text></View>
             <View style={styles.box}><Text style={[styles.text, {fontSize: 16, marginLeft: "auto"}]}>{days} days left</Text></View>
         </View>
-        <ProgressBar {...{ progress, target, icon }} />
+        <ProgressBarIcon {...{ progress, target, icon }} />
     </Container>
   );
 }
 
 const styles = StyleSheet.create({
-      text: {
-        fontFamily: "Roboto",
-        fontWeight: 500,
-        textAlign: "center"
-      },
-      box: {
-          display: "flex",
-          justifyContent: "center",
-          flex: 1,
-      },
-      row: {
+    text: {
+      fontFamily: "Roboto",
+      fontWeight: 500,
+      textAlign: "center"
+    },
+    box: {
         display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-      },
+        justifyContent: "center",
+        flex: 1,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
 });

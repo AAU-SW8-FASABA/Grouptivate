@@ -10,7 +10,7 @@ export default function Profile() {
         <Text style={[styles.text, styles.profileName]}>Aske #82</Text>
         <Text style={[styles.text, { fontSize: 32, marginTop: 50 }]}>Invitations</Text>
         <Container>
-          <View  style={styles.column}>
+          <View style={styles.column}>
             <View>
               <Text style={[styles.text, { fontSize: 12, color: "#4A4A4A" }]}>Hald #81 invited you to:</Text>
               <Text style={[styles.text, { fontSize: 24 }]}>The Gulops</Text>
@@ -33,8 +33,8 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
-    height: "100%",
     padding: 20,
+    paddingTop: 10,
   },
   text: {
     fontFamily: "Roboto",

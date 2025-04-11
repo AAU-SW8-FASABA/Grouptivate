@@ -7,7 +7,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { GoalContainer } from '@/components/GoalContainer';
 import { GroupContainer } from '@/components/GroupContainer';
 
-export default function HomeScreen() {
+export default function Main() {
   const router = useRouter();
 
   const [groups, setGroups] = useState([
@@ -61,6 +61,7 @@ export default function HomeScreen() {
           params: { name: group.name },
         })}>
           <GroupContainer
+            key={group.name}
             name={group.name}
             image={group.image}
             days={group.days}
@@ -78,8 +79,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
-    height: "100%",
     padding: 20,
+    paddingTop: 10,
   },
   text: {
     fontFamily: "Roboto",

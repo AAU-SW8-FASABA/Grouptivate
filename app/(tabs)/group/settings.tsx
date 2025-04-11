@@ -20,7 +20,7 @@ export default function GroupSettings() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
-    height: "100%",
     padding: 20,
+    paddingTop: 10,
   },
 });
