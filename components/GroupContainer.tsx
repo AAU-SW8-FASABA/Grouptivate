@@ -5,15 +5,15 @@ import { Container } from "./Container";
 import { ProgressBarIcon } from "./ProgressBarIcon";
 
 export function GroupContainer({
-    name, image, days, groupProgress, groupTarget, individualProgress, individualTarget
+    name, days, groupProgress, groupTarget, individualProgress, individualTarget
 }: {
-    name: string, image: string, days: number, groupProgress: number, groupTarget: number, individualProgress: number, individualTarget: number
+    name: string, days: number, groupProgress: number, groupTarget: number, individualProgress: number, individualTarget: number
 }) {
   return (
     <Container>
         <View style={styles.row}>
             <View style={{flexDirection: "row"}}>
-                <Image source={{ uri: image }} style={{ width: 32, height: 32, borderRadius: 100 }} />
+                <Image source={require("@/assets/images/Aske.png")} borderRadius={100} style={{ width: 32, height: 32 }} />
                 <Text style={[styles.text, {fontSize: 24, marginLeft: 10}]}>{name}</Text>
             </View>
             <Text style={[styles.text, {fontSize: 16}]}>{days} days left</Text>

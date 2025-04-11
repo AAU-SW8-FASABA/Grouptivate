@@ -14,7 +14,6 @@ export default function Main() {
     {
       key: Math.random().toString(),
       name: 'The Bongers',
-      image: 'https://placehold.co/32x32',
       days: 2,
       groupProgress: 28,
       groupTarget: 100,
@@ -24,7 +23,6 @@ export default function Main() {
     {
       key: Math.random().toString(),
       name: 'The Gulops',
-      image: 'https://placehold.co/32x32',
       days: 28,
       groupProgress: 4,
       groupTarget: 100,
@@ -37,7 +35,6 @@ export default function Main() {
     setGroups(prev => [...prev, {
       key: Math.random().toString(),
       name: 'New Group',
-      image: 'https://placehold.co/32x32',
       days: 2,
       groupProgress: Math.random() * 100,
       groupTarget: 100,
@@ -65,7 +62,6 @@ export default function Main() {
         })}>
           <GroupContainer
             name={group.name}
-            image={group.image}
             days={group.days}
             groupProgress={group.groupProgress}
             groupTarget={group.groupTarget}

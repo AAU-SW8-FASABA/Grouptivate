@@ -6,7 +6,7 @@ export default function Profile() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.center}>
-        <Image source={require("@/assets/images/Aske.png")} style={styles.profilePhoto} />
+        <Image source={require("@/assets/images/Aske.png")} borderRadius={100} style={styles.profilePhoto} />
         <Text style={[styles.text, styles.profileName]}>Aske #82</Text>
         <Text style={[styles.text, { fontSize: 32, marginTop: 50 }]}>Invitations</Text>
         <Container>
@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
     height: 200,
     borderWidth: 1,
     borderColor: "black",
-    borderRadius: "100%",
   },
   profileName: {
     fontSize: 24,
