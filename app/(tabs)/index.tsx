@@ -44,7 +44,7 @@ export default function Main() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
       <Collapsible title="Goals">
         <GoalContainer activity="Swim" unit="kcal" progress={960} target={800} days={2} icon="ant.fill"/>
         <GoalContainer activity="Bike" unit="km" progress={3.8} target={10} days={2} icon="ant"/>

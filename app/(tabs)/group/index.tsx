@@ -61,7 +61,7 @@ export default function Group() {
           <IconSymbol name="gear" size={24} color="white" />
         </TouchableOpacity>
       }}/>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
         <View style={{flexDirection: "row", gap: 10}}>
           <ContainerWithBlueBox text="23"/>
           <ContainerWithBlueBox text="13🔥"/>
