@@ -1,17 +1,16 @@
 import { StyleSheet, View, Text } from "react-native";
 import { Bar } from "react-native-progress";
-import { SFSymbols6_0 } from "sf-symbols-typescript";
 
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
 
-export function ProgressBar({ progress, target, icon }: { progress: number, target: number, icon: SFSymbols6_0 }) {
+export function ProgressBar({ progress, target, iconSource, icon, iconSize }: { progress: number, target: number, iconSource: IconSource, icon: string, iconSize: number, }) {
     const progressPercentage = Math.min((progress / target) * 100, 100);
     const isRightAligned = progressPercentage < 90;
     const indent = isRightAligned ? 5 : -7.5;
   
     return (
         <View style={[styles.row, {marginTop: 10}]}>
-            <IconSymbol size={28} name={icon} color="black" style={{paddingRight: 10}}/>
+            <UniversalIcon source={iconSource} size={iconSize} name={icon} color="black" style={{paddingLeft: 2, paddingRight: 10}}/>
             <View style={styles.progress}>
                 <Bar progress={progress / target} width={null} height={32} borderWidth={0} color="#2B70CA" unfilledColor="#FFFFFF"></Bar>
                 <Text style={[
