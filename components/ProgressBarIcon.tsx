@@ -1,13 +1,16 @@
 import { StyleSheet, View } from "react-native";
-import { SFSymbols6_0 } from "sf-symbols-typescript";
 
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { IconSource, UniversalIcon } from '@/components/ui/UniversalIcon';
 import { ProgressBarPercentage } from "@/components/ProgressBarPercentage";
 
-export function ProgressBarIcon({ progress, target = 100, icon }: { progress: number, target?: number, icon: SFSymbols6_0 }) {
+export function ProgressBarIcon({
+    progress, target = 100, iconSource, icon, iconSize 
+}: {
+    progress: number, target?: number, iconSource: IconSource, icon: string, iconSize: number
+}) {
     return (
         <View style={[styles.row, {marginTop: 10}]}>
-            <IconSymbol size={28} name={icon} color="black" style={{paddingRight: 10}}/>
+            <UniversalIcon source={iconSource} size={iconSize} name={icon} color="black" style={{paddingLeft: 2, paddingRight: 10}}/>
             <ProgressBarPercentage progress={progress} target={target}/>
         </View>
     );

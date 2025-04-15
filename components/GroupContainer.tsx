@@ -1,6 +1,7 @@
 import { StyleSheet, View, Text, Image } from "react-native";
 
 import { HR } from "./HR";
+import { IconSource } from "./ui/UniversalIcon";
 import { Container } from "./Container";
 import { ProgressBarIcon } from "./ProgressBarIcon";
 
@@ -19,8 +20,8 @@ export function GroupContainer({
             <Text style={[styles.text, {fontSize: 16}]}>{days} days left</Text>
         </View>
         <HR/>
-        <ProgressBarIcon progress={groupProgress} target={groupTarget} icon="person.3.fill" />
-        <ProgressBarIcon progress={individualProgress} target={individualTarget} icon="person.fill" />
+        <ProgressBarIcon progress={groupProgress} target={groupTarget} iconSource={IconSource.FontAwesome6} icon="users" iconSize={16}  />
+        <ProgressBarIcon progress={individualProgress} target={individualTarget} iconSource={IconSource.FontAwesome6} icon="user-large" iconSize={20} />
     </Container>
   );
 }

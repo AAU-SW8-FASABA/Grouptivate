@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-nati
 import { useRouter } from 'expo-router';
 
 import { Collapsible } from '@/components/Collapsible';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { IconSource, UniversalIcon } from '@/components/ui/UniversalIcon';
 import { GoalContainer } from '@/components/GoalContainer';
 import { GroupContainer } from '@/components/GroupContainer';
 
@@ -46,13 +46,13 @@ export default function Main() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
       <Collapsible title="Goals">
-        <GoalContainer activity="Swim" unit="kcal" progress={960} target={800} days={2} icon="ant.fill"/>
-        <GoalContainer activity="Bike" unit="km" progress={3.8} target={10} days={2} icon="ant"/>
+        <GoalContainer activity="Swim" unit="kcal" progress={960} target={800} days={2} iconSource={IconSource.MaterialCommunityIcons} icon="swim" iconSize={26}/>
+        <GoalContainer activity="Bike" unit="km" progress={3.8} target={10} days={2} iconSource={IconSource.MaterialCommunityIcons} icon="bike" iconSize={26}/>
       </Collapsible>
       <View style={[styles.row, {marginTop: 25}]}>
         <Text style={[styles.text, {fontSize: 28}]}>Groups</Text>
         <TouchableOpacity onPress={addGroup} activeOpacity={0.8}>
-          <IconSymbol name="plus" size={32} color="black" style={{ marginTop: 5 }} />
+          <UniversalIcon source={IconSource.FontAwesome6} name="plus" size={23} color="black" style={{ marginTop: 11, marginRight: 5, marginBottom: 6 }} />
         </TouchableOpacity>
       </View>
       {groups.map((group) => (
