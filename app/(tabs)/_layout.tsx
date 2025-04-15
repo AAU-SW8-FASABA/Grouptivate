@@ -3,7 +3,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { IconSource, UniversalIcon } from '@/components/ui/UniversalIcon';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 
 export default function TabLayout() {
@@ -45,14 +45,14 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={32} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <UniversalIcon source={IconSource.FontAwesome6} name={"house"} size={21} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <IconSymbol size={32} name="person.fill" color={color} />,
+          tabBarIcon: ({ color }) => <UniversalIcon source={IconSource.FontAwesome6} name={"user-large"} size={21} color={color} />,
         }}
       />
     </Tabs>

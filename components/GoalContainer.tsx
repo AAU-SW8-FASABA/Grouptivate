@@ -1,12 +1,12 @@
 import { StyleSheet, View, Text } from "react-native";
-import { SFSymbols6_0 } from "sf-symbols-typescript";
+import { IconSource } from "./ui/UniversalIcon";
 import { Container } from "./Container";
 import { ProgressBar } from "./ProgressBar";
 
 export function GoalContainer({
-    activity, unit, progress, target, days, icon
+    activity, unit, progress, target, days, iconSource, icon, iconSize,
 }: {
-    activity: string, unit: string, progress: number, target: number, days: number, icon: SFSymbols6_0
+    activity: string, unit: string, progress: number, target: number, days: number, iconSource: IconSource, icon: string, iconSize: number,
 }) {
   return (
     <Container>
@@ -15,7 +15,7 @@ export function GoalContainer({
             <View style={styles.box}><Text style={[styles.text, {fontSize: 16}]}>{progress} / {target} {unit}</Text></View>
             <View style={styles.box}><Text style={[styles.text, {fontSize: 16, marginLeft: "auto"}]}>{days} days left</Text></View>
         </View>
-        <ProgressBar {...{ progress, target, icon }} />
+        <ProgressBar {...{ progress, target, iconSource, icon, iconSize }} />
     </Container>
   );
 }
