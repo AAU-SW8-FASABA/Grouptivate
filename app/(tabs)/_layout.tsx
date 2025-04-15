@@ -1,10 +1,10 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Tabs } from "expo-router";
+import React from "react";
+import { Platform } from "react-native";
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSource, UniversalIcon } from '@/components/ui/UniversalIcon';
-import TabBarBackground from '@/components/ui/TabBarBackground';
+import { HapticTab } from "@/components/HapticTab";
+import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
+import TabBarBackground from "@/components/ui/TabBarBackground";
 
 export default function TabLayout() {
   return (
@@ -29,30 +29,45 @@ export default function TabLayout() {
         tabBarStyle: Platform.select({
           ios: {
             // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
+            position: "absolute",
             height: 50,
-            borderTopWidth: 0
+            borderTopWidth: 0,
           },
           default: {
             // Use a solid background on Android
-            backgroundColor: '#ffffff',
+            backgroundColor: "#ffffff",
             height: 50,
-            borderTopWidth: 0
+            borderTopWidth: 0,
           },
         }),
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <UniversalIcon source={IconSource.FontAwesome6} name={"house"} size={21} color={color} />,
+          title: "Home",
+          tabBarIcon: ({ color }) => (
+            <UniversalIcon
+              source={IconSource.FontAwesome6}
+              name={"house"}
+              size={21}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <UniversalIcon source={IconSource.FontAwesome6} name={"user-large"} size={21} color={color} />,
+          title: "Profile",
+          tabBarIcon: ({ color }) => (
+            <UniversalIcon
+              source={IconSource.FontAwesome6}
+              name={"user-large"}
+              size={21}
+              color={color}
+            />
+          ),
         }}
       />
     </Tabs>

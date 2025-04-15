@@ -4,36 +4,62 @@ import { Container } from "./Container";
 import { ProgressBar } from "./ProgressBar";
 
 export function GoalContainer({
-    activity, unit, progress, target, days, iconSource, icon, iconSize,
+  activity,
+  unit,
+  progress,
+  target,
+  days,
+  iconSource,
+  icon,
+  iconSize,
 }: {
-    activity: string, unit: string, progress: number, target: number, days: number, iconSource: IconSource, icon: string, iconSize: number,
+  activity: string;
+  unit: string;
+  progress: number;
+  target: number;
+  days: number;
+  iconSource: IconSource;
+  icon: string;
+  iconSize: number;
 }) {
   return (
     <Container>
-        <View style={styles.row}>
-            <View style={styles.box}><Text style={[styles.text, {fontSize: 24, marginRight: "auto"}]}>{activity}</Text></View>
-            <View style={styles.box}><Text style={[styles.text, {fontSize: 16}]}>{progress} / {target} {unit}</Text></View>
-            <View style={styles.box}><Text style={[styles.text, {fontSize: 16, marginLeft: "auto"}]}>{days} days left</Text></View>
+      <View style={styles.row}>
+        <View style={styles.box}>
+          <Text style={[styles.text, { fontSize: 24, marginRight: "auto" }]}>
+            {activity}
+          </Text>
         </View>
-        <ProgressBar {...{ progress, target, iconSource, icon, iconSize }} />
+        <View style={styles.box}>
+          <Text style={[styles.text, { fontSize: 16 }]}>
+            {progress} / {target} {unit}
+          </Text>
+        </View>
+        <View style={styles.box}>
+          <Text style={[styles.text, { fontSize: 16, marginLeft: "auto" }]}>
+            {days} days left
+          </Text>
+        </View>
+      </View>
+      <ProgressBar {...{ progress, target, iconSource, icon, iconSize }} />
     </Container>
   );
 }
 
 const styles = StyleSheet.create({
-      text: {
-        fontFamily: "Roboto",
-        fontWeight: 500,
-        textAlign: "center"
-      },
-      box: {
-          display: "flex",
-          justifyContent: "center",
-          flex: 1,
-      },
-      row: {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-      },
+  text: {
+    fontFamily: "Roboto",
+    fontWeight: 500,
+    textAlign: "center",
+  },
+  box: {
+    display: "flex",
+    justifyContent: "center",
+    flex: 1,
+  },
+  row: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
 });
