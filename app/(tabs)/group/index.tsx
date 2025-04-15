@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { IconSource, UniversalIcon } from '@/components/ui/UniversalIcon';
 import { Back } from '@/components/Back';
 import { Container } from '@/components/Container';
 import { ContainerWithBlueBox } from '@/components/ContainerWithBlueBox';
@@ -11,7 +11,6 @@ import { ProgressBarIcon } from '@/components/ProgressBarIcon';
 import { ProgressBarTextIcon } from '@/components/ProgressBarTextIcon';
 import { CollapsibleContainer } from '@/components/CollapsibleContainer';
 import { NameProgress } from '@/components/NameProgress';
-import { SFSymbols6_0 } from 'sf-symbols-typescript';
 
 export default function Group() {
   const { name } = useLocalSearchParams();
@@ -23,12 +22,12 @@ export default function Group() {
       activities: [{
         progress: 382,
         target: 800,
-        icon: "ant.fill" as SFSymbols6_0,
+        icon: "person-swimming",
         unit: "kcal",
       }, {
         progress: 200,
         target: 700,
-        icon: "ant" as SFSymbols6_0,
+        icon: "person-biking",
         unit: "km",
       }]
     },
@@ -37,7 +36,7 @@ export default function Group() {
       activities: [{
         progress: 70,
         target: 700,
-        icon: "ant" as SFSymbols6_0,
+        icon: "person-biking",
         unit: "km",
       }]
     },
@@ -46,7 +45,7 @@ export default function Group() {
       activities: [{
         progress: 630,
         target: 700,
-        icon: "ant" as SFSymbols6_0,
+        icon: "person-biking",
         unit: "km",
       }]
     },
@@ -58,7 +57,7 @@ export default function Group() {
         headerTitle: name && typeof name === "string" ? name : "Group Name",
         headerLeft: () => <Back/>,
         headerRight: () => <TouchableOpacity style={{ marginRight: 15 }} onPress={() => router.push("/group/settings")}>
-          <IconSymbol name="gear" size={24} color="white" />
+          <UniversalIcon source={IconSource.FontAwesome6} name={"gear"} size={21} color="white" />
         </TouchableOpacity>
       }}/>
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
@@ -86,7 +85,7 @@ export default function Group() {
                   <View style={styles.box}><Text style={[styles.text, {fontSize: 16, textAlign: "center"}]}>3.8 / 10 km</Text></View>
                   <View style={styles.box}/>
               </View>
-              <ProgressBarIcon progress={38} icon="ant"/>
+              <ProgressBarIcon progress={38} iconSource={IconSource.FontAwesome6} icon="person-biking" />
             </View>
             <View style={[styles.row, {gap: 10, flexWrap: "wrap"}]}>
               <NameProgress name="Anders" progress={88}/>
@@ -105,7 +104,7 @@ export default function Group() {
               <CollapsibleContainer>
                 <View style={styles.row}>
                   <Text numberOfLines={1} style={[styles.text, {fontSize: 24}]}>{member.name}</Text>
-                  <View style={{width: "40%", marginRight: 40}}>
+                  <View style={{ width: "40%", marginRight: 40 }}>
                     <ProgressBarPercentage
                       progress={member.activities!.reduce((acc, a) => acc + (a.progress / a.target), 0) / member.activities!.length * 100}
                       target={100}
@@ -114,7 +113,14 @@ export default function Group() {
                 </View>
                 <View>
                   {member.activities!.map((activity, index) => (
-                    <ProgressBarTextIcon key={index} progress={activity.progress} target={activity.target} icon={activity.icon} unit={activity.unit} />
+                    <ProgressBarTextIcon
+                      key={index}
+                      progress={activity.progress}
+                      target={activity.target}
+                      unit={activity.unit}
+                      iconSource={IconSource.FontAwesome6}
+                      icon={activity.icon}
+                    />
                   ))}
                 </View>
               </CollapsibleContainer>

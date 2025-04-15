@@ -46,8 +46,8 @@ export default function Main() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
       <Collapsible title="Goals">
-        <GoalContainer activity="Swim" unit="kcal" progress={960} target={800} days={2} iconSource={IconSource.MaterialCommunityIcons} icon="swim" iconSize={26}/>
-        <GoalContainer activity="Bike" unit="km" progress={3.8} target={10} days={2} iconSource={IconSource.MaterialCommunityIcons} icon="bike" iconSize={26}/>
+        <GoalContainer activity="Swim" unit="kcal" progress={960} target={800} days={2} iconSource={IconSource.FontAwesome6} icon="person-swimming" iconSize={20}/>
+        <GoalContainer activity="Bike" unit="km" progress={3.8} target={10} days={2} iconSource={IconSource.FontAwesome6} icon="person-biking" iconSize={20}/>
       </Collapsible>
       <View style={[styles.row, {marginTop: 25}]}>
         <Text style={[styles.text, {fontSize: 28}]}>Groups</Text>

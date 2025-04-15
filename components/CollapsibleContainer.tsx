@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 
 import { HR } from './HR';
-import { IconSymbol } from './ui/IconSymbol';
+import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 
 export function CollapsibleContainer({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,10 +14,10 @@ export function CollapsibleContainer({ children }: { children: React.ReactNode }
         style={styles.collapse}
         onPress={() => setIsOpen((value) => !value)}
         activeOpacity={0.8}>
-        <IconSymbol
-          name="chevron.right"
+        <UniversalIcon
+          source={IconSource.FontAwesome6}
+          name={"chevron-right"}
           size={32}
-          weight="medium"
           color="black"
           style={{ transform: [{ rotate: isOpen ? '270deg' : '90deg' }] }}
         />
