@@ -1,17 +1,19 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import { Container } from './Container';
+import { Container } from "./Container";
 
 export function ContainerWithBlueBox({ text }: { text: string }) {
-    return (
-        <Container>
-            <Text style={[styles.text, styles.bigText]}>Days Left</Text>
-            <View style={styles.blueContainer}>
-                <Text style={[styles.text, styles.bigText, {color: "white"}]}>{text}</Text>
-            </View>
-        </Container>
-    );
+  return (
+    <Container>
+      <Text style={[styles.text, styles.bigText]}>Days Left</Text>
+      <View style={styles.blueContainer}>
+        <Text style={[styles.text, styles.bigText, { color: "white" }]}>
+          {text}
+        </Text>
+      </View>
+    </Container>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -30,4 +32,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-          

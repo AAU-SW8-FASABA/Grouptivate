@@ -1,26 +1,57 @@
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 
-import { Container } from '@/components/Container';
+import { Container } from "@/components/Container";
 
 export default function Profile() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.center}>
-        <Image source={require("@/assets/images/Aske.png")} borderRadius={100} style={styles.profilePhoto} />
+        <Image
+          source={require("@/assets/images/Aske.png")}
+          borderRadius={100}
+          style={styles.profilePhoto}
+        />
         <Text style={[styles.text, styles.profileName]}>Aske #82</Text>
-        <Text style={[styles.text, { fontSize: 32, marginTop: 50 }]}>Invitations</Text>
+        <Text style={[styles.text, { fontSize: 32, marginTop: 50 }]}>
+          Invitations
+        </Text>
         <Container>
           <View style={styles.column}>
             <View>
-              <Text style={[styles.text, { fontSize: 12, color: "#4A4A4A" }]}>Hald #81 invited you to:</Text>
+              <Text style={[styles.text, { fontSize: 12, color: "#4A4A4A" }]}>
+                Hald #81 invited you to:
+              </Text>
               <Text style={[styles.text, { fontSize: 24 }]}>The Gulops</Text>
             </View>
-            <View style={{width: "50%"}}>
+            <View style={{ width: "50%" }}>
               <TouchableOpacity style={{ marginBottom: 5 }}>
-                <Text style={[styles.text, styles.button, { backgroundColor: "#57A773", color: "white" }]}>Accept</Text>
+                <Text
+                  style={[
+                    styles.text,
+                    styles.button,
+                    { backgroundColor: "#57A773", color: "white" },
+                  ]}
+                >
+                  Accept
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity>
-                <Text style={[styles.text, styles.button, { backgroundColor: "#D0312D", color: "white" }]}>Decline</Text>
+                <Text
+                  style={[
+                    styles.text,
+                    styles.button,
+                    { backgroundColor: "#D0312D", color: "white" },
+                  ]}
+                >
+                  Decline
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -65,5 +96,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     height: 32,
     lineHeight: 32,
-  }
+  },
 });

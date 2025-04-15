@@ -1,11 +1,17 @@
-import { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import { useRouter } from "expo-router";
 
-import { Collapsible } from '@/components/Collapsible';
-import { IconSource, UniversalIcon } from '@/components/ui/UniversalIcon';
-import { GoalContainer } from '@/components/GoalContainer';
-import { GroupContainer } from '@/components/GroupContainer';
+import { Collapsible } from "@/components/Collapsible";
+import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
+import { GoalContainer } from "@/components/GoalContainer";
+import { GroupContainer } from "@/components/GroupContainer";
 
 export default function Main() {
   const router = useRouter();
@@ -13,7 +19,7 @@ export default function Main() {
   const [groups, setGroups] = useState([
     {
       key: Math.random().toString(),
-      name: 'The Bongers',
+      name: "The Bongers",
       days: 2,
       groupProgress: 28,
       groupTarget: 100,
@@ -22,7 +28,7 @@ export default function Main() {
     },
     {
       key: Math.random().toString(),
-      name: 'The Gulops',
+      name: "The Gulops",
       days: 28,
       groupProgress: 4,
       groupTarget: 100,
@@ -32,22 +38,46 @@ export default function Main() {
   ]);
 
   function addGroup() {
-    setGroups(prev => [...prev, {
-      key: Math.random().toString(),
-      name: 'New Group',
-      days: 2,
-      groupProgress: Math.random() * 100,
-      groupTarget: 100,
-      individualProgress: Math.random() * 100,
-      individualTarget: 100,
-    }]);
+    setGroups((prev) => [
+      ...prev,
+      {
+        key: Math.random().toString(),
+        name: "New Group",
+        days: 2,
+        groupProgress: Math.random() * 100,
+        groupTarget: 100,
+        individualProgress: Math.random() * 100,
+        individualTarget: 100,
+      },
+    ]);
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 20 }}
+    >
       <Collapsible title="Goals">
-        <GoalContainer activity="Swim" unit="kcal" progress={960} target={800} days={2} iconSource={IconSource.FontAwesome6} icon="person-swimming" iconSize={20}/>
-        <GoalContainer activity="Bike" unit="km" progress={3.8} target={10} days={2} iconSource={IconSource.FontAwesome6} icon="person-biking" iconSize={20}/>
+        <GoalContainer
+          activity="Swim"
+          unit="kcal"
+          progress={960}
+          target={800}
+          days={2}
+          iconSource={IconSource.FontAwesome6}
+          icon="person-swimming"
+          iconSize={20}
+        />
+        <GoalContainer
+          activity="Bike"
+          unit="km"
+          progress={3.8}
+          target={10}
+          days={2}
+          iconSource={IconSource.FontAwesome6}
+          icon="person-biking"
+          iconSize={20}
+        />
       </Collapsible>
       <View style={[styles.row, { marginTop: 25 }]}>
         <Text style={[styles.text, { fontSize: 28 }]}>Groups</Text>
@@ -62,10 +92,15 @@ export default function Main() {
         </TouchableOpacity>
       </View>
       {groups.map((group) => (
-        <TouchableOpacity key={group.key} onPress={() => router.push({
-          pathname: "/group",
-          params: { name: group.name },
-        })}>
+        <TouchableOpacity
+          key={group.key}
+          onPress={() =>
+            router.push({
+              pathname: "/group",
+              params: { name: group.name },
+            })
+          }
+        >
           <GroupContainer
             name={group.name}
             days={group.days}
