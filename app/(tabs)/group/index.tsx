@@ -41,7 +41,7 @@ export default function Group() {
       }]
     },
     {
-      name: 'Albert Hald 2',
+      name: 'Albert Hel',
       activities: [{
         progress: 630,
         target: 700,
@@ -68,8 +68,8 @@ export default function Group() {
 
         <Container>
           <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-            <Text style={[styles.text, {fontSize: 24}]}>Progress</Text>
-            <Text style={[styles.text, {fontSize: 16}]}>0 / 2 members finished</Text>
+            <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
+            <Text style={[styles.text, { fontSize: 16 }]}>0 / 2 members finished</Text>
           </View>
           <View style={{marginTop: 10}}>
             <ProgressBarPercentage progress={38} />
@@ -81,8 +81,8 @@ export default function Group() {
           <CollapsibleContainer>
             <View>
               <View style={styles.row}>
-                  <View style={styles.box}><Text style={[styles.text, {fontSize: 24, marginRight: "auto"}]}>Bike</Text></View>
-                  <View style={styles.box}><Text style={[styles.text, {fontSize: 16, textAlign: "center"}]}>3.8 / 10 km</Text></View>
+                  <View style={styles.box}><Text style={[styles.text, { fontSize: 24, marginRight: "auto" }]}>Bike</Text></View>
+                  <View style={styles.box}><Text style={[styles.text, { fontSize: 16, textAlign: "center" }]}>3.8 / 10 km</Text></View>
                   <View style={styles.box}/>
               </View>
               <ProgressBarIcon progress={38} iconSource={IconSource.FontAwesome6} icon="person-biking" />
@@ -98,12 +98,12 @@ export default function Group() {
         </View>
 
         <View style={{marginTop: 25}}>
-          <Text style={[styles.text, {fontSize: 28}]}>Members</Text>
+          <Text style={[styles.text, { fontSize: 28 }]}>Members</Text>
           {members.map((member) => (
             <View key={member.name}>
               <CollapsibleContainer>
                 <View style={styles.row}>
-                  <Text numberOfLines={1} style={[styles.text, {fontSize: 24}]}>{member.name}</Text>
+                  <Text numberOfLines={1} style={[styles.text, { fontSize: 24 }]}>{member.name}</Text>
                   <View style={{ width: "40%", marginRight: 30 }}>
                     <ProgressBarPercentage
                       progress={member.activities!.reduce((acc, a) => acc + (a.progress / a.target), 0) / member.activities!.length * 100}

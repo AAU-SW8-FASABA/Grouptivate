@@ -1,13 +1,13 @@
 import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 
 import { IconSource, UniversalIcon } from './ui/UniversalIcon';
 
-export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
+export function Collapsible({ children, title, style }: PropsWithChildren & { title: string, style?: StyleProp<ViewStyle> }) {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <View>
+    <View style={style}>
       <TouchableOpacity
         style={styles.heading}
         onPress={() => setIsOpen((value) => !value)}
