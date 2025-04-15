@@ -9,8 +9,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
     backgroundColor: "#EFEFF3",
+    width: "100%",
     borderRadius: 5,
     marginTop: 10,
     padding: 10,
+    flex: 1,
   },
 });
