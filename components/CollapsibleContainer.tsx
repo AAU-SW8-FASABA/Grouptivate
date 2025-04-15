@@ -17,9 +17,9 @@ export function CollapsibleContainer({ children }: { children: React.ReactNode }
         <UniversalIcon
           source={IconSource.FontAwesome6}
           name={"chevron-right"}
-          size={32}
+          size={20}
           color="black"
-          style={{ transform: [{ rotate: isOpen ? '270deg' : '90deg' }] }}
+          style={{ transform: [{ rotate: isOpen ? '270deg' : '90deg' }], marginTop: 5, marginRight: 5 }}
         />
       </TouchableOpacity>
         {child1}

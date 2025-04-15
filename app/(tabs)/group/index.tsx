@@ -104,7 +104,7 @@ export default function Group() {
               <CollapsibleContainer>
                 <View style={styles.row}>
                   <Text numberOfLines={1} style={[styles.text, {fontSize: 24}]}>{member.name}</Text>
-                  <View style={{ width: "40%", marginRight: 40 }}>
+                  <View style={{ width: "40%", marginRight: 30 }}>
                     <ProgressBarPercentage
                       progress={member.activities!.reduce((acc, a) => acc + (a.progress / a.target), 0) / member.activities!.length * 100}
                       target={100}
