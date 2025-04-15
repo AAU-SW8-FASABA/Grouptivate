@@ -1,8 +1,14 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, StyleProp, ViewStyle } from "react-native";
 
-export function Container({ children }: { children: React.ReactNode }) {
-  return <View style={styles.container}>{children}</View>;
+export function Container({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+}) {
+  return <View style={[styles.container, style]}>{children}</View>;
 }
 
 const styles = StyleSheet.create({

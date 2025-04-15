@@ -17,7 +17,6 @@ export function CollapsibleContainer({
       <TouchableOpacity
         style={styles.collapse}
         onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}
       >
         <UniversalIcon
           source={IconSource.FontAwesome6}

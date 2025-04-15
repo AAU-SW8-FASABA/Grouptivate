@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -22,7 +21,7 @@ export default function Group() {
   const { name } = useLocalSearchParams();
   const router = useRouter();
 
-  const [members, _] = useState([
+  const members = [
     {
       name: "Anders",
       activities: [
@@ -62,7 +61,7 @@ export default function Group() {
         },
       ],
     },
-  ]);
+  ];
 
   return (
     <>
@@ -205,7 +204,6 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: "Roboto",
     fontWeight: 500,
-    textOverflow: "ellipsis",
   },
   row: {
     flexDirection: "row",

@@ -22,7 +22,6 @@ export function Collapsible({
       <TouchableOpacity
         style={styles.heading}
         onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}
       >
         <Text style={styles.text}>{title}</Text>
         <UniversalIcon
@@ -41,7 +40,6 @@ export function Collapsible({
 const styles = StyleSheet.create({
   heading: {
     backgroundColor: "white",
-    color: "black",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",

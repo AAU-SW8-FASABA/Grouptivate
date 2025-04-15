@@ -52,14 +52,14 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     textAlign: "center",
   },
-  box: {
-    display: "flex",
-    justifyContent: "center",
-    flex: 1,
-  },
   row: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+  },
+  box: {
+    display: "flex",
+    justifyContent: "center",
+    flex: 1,
   },
 });

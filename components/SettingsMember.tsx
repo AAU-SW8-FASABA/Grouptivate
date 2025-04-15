@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto",
     fontWeight: 500,
     fontSize: 24,
-    textOverflow: "ellipsis",
   },
   row: {
     flexDirection: "row",

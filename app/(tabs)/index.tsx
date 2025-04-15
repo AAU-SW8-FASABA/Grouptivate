@@ -3,11 +3,13 @@ import {
   StyleSheet,
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 
+import { CustomModal } from "@/components/CustomModal";
 import { Collapsible } from "@/components/Collapsible";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { GoalContainer } from "@/components/GoalContainer";
@@ -15,6 +17,7 @@ import { GroupContainer } from "@/components/GroupContainer";
 
 export default function Main() {
   const router = useRouter();
+  const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
 
   const [groups, setGroups] = useState([
     {
@@ -57,6 +60,19 @@ export default function Main() {
       style={styles.container}
       contentContainerStyle={{ paddingBottom: 20 }}
     >
+      <CustomModal
+        height={500}
+        title="New Group"
+        isVisible={newGroupModalVisibility}
+        setIsVisible={setNewGroupModalVisibility}
+        createCallback={addGroup}
+      >
+        <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
+        <TextInput style={styles.input}></TextInput>
+        <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          Interval
+        </Text>
+      </CustomModal>
       <Collapsible title="Goals">
         <GoalContainer
           activity="Swim"
@@ -81,7 +97,7 @@ export default function Main() {
       </Collapsible>
       <View style={[styles.row, { marginTop: 25 }]}>
         <Text style={[styles.text, { fontSize: 28 }]}>Groups</Text>
-        <TouchableOpacity onPress={addGroup} activeOpacity={0.8}>
+        <TouchableOpacity onPress={() => setNewGroupModalVisibility(true)}>
           <UniversalIcon
             source={IconSource.FontAwesome6}
             name="plus"
@@ -129,5 +145,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  input: {
+    backgroundColor: "#EFEFF3",
   },
 });
