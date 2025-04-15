@@ -3,44 +3,72 @@ import { Bar } from "react-native-progress";
 
 import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
 
-export function ProgressBar({ progress, target, iconSource, icon, iconSize }: { progress: number, target: number, iconSource: IconSource, icon: string, iconSize: number, }) {
-    const progressPercentage = Math.min((progress / target) * 100, 100);
-    const isRightAligned = progressPercentage < 90;
-    const indent = isRightAligned ? 5 : -7.5;
-  
-    return (
-        <View style={[styles.row, {marginTop: 10}]}>
-            <UniversalIcon source={iconSource} size={iconSize} name={icon} color="black" style={{paddingLeft: 2, paddingRight: 10}}/>
-            <View style={styles.progress}>
-                <Bar progress={progress / target} width={null} height={32} borderWidth={0} color="#2B70CA" unfilledColor="#FFFFFF"></Bar>
-                <Text style={[
-                    styles.progressText,
-                    {
-                        left: `${progressPercentage + indent}%`,
-                        color: isRightAligned ? "#2B70CA" : "#FFFFFF",
-                    }]}>
-                        {(progress / target * 100).toFixed(0)}%
-                </Text>
-            </View>
-        </View>
-    );
+export function ProgressBar({
+  progress,
+  target,
+  iconSource,
+  icon,
+  iconSize,
+}: {
+  progress: number;
+  target: number;
+  iconSource: IconSource;
+  icon: string;
+  iconSize: number;
+}) {
+  const progressPercentage = Math.min((progress / target) * 100, 100);
+  const isRightAligned = progressPercentage < 90;
+  const indent = isRightAligned ? 5 : -7.5;
+
+  return (
+    <View style={[styles.row, { marginTop: 10 }]}>
+      <UniversalIcon
+        source={iconSource}
+        size={iconSize}
+        name={icon}
+        color="black"
+        style={{ paddingLeft: 2, paddingRight: 10 }}
+      />
+      <View style={styles.progress}>
+        <Bar
+          progress={progress / target}
+          width={null}
+          height={32}
+          borderWidth={0}
+          color="#2B70CA"
+          unfilledColor="#FFFFFF"
+        ></Bar>
+        <Text
+          style={[
+            styles.progressText,
+            {
+              left: `${progressPercentage + indent}%`,
+              color: isRightAligned ? "#2B70CA" : "#FFFFFF",
+            },
+          ]}
+        >
+          {((progress / target) * 100).toFixed(0)}%
+        </Text>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    row: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-    },
-    progress: {
-      flex: 1,
-    },
-    progressText: {
-      fontFamily: "Roboto",
-      fontWeight: 500,
-      fontSize: 16,
-      position: "absolute",
-      top: "50%",
-      transform: [{ translateX: "-50%" }, { translateY: "-50%" }]
-    }
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  progress: {
+    flex: 1,
+  },
+  progressText: {
+    fontFamily: "Roboto",
+    fontWeight: 500,
+    fontSize: 16,
+    position: "absolute",
+    top: "50%",
+    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
+  },
 });
