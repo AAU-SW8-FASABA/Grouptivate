@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text } from "react-native";
 import { IconSource } from "./ui/UniversalIcon";
 import { Container } from "./Container";
-import { ProgressBar } from "./ProgressBar";
+import { ProgressBarIcon } from "./ProgressBarIcon";
 
 export function GoalContainer({
   activity,
@@ -41,7 +41,7 @@ export function GoalContainer({
           </Text>
         </View>
       </View>
-      <ProgressBar {...{ progress, target, iconSource, icon, iconSize }} />
+      <ProgressBarIcon {...{ progress, target, iconSource, icon, iconSize }} />
     </Container>
   );
 }

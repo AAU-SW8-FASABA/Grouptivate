@@ -9,19 +9,20 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 export default function TabLayout() {
   return (
     <Tabs
+      backBehavior="history"
       screenOptions={{
         tabBarActiveTintColor: "#1E4E8C",
-        headerTitle: "Grouptivate",
         headerTitleAlign: "center",
         tabBarLabelStyle: {
           fontFamily: "Roboto",
         },
         headerTitleStyle: {
           fontFamily: "Roboto",
+          color: "white",
           fontSize: 32,
         },
         headerStyle: {
-          height: 50,
+          height: 100,
           backgroundColor: "#1E4E8C",
         },
         tabBarButton: HapticTab,
@@ -30,13 +31,11 @@ export default function TabLayout() {
           ios: {
             // Use a transparent background on iOS to show the blur effect
             position: "absolute",
-            height: 50,
             borderTopWidth: 0,
           },
           default: {
             // Use a solid background on Android
             backgroundColor: "#ffffff",
-            height: 50,
             borderTopWidth: 0,
           },
         }),
@@ -46,6 +45,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
+          headerTitle: "Grouptivate",
           tabBarIcon: ({ color }) => (
             <UniversalIcon
               source={IconSource.FontAwesome6}
@@ -60,6 +60,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: "Profile",
+          headerTitle: "Grouptivate",
           tabBarIcon: ({ color }) => (
             <UniversalIcon
               source={IconSource.FontAwesome6}
@@ -68,6 +69,18 @@ export default function TabLayout() {
               color={color}
             />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="group/index"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="group/settings"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

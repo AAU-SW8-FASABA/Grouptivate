@@ -6,17 +6,20 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { useRouter } from "expo-router";
 
 import { Collapsible } from "@/components/Collapsible";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { GoalContainer } from "@/components/GoalContainer";
 import { GroupContainer } from "@/components/GroupContainer";
 
-export default function HomeScreen() {
+export default function Main() {
+  const router = useRouter();
+
   const [groups, setGroups] = useState([
     {
+      key: Math.random().toString(),
       name: "The Bongers",
-      image: "https://placehold.co/32x32",
       days: 2,
       groupProgress: 28,
       groupTarget: 100,
@@ -24,8 +27,8 @@ export default function HomeScreen() {
       individualTarget: 100,
     },
     {
+      key: Math.random().toString(),
       name: "The Gulops",
-      image: "https://placehold.co/32x32",
       days: 28,
       groupProgress: 4,
       groupTarget: 100,
@@ -38,8 +41,8 @@ export default function HomeScreen() {
     setGroups((prev) => [
       ...prev,
       {
+        key: Math.random().toString(),
         name: "New Group",
-        image: "https://placehold.co/32x32",
         days: 2,
         groupProgress: Math.random() * 100,
         groupTarget: 100,
@@ -50,7 +53,10 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 20 }}
+    >
       <Collapsible title="Goals">
         <GoalContainer
           activity="Swim"
@@ -58,9 +64,9 @@ export default function HomeScreen() {
           progress={960}
           target={800}
           days={2}
-          iconSource={IconSource.MaterialCommunityIcons}
-          icon="swim"
-          iconSize={26}
+          iconSource={IconSource.FontAwesome6}
+          icon="person-swimming"
+          iconSize={20}
         />
         <GoalContainer
           activity="Bike"
@@ -68,9 +74,9 @@ export default function HomeScreen() {
           progress={3.8}
           target={10}
           days={2}
-          iconSource={IconSource.MaterialCommunityIcons}
-          icon="bike"
-          iconSize={26}
+          iconSource={IconSource.FontAwesome6}
+          icon="person-biking"
+          iconSize={20}
         />
       </Collapsible>
       <View style={[styles.row, { marginTop: 25 }]}>
@@ -86,15 +92,24 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
       {groups.map((group) => (
-        <GroupContainer
-          name={group.name}
-          image={group.image}
-          days={group.days}
-          groupProgress={group.groupProgress}
-          groupTarget={group.groupTarget}
-          individualProgress={group.individualProgress}
-          individualTarget={group.individualTarget}
-        />
+        <TouchableOpacity
+          key={group.key}
+          onPress={() =>
+            router.push({
+              pathname: "/group",
+              params: { name: group.name },
+            })
+          }
+        >
+          <GroupContainer
+            name={group.name}
+            days={group.days}
+            groupProgress={group.groupProgress}
+            groupTarget={group.groupTarget}
+            individualProgress={group.individualProgress}
+            individualTarget={group.individualTarget}
+          />
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );
@@ -103,8 +118,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
-    height: "100%",
     padding: 20,
+    paddingTop: 10,
   },
   text: {
     fontFamily: "Roboto",
