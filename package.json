@@ -10,7 +10,8 @@
     "ios": "patch-package && expo run:ios",
     "web": "patch-package && expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "format": "prettier . --write"
   },
   "jest": {
     "preset": "jest-expo"
@@ -54,9 +55,14 @@
     "@types/jest": "^29.5.14",
     "@types/react": "~18.3.20",
     "@types/react-test-renderer": "^18.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "~8.0.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
     "expo-build-properties": "^0.13.2",
     "jest": "^29.7.0",
     "jest-expo": "~52.0.6",
+    "prettier": "^3.5.3",
     "react-test-renderer": "18.3.1",
     "typescript": "^5.8.3"
   },
