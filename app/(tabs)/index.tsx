@@ -49,10 +49,16 @@ export default function Main() {
         <GoalContainer activity="Swim" unit="kcal" progress={960} target={800} days={2} iconSource={IconSource.FontAwesome6} icon="person-swimming" iconSize={20}/>
         <GoalContainer activity="Bike" unit="km" progress={3.8} target={10} days={2} iconSource={IconSource.FontAwesome6} icon="person-biking" iconSize={20}/>
       </Collapsible>
-      <View style={[styles.row, {marginTop: 25}]}>
-        <Text style={[styles.text, {fontSize: 28}]}>Groups</Text>
+      <View style={[styles.row, { marginTop: 25 }]}>
+        <Text style={[styles.text, { fontSize: 28 }]}>Groups</Text>
         <TouchableOpacity onPress={addGroup} activeOpacity={0.8}>
-          <UniversalIcon source={IconSource.FontAwesome6} name="plus" size={23} color="black" style={{ marginTop: 11, marginRight: 5, marginBottom: 6 }} />
+          <UniversalIcon
+            source={IconSource.FontAwesome6}
+            name="plus"
+            size={23}
+            color="black"
+            style={{ marginTop: 11, marginRight: 5, marginBottom: 6 }}
+          />
         </TouchableOpacity>
       </View>
       {groups.map((group) => (

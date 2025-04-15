@@ -1,6 +1,6 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Tabs } from "expo-router";
+import React from "react";
+import { Platform } from "react-native";
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSource, UniversalIcon } from '@/components/ui/UniversalIcon';
@@ -39,7 +39,8 @@ export default function TabLayout() {
             borderTopWidth: 0
           },
         }),
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
