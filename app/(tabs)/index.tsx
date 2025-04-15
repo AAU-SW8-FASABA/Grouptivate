@@ -57,7 +57,7 @@ export default function Main() {
       </View>
       {groups.map((group) => (
         <TouchableOpacity key={group.key} onPress={() => router.push({
-          pathname: "/group/index",
+          pathname: "/group",
           params: { name: group.name },
         })}>
           <GroupContainer
