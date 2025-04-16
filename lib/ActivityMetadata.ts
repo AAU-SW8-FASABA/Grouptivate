@@ -98,7 +98,6 @@ export const sportActivityMetadata: Record<SportActivity, ActivityMetadata> = {
     icon: "disc",
   },
   golf: {
-    metrics: [Metric.Count, Metric.Calories, Metric.Duration],
     iconSource: IconSource.MaterialCommunityIcons,
     icon: "golf",
   },
