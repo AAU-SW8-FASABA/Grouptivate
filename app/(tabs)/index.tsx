@@ -12,6 +12,8 @@ import { Collapsible } from "@/components/Collapsible";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { GoalContainer } from "@/components/GoalContainer";
 import { GroupContainer } from "@/components/GroupContainer";
+import { SportActivity } from "@/lib/API/schemas/Activity";
+import { Metric } from "@/lib/API/schemas/Metric";
 
 export default function Main() {
   const router = useRouter();
@@ -59,24 +61,18 @@ export default function Main() {
     >
       <Collapsible title="Goals">
         <GoalContainer
-          activity="Swim"
-          unit="kcal"
+          activity={SportActivity.Swimming}
+          metric={Metric.Calories}
           progress={960}
           target={800}
           days={2}
-          iconSource={IconSource.FontAwesome6}
-          icon="person-swimming"
-          iconSize={20}
         />
         <GoalContainer
-          activity="Bike"
-          unit="km"
+          activity={SportActivity.Biking}
+          metric={Metric.Distance}
           progress={3.8}
           target={10}
           days={2}
-          iconSource={IconSource.FontAwesome6}
-          icon="person-biking"
-          iconSize={20}
         />
       </Collapsible>
       <View style={[styles.row, { marginTop: 25 }]}>
