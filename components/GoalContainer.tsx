@@ -1,38 +1,43 @@
 import { StyleSheet, View, Text } from "react-native";
-import { IconSource } from "./ui/UniversalIcon";
 import { Container } from "./Container";
 import { ProgressBarIcon } from "./ProgressBarIcon";
+import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
+import {
+  otherActivityMetadata,
+  sportActivityMetadata,
+} from "@/lib/ActivityMetadata";
+import { Metric } from "@/lib/API/schemas/Metric";
+import { metricMetadata } from "@/lib/MetricMetadata";
 
 export function GoalContainer({
   activity,
-  unit,
+  metric,
   progress,
   target,
   days,
-  iconSource,
-  icon,
-  iconSize,
 }: {
-  activity: string;
-  unit: string;
+  activity: SportActivity | OtherActivity;
+  metric: Metric;
   progress: number;
   target: number;
   days: number;
-  iconSource: IconSource;
-  icon: string;
-  iconSize: number;
 }) {
+  const aMeta = { ...otherActivityMetadata, ...sportActivityMetadata }[
+    activity
+  ];
+  const mMeta = metricMetadata[metric];
+
   return (
     <Container>
       <View style={styles.row}>
         <View style={styles.box}>
           <Text style={[styles.text, { fontSize: 24, marginRight: "auto" }]}>
-            {activity}
+            {prettyName(activity)}
           </Text>
         </View>
         <View style={styles.box}>
           <Text style={[styles.text, { fontSize: 16 }]}>
-            {progress} / {target} {unit}
+            {progress} / {target} {mMeta.unit}
           </Text>
         </View>
         <View style={styles.box}>
@@ -41,9 +46,34 @@ export function GoalContainer({
           </Text>
         </View>
       </View>
-      <ProgressBarIcon {...{ progress, target, iconSource, icon, iconSize }} />
+      <ProgressBarIcon
+        {...{ progress, target }}
+        iconSource={aMeta.iconSource}
+        icon={aMeta.icon}
+        iconSize={20}
+      />
     </Container>
   );
+}
+
+/**
+ * Take an id such as "fancyId" and returns the pretty version of it:
+ * "Fancy id"
+ */
+function prettyName(id: string) {
+  if (!id) return "";
+
+  let formatted = id[0].toUpperCase();
+
+  for (const char of id.slice(1)) {
+    if (char === char.toUpperCase() && char !== char.toLowerCase()) {
+      formatted += " " + char.toLowerCase();
+    } else {
+      formatted += char;
+    }
+  }
+
+  return formatted;
 }
 
 const styles = StyleSheet.create({
