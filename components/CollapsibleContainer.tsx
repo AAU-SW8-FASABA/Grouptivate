@@ -20,11 +20,11 @@ export function CollapsibleContainer({
       >
         <UniversalIcon
           source={IconSource.FontAwesome6}
-          name={"chevron-right"}
+          name={"chevron-down"}
           size={20}
           color="black"
           style={{
-            transform: [{ rotate: isOpen ? "270deg" : "90deg" }],
+            transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
             marginTop: 5,
             marginRight: 5,
           }}

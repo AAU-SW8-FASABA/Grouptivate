@@ -9,8 +9,8 @@ export function CustomModal({
   setIsVisible,
   createCallback,
 }: PropsWithChildren & {
-  height: number;
   title: string;
+  height: number;
   isVisible: boolean;
   setIsVisible: (value: boolean) => void;
   createCallback: () => void;
@@ -21,7 +21,6 @@ export function CustomModal({
         <View
           style={{
             height: "100%",
-            top: 0,
             backgroundColor: "white",
             opacity: 0.75,
           }}
@@ -35,8 +34,11 @@ export function CustomModal({
       >
         <View
           style={{
-            height: "40%", // TODO: This is hardcoded lol, either live with it or fix it
-            top: height,
+            position: "absolute",
+            height,
+            bottom: 0,
+            right: 0,
+            left: 0,
             backgroundColor: "white",
             borderColor: "black",
             borderWidth: 2,

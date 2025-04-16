@@ -89,8 +89,8 @@ export default function Group() {
         contentContainerStyle={{ paddingBottom: 20 }}
       >
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <ContainerWithBlueBox text="23" />
-          <ContainerWithBlueBox text="13🔥" />
+          <ContainerWithBlueBox text1="Days Left" text2="23" />
+          <ContainerWithBlueBox text1="Streak" text2="13🔥" />
         </View>
 
         <Container>

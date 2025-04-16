@@ -3,13 +3,19 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { Container } from "./Container";
 
-export function ContainerWithBlueBox({ text }: { text: string }) {
+export function ContainerWithBlueBox({
+  text1,
+  text2,
+}: {
+  text1: string;
+  text2: string;
+}) {
   return (
     <Container>
-      <Text style={[styles.text, styles.bigText]}>Days Left</Text>
+      <Text style={[styles.text, styles.bigText]}>{text1}</Text>
       <View style={styles.blueContainer}>
         <Text style={[styles.text, styles.bigText, { color: "white" }]}>
-          {text}
+          {text2}
         </Text>
       </View>
     </Container>

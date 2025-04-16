@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { Dropdown } from "react-native-element-dropdown";
 
 import { CustomModal } from "@/components/CustomModal";
 import { Collapsible } from "@/components/Collapsible";
@@ -39,6 +40,13 @@ export default function Main() {
       individualTarget: 100,
     },
   ]);
+  const intervals = [
+    { label: "Daily", value: "daily" },
+    { label: "Weekly", value: "weekly" },
+    { label: "Monthly", value: "monthly" },
+  ];
+  const [intervalValue, setIntervalValue] = useState(null);
+  const [isIntervalFocus, setIsIntervalFocus] = useState(false);
 
   function addGroup() {
     setGroups((prev) => [
@@ -61,17 +69,46 @@ export default function Main() {
       contentContainerStyle={{ paddingBottom: 20 }}
     >
       <CustomModal
-        height={500}
+        height={410}
         title="New Group"
         isVisible={newGroupModalVisibility}
         setIsVisible={setNewGroupModalVisibility}
         createCallback={addGroup}
       >
         <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
-        <TextInput style={styles.input}></TextInput>
+        <TextInput style={[styles.input, { fontSize: 20 }]}></TextInput>
         <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
           Interval
         </Text>
+        <Dropdown
+          style={[styles.dropdown, isIntervalFocus && { borderColor: "blue" }]}
+          placeholderStyle={[styles.text, { fontSize: 20 }]}
+          selectedTextStyle={[styles.text, { fontSize: 20 }]}
+          itemTextStyle={[styles.text, { fontSize: 20 }]}
+          data={intervals}
+          labelField="label"
+          valueField="value"
+          placeholder="Select"
+          onFocus={() => setIsIntervalFocus(true)}
+          onBlur={() => setIsIntervalFocus(false)}
+          value={intervalValue}
+          onChange={(item) => {
+            setIntervalValue(item.value);
+            setIsIntervalFocus(false);
+          }}
+          renderRightIcon={() => (
+            <UniversalIcon
+              source={IconSource.FontAwesome6}
+              name="chevron-down"
+              size={20}
+              color="black"
+              style={{
+                transform: [{ rotate: isIntervalFocus ? "180deg" : "0deg" }],
+                marginRight: 5,
+              }}
+            />
+          )}
+        />
       </CustomModal>
       <Collapsible title="Goals">
         <GoalContainer
@@ -148,5 +185,13 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: "#EFEFF3",
+  },
+  dropdown: {
+    backgroundColor: "#EFEFF3",
+    borderColor: "black",
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
   },
 });
