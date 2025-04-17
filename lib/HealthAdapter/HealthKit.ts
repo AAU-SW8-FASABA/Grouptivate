@@ -1,147 +1,41 @@
+/**
+ * IMPORTS
+ */
+// External libraries
+import HealthKit, {
+  HealthInputOptions,
+  HealthKitPermissions,
+  HealthPermission,
+  HealthValue,
+} from "react-native-health";
+import * as v from "valibot";
+
+// Internal modules - Adapters
 import {
   CaloriesOnlyOptions,
   CountOnlyOptions,
   HealthAdapter,
   SportOptions,
-  isSportActivity,
 } from "./HealthAdapter";
-import { OtherActivity, SportActivity } from "../API/schemas/Activity";
 
-import HealthKit, {
-  HealthActivity,
-  HealthValue,
-  HealthKitPermissions,
-  HealthInputOptions,
-  HealthPermission,
-  HealthObserver,
-} from "react-native-health";
+// Internal modules - HealthKit
+import {
+  otherActivityFunctionMap,
+  permissionMap,
+  sportActivityHealthKitMap,
+} from "./HealthKit/HealthKitConstants";
+import { Workout, WorkoutSchema } from "./HealthKit/HealthKitWorkoutSchema";
 
+// Internal modules - Helpers
 import { getDatesBetween } from "./Helpers";
 
-const permissionMap: Record<OtherActivity | SportActivity, HealthPermission> = {
-  [OtherActivity.ActiveCaloriesBurned]: HealthPermission.ActiveEnergyBurned,
-  [OtherActivity.FloorsClimbed]: HealthPermission.FlightsClimbed,
-  [OtherActivity.Steps]: HealthPermission.StepCount,
-  [SportActivity.Badminton]: HealthPermission.Workout,
-  [SportActivity.Baseball]: HealthPermission.Workout,
-  [SportActivity.Basketball]: HealthPermission.Workout,
-  [SportActivity.Biking]: HealthPermission.Workout,
-  [SportActivity.Boxing]: HealthPermission.Workout,
-  [SportActivity.Cricket]: HealthPermission.Workout,
-  [SportActivity.Dancing]: HealthPermission.Workout,
-  [SportActivity.Elliptical]: HealthPermission.Workout,
-  [SportActivity.Fencing]: HealthPermission.Workout,
-  [SportActivity.Football]: HealthPermission.Workout,
-  [SportActivity.FootballAmerican]: HealthPermission.Workout,
-  [SportActivity.FootballAustralian]: HealthPermission.Workout,
-  [SportActivity.Frisbee]: HealthPermission.Workout,
-  [SportActivity.Golf]: HealthPermission.Workout,
-  [SportActivity.Gymnastics]: HealthPermission.Workout,
-  [SportActivity.Handball]: HealthPermission.Workout,
-  [SportActivity.Hiking]: HealthPermission.Workout,
-  [SportActivity.Hockey]: HealthPermission.Workout,
-  [SportActivity.MartialArts]: HealthPermission.Workout,
-  [SportActivity.Paddling]: HealthPermission.Workout,
-  [SportActivity.Pilates]: HealthPermission.Workout,
-  [SportActivity.Racquetball]: HealthPermission.Workout,
-  [SportActivity.RockClimbing]: HealthPermission.Workout,
-  [SportActivity.Rowing]: HealthPermission.Workout,
-  [SportActivity.Rugby]: HealthPermission.Workout,
-  [SportActivity.Running]: HealthPermission.Workout,
-  [SportActivity.Sailing]: HealthPermission.Workout,
-  [SportActivity.Skating]: HealthPermission.Workout,
-  [SportActivity.Skiing]: HealthPermission.Workout,
-  [SportActivity.Snowboarding]: HealthPermission.Workout,
-  [SportActivity.Softball]: HealthPermission.Workout,
-  [SportActivity.Squash]: HealthPermission.Workout,
-  [SportActivity.StairClimbing]: HealthPermission.Workout,
-  [SportActivity.StrengthTraining]: HealthPermission.Workout,
-  [SportActivity.Stretching]: HealthPermission.Workout,
-  [SportActivity.Surfing]: HealthPermission.Workout,
-  [SportActivity.Swimming]: HealthPermission.Workout,
-  [SportActivity.TableTennis]: HealthPermission.Workout,
-  [SportActivity.Tennis]: HealthPermission.Workout,
-  [SportActivity.Volleyball]: HealthPermission.Workout,
-  [SportActivity.Walking]: HealthPermission.Workout,
-  [SportActivity.WaterPolo]: HealthPermission.Workout,
-  [SportActivity.Wheelchair]: HealthPermission.Workout,
-  [SportActivity.Yoga]: HealthPermission.Workout,
-};
+// Internal modules - Schemas
+import { OtherActivity } from "../API/schemas/Activity";
+import { Metric } from "../API/schemas/Metric";
 
-const workoutSportActivityHealthKitMap: Record<
-  SportActivity,
-  HealthActivity[]
-> = {
-  [SportActivity.Badminton]: [HealthActivity.Badminton],
-  [SportActivity.Baseball]: [HealthActivity.Baseball],
-  [SportActivity.Basketball]: [HealthActivity.Basketball],
-  [SportActivity.Biking]: [HealthActivity.Cycling],
-  [SportActivity.Boxing]: [HealthActivity.Boxing],
-  [SportActivity.Cricket]: [HealthActivity.Cricket],
-  [SportActivity.Dancing]: [
-    HealthActivity.SocialDance,
-    HealthActivity.CardioDance,
-  ],
-  [SportActivity.Elliptical]: [HealthActivity.Elliptical],
-  [SportActivity.Fencing]: [HealthActivity.Fencing],
-  [SportActivity.Football]: [HealthActivity.Soccer],
-  [SportActivity.FootballAmerican]: [HealthActivity.AmericanFootball],
-  [SportActivity.FootballAustralian]: [HealthActivity.AustralianFootball],
-  [SportActivity.Frisbee]: [HealthActivity.DiscSports],
-  [SportActivity.Golf]: [HealthActivity.Golf],
-  [SportActivity.Gymnastics]: [HealthActivity.Gymnastics],
-  [SportActivity.Handball]: [HealthActivity.Handball],
-  [SportActivity.Hiking]: [HealthActivity.Hiking],
-  [SportActivity.Hockey]: [HealthActivity.Hockey],
-  [SportActivity.MartialArts]: [HealthActivity.MartialArts],
-  [SportActivity.Paddling]: [HealthActivity.PaddleSports],
-  [SportActivity.Pilates]: [HealthActivity.Pilates],
-  [SportActivity.Racquetball]: [HealthActivity.Racquetball],
-  [SportActivity.RockClimbing]: [HealthActivity.Climbing],
-  [SportActivity.Rowing]: [HealthActivity.Rowing],
-  [SportActivity.Rugby]: [HealthActivity.Rugby],
-  [SportActivity.Running]: [HealthActivity.Running],
-  [SportActivity.Sailing]: [HealthActivity.Sailing],
-  [SportActivity.Skating]: [HealthActivity.SkatingSports],
-  [SportActivity.Skiing]: [
-    HealthActivity.CrossCountrySkiing,
-    HealthActivity.DownhillSkiing,
-  ],
-  [SportActivity.Snowboarding]: [HealthActivity.Snowboarding],
-  [SportActivity.Softball]: [HealthActivity.Softball],
-  [SportActivity.Squash]: [HealthActivity.Squash],
-  [SportActivity.StairClimbing]: [
-    HealthActivity.StairClimbing,
-    HealthActivity.Stairs,
-  ],
-  [SportActivity.StrengthTraining]: [
-    HealthActivity.FunctionalStrengthTraining,
-    HealthActivity.TraditionalStrengthTraining,
-  ],
-  [SportActivity.Stretching]: [
-    HealthActivity.Cooldown,
-    HealthActivity.PreparationAndRecovery,
-  ],
-  [SportActivity.Surfing]: [HealthActivity.SurfingSports],
-  [SportActivity.Swimming]: [HealthActivity.Swimming],
-  [SportActivity.TableTennis]: [HealthActivity.TableTennis],
-  [SportActivity.Tennis]: [HealthActivity.Tennis],
-  [SportActivity.Volleyball]: [HealthActivity.Volleyball],
-  [SportActivity.Walking]: [HealthActivity.Walking],
-  [SportActivity.WaterPolo]: [HealthActivity.WaterPolo],
-  [SportActivity.Wheelchair]: [
-    HealthActivity.WheelchairRunPace,
-    HealthActivity.WheelchairWalkPace,
-  ],
-  [SportActivity.Yoga]: [HealthActivity.Yoga],
-};
-
-const otherActivityFunctionMap = {
-  [OtherActivity.ActiveCaloriesBurned]: HealthKit.getActiveEnergyBurned, // Uses Start and end date
-  [OtherActivity.FloorsClimbed]: HealthKit.getFlightsClimbed, // Uses the date field
-  [OtherActivity.Steps]: HealthKit.getStepCount, // Uses the date field
-};
-
+/**
+ * HealthKitAdapter Implementation
+ */
 export class HealthKitAdapter extends HealthAdapter {
   #permissionGranted = false;
 
@@ -200,17 +94,20 @@ export class HealthKitAdapter extends HealthAdapter {
     });
   }
 
-  getData(
+  async getData(
     options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions
   ): Promise<number> {
-    if (!this.permissionGranted) {
+    if (!this.#permissionGranted) {
       throw new Error(
         "Error: Requesting data before having all permissions will crash the application"
       );
     }
 
     if (options.type === "sport") {
-      return this.getActivityData({ ...options, activity: options.activity });
+      return await this.getActivityData({
+        ...options,
+        activity: options.activity,
+      });
     } else if (options.type === "calories" && options.type === "calories") {
       return this.getOtherData({ ...options, activity: options.activity });
     } else {
@@ -223,7 +120,7 @@ export class HealthKitAdapter extends HealthAdapter {
     const baseOptionsObject: HealthInputOptions = {
       startDate: options.startDate.toISOString(),
       endDate: options.endDate.toISOString(),
-      type: HealthObserver.Workout,
+      type: HealthKit.Constants.Observers.Workout,
     };
 
     return new Promise<number>((resolve, reject) => {
@@ -233,10 +130,55 @@ export class HealthKitAdapter extends HealthAdapter {
           return;
         }
 
+        // Gather relevant workout entries within the timeframe
+        const relevantWorkouts: Workout[] = [];
         for (const result of results) {
-          console.log(result);
+          const parsedWorkout = v.safeParse(WorkoutSchema, result);
+          if (
+            parsedWorkout.success &&
+            sportActivityHealthKitMap[options.activity].includes(
+              parsedWorkout.output.activityName
+            )
+          ) {
+            relevantWorkouts.push(parsedWorkout.output);
+          }
         }
-        resolve(2);
+
+        // Gater relevant information based on metric
+        switch (options.metric) {
+          case Metric.Calories:
+            resolve(
+              relevantWorkouts.reduce((sum, curr) => sum + curr.calories, 0)
+            );
+            break;
+          case Metric.Distance:
+            resolve(
+              relevantWorkouts.reduce(
+                (sum, curr) => sum + curr.distance * 1.609344 * 1000, // Convert miles -> kilometers -> meters
+                0
+              )
+            );
+            break;
+          case Metric.Count:
+            resolve(
+              relevantWorkouts.reduce(
+                (set, curr) => set.add(curr.id),
+                new Set<string>()
+              ).size
+            );
+            break;
+          case Metric.Duration:
+            resolve(
+              relevantWorkouts.reduce(
+                (sum, curr) =>
+                  sum +
+                  (new Date(curr.end).getTime() -
+                    new Date(curr.start).getTime()),
+                0
+              ) / 1000 // Milliseconds to seconds
+            );
+            break;
+        }
       });
     });
   }

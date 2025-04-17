@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { HealthKitAdapter } from '@/lib/HealthAdapter/HealthKit';
+
+import { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { GoalContainer } from '@/components/GoalContainer';
 import { GroupContainer } from '@/components/GroupContainer';
+import { SportActivity } from '@/lib/API/schemas/Activity';
+import { Metric } from '@/lib/API/schemas/Metric';
 
 export default function HomeScreen() {
   const [groups, setGroups] = useState([
@@ -27,6 +31,38 @@ export default function HomeScreen() {
       individualTarget: 100,
     },
   ])
+  
+  const [healthAdapter, _] = useState(new HealthKitAdapter())
+  const [isAvailable, setIsAvailable] = useState(false)
+  const [permissionGranted, setPermissionGranted] = useState(false)
+  
+  useEffect(() => {
+    const asyncFunc = async () => {
+      setIsAvailable(await healthAdapter.isAvailable());
+    }
+    asyncFunc()
+  }, [])
+
+  useEffect(() => {
+    if (!isAvailable) return;
+    const asyncFunc = async () => {
+      await healthAdapter.init()
+      setPermissionGranted(healthAdapter.permissionGranted);
+    }
+    asyncFunc()
+  }, [isAvailable])
+
+  useEffect(() => {
+    if (!permissionGranted) {
+      return;
+    };
+    const asyncFunc = async () => {
+      console.log("Getting data - permissionGranted = ", healthAdapter.permissionGranted);
+      const data = await healthAdapter.getData({type: "sport", activity: SportActivity.Biking, metric: Metric.Distance, startDate: new Date(2024, 1, 1), endDate: new Date(2025, 4, 17)});
+      console.log("Got data: ", data);
+    }
+    asyncFunc()
+  }, [permissionGranted])
 
   function addGroup() {
     setGroups(prev => [...prev, {
