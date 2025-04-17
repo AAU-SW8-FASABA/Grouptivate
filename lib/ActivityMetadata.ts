@@ -122,10 +122,6 @@ export const sportActivityMetadata: Record<SportActivity, ActivityMetadata> = {
     iconSource: IconSource.MaterialIcons,
     icon: "sports-martial-arts",
   },
-  other: {
-    iconSource: IconSource.MaterialIcons,
-    icon: "sports",
-  },
   paddling: {
     iconSource: IconSource.FontAwesome6,
     icon: "table-tennis-paddle-ball",
@@ -158,11 +154,6 @@ export const sportActivityMetadata: Record<SportActivity, ActivityMetadata> = {
   sailing: {
     iconSource: IconSource.MaterialIcons,
     icon: "sailing",
-  },
-  scubaDiving: {
-    metrics: [Metric.Count, Metric.Calories, Metric.Duration],
-    iconSource: IconSource.MaterialIcons,
-    icon: "scuba-diving",
   },
   skating: {
     iconSource: IconSource.FontAwesome6,
@@ -227,11 +218,6 @@ export const sportActivityMetadata: Record<SportActivity, ActivityMetadata> = {
   waterPolo: {
     iconSource: IconSource.MaterialCommunityIcons,
     icon: "water-polo",
-  },
-  weightlifting: {
-    metrics: [Metric.Count, Metric.Calories, Metric.Duration],
-    iconSource: IconSource.MaterialCommunityIcons,
-    icon: "weight-lifter",
   },
   wheelchair: {
     iconSource: IconSource.MaterialCommunityIcons,
