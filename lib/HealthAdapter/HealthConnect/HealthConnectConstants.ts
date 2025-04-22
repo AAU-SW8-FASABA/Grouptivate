@@ -1,5 +1,6 @@
 import { Metric } from "@/lib/API/schemas/Metric";
 import { SportActivity } from "../../API/schemas/Activity";
+import { RecordEnum } from "./HealthConnectRecordEnum";
 
 // Active calories is not a sport :( )
 export const activityMapping: Record<SportActivity, number[]> = {
@@ -49,9 +50,7 @@ export const activityMapping: Record<SportActivity, number[]> = {
   [SportActivity.Yoga]: [83], // EXERCISE_TYPE_YOGA [83]
 };
 
-export const metricMap: Record<Metric, string> = {
-  [Metric.Calories]: "ActiveCaloriesBurned",
-  [Metric.Distance]: "Distance",
-  [Metric.Duration]: "Duration",
-  [Metric.Count]: "Count",
+export const metricMap = {
+  [Metric.Calories]: RecordEnum.ActiveCaloriesBurned,
+  [Metric.Distance]: RecordEnum.Distance,
 };
