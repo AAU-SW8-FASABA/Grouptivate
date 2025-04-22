@@ -17,6 +17,54 @@ const url = new URL(SERVER_URL);
 
 export async function fetchApi<
   S extends RequestSchema<P, R, D>,
+  P extends SearchParametersSchema | undefined,
+  R extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
+  D extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
+>({
+  path,
+  method,
+  schema,
+  searchParams,
+  requestBody,
+}: {
+  path: string;
+  method: "GET" | "POST" | "DELETE";
+  schema: S;
+  searchParams?: Record<string, unknown>;
+  requestBody?: S["requestBody"] extends BaseSchema<
+    unknown,
+    unknown,
+    BaseIssue<unknown>
+  >
+    ? InferInput<S["requestBody"]>
+    : undefined;
+}): Promise<InferOutput<S["responseBody"]>>;
+export async function fetchApi<
+  S extends RequestSchema<P, R, D>,
+  P extends SearchParametersSchema | undefined,
+  R extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
+  D extends undefined,
+>({
+  path,
+  method,
+  schema,
+  searchParams,
+  requestBody,
+}: {
+  path: string;
+  method: "POST" | "DELETE";
+  schema: S;
+  searchParams?: Record<string, unknown>;
+  requestBody?: S["requestBody"] extends BaseSchema<
+    unknown,
+    unknown,
+    BaseIssue<unknown>
+  >
+    ? InferInput<S["requestBody"]>
+    : undefined;
+}): Promise<void>;
+export async function fetchApi<
+  S extends RequestSchema<P, R, D>,
   P extends SearchParametersSchema,
   R extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
   D extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
@@ -38,11 +86,7 @@ export async function fetchApi<
   >
     ? InferInput<S["requestBody"]>
     : undefined;
-}): Promise<
-  S["responseBody"] extends BaseSchema<unknown, unknown, BaseIssue<unknown>>
-    ? InferOutput<S["responseBody"]>
-    : void
-> {
+}): Promise<InferOutput<S["responseBody"]> | void> {
   const newUrl = new URL(path, url);
   for (const [key, value] of Object.entries(searchParams)) {
     newUrl.searchParams.set(key, JSON.stringify(value));
@@ -57,5 +101,4 @@ export async function fetchApi<
   if (schema.responseBody) {
     return parse(schema.responseBody, await response.json());
   }
-  return;
 }
