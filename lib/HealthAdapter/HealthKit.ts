@@ -121,6 +121,20 @@ export class HealthKitAdapter extends HealthAdapter {
     });
   }
 
+  /**
+   * Retrieves data based on the provided options. The type of data retrieved
+   * depends on the `type` property of the options parameter.
+   *
+   * @param options - The options specifying the type of data to retrieve.
+   *   - `CaloriesOnlyOptions`: Used to retrieve calorie-related data.
+   *   - `CountOnlyOptions`: Used to retrieve count-related data.
+   *   - `SportOptions`: Used to retrieve sport activity data.
+   *
+   * @returns A promise that resolves to a number representing the requested data.
+   *
+   * @throws {Error} If permissions are not granted before requesting data.
+   * @throws {Error} If an invalid option type is provided.
+   */
   async getData(
     options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions
   ): Promise<number> {
@@ -130,18 +144,12 @@ export class HealthKitAdapter extends HealthAdapter {
       );
     }
 
-    if (options.type === "sport") {
-      return await this.getActivityData({
-        ...options,
-        activity: options.activity,
-      });
-    } else if (options.type === "calories" && options.type === "calories") {
-      return await this.getOtherData({
-        ...options,
-        activity: options.activity,
-      });
-    } else {
-      throw new Error("Unexpected Error: Invalid option type");
+    switch (options.type) {
+      case "sport":
+        return await this.getActivityData(options);
+      case "calories":
+      case "count":
+        return await this.getOtherData(options);
     }
   }
 
@@ -239,9 +247,8 @@ export class HealthKitAdapter extends HealthAdapter {
         );
       });
     } else {
-      let valuePromises: Promise<number>[] = [];
-      for (const date of dates) {
-        valuePromises.push(
+      const valuePromises: Promise<number>[] = dates.map(
+        (date) =>
           new Promise<number>((resolve, reject) => {
             otherActivityFunctionMap[options.activity](
               {
@@ -256,8 +263,7 @@ export class HealthKitAdapter extends HealthAdapter {
               }
             );
           })
-        );
-      }
+      );
 
       const values = await Promise.all(valuePromises);
       return values.reduce((sum, curr) => sum + curr, 0);
@@ -273,17 +279,18 @@ export class HealthKitAdapter extends HealthAdapter {
       );
     }
 
-    const defaultData: HealthKitInsertOptions = {
-      type: HealthKit.Constants.Activities.Cycling, // See HealthActivity Enum
-      startDate: new Date(2020, 6, 2, 6, 0, 0).toISOString(),
-      endDate: new Date(2020, 6, 2, 6, 30, 0).toISOString(),
-      energyBurned: 50, // In Energy burned unit,
-      energyBurnedUnit: "calorie",
-      distance: 50, // In Distance unit
-      distanceUnit: "meter",
-    };
-
+    // Insert default data
     if (!data) {
+      const defaultData: HealthKitInsertOptions = {
+        type: HealthKit.Constants.Activities.Cycling, // See HealthActivity Enum
+        startDate: new Date(2020, 6, 2, 6, 0, 0).toISOString(),
+        endDate: new Date(2020, 6, 2, 6, 30, 0).toISOString(),
+        energyBurned: 50, // In Energy burned unit,
+        energyBurnedUnit: "calorie",
+        distance: 50, // In Distance unit
+        distanceUnit: "meter",
+      };
+
       return await this.insertHealthKitData(defaultData);
     }
 
