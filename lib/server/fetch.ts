@@ -17,21 +17,15 @@ const url = new URL(SERVER_URL);
 
 export async function fetchApi<
   S extends RequestSchema<P, R, D>,
-  P extends SearchParametersSchema | undefined,
+  P extends SearchParametersSchema,
   R extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
   D extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
->({
-  path,
-  method,
-  schema,
-  searchParams,
-  requestBody,
-}: {
+>(_: {
   path: string;
   method: "GET" | "POST" | "DELETE";
   schema: S;
-  searchParams?: Record<string, unknown>;
-  requestBody?: S["requestBody"] extends BaseSchema<
+  searchParams: { [K in keyof P]: InferInput<P[K]> };
+  requestBody: S["requestBody"] extends BaseSchema<
     unknown,
     unknown,
     BaseIssue<unknown>
@@ -41,21 +35,15 @@ export async function fetchApi<
 }): Promise<InferOutput<S["responseBody"]>>;
 export async function fetchApi<
   S extends RequestSchema<P, R, D>,
-  P extends SearchParametersSchema | undefined,
+  P extends SearchParametersSchema,
   R extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
   D extends undefined,
->({
-  path,
-  method,
-  schema,
-  searchParams,
-  requestBody,
-}: {
+>(_: {
   path: string;
   method: "POST" | "DELETE";
   schema: S;
-  searchParams?: Record<string, unknown>;
-  requestBody?: S["requestBody"] extends BaseSchema<
+  searchParams: { [K in keyof P]: InferInput<P[K]> };
+  requestBody: S["requestBody"] extends BaseSchema<
     unknown,
     unknown,
     BaseIssue<unknown>
@@ -66,27 +54,23 @@ export async function fetchApi<
 export async function fetchApi<
   S extends RequestSchema<P, R, D>,
   P extends SearchParametersSchema,
-  R extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
-  D extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
+  R extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
+  D extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
 >({
   path,
   method,
   schema,
-  searchParams = {},
+  searchParams,
   requestBody,
 }: {
   path: string;
   method: "GET" | "POST" | "DELETE";
   schema: S;
-  searchParams?: Record<string, unknown>;
-  requestBody?: S["requestBody"] extends BaseSchema<
-    unknown,
-    unknown,
-    BaseIssue<unknown>
-  >
-    ? InferInput<S["requestBody"]>
+  searchParams: { [K in keyof P]: InferInput<P[K]> };
+  requestBody: R extends BaseSchema<unknown, unknown, BaseIssue<unknown>>
+    ? InferInput<R>
     : undefined;
-}): Promise<InferOutput<S["responseBody"]> | void> {
+}) {
   const newUrl = new URL(path, url);
   for (const [key, value] of Object.entries(searchParams)) {
     newUrl.searchParams.set(key, JSON.stringify(value));

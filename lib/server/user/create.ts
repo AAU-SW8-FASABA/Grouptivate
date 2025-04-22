@@ -13,6 +13,7 @@ export async function create(name: User["name"]): Promise<User> {
     path: "/user",
     method: "GET",
     schema: UserCreateRequestSchema,
+    searchParams: {},
     requestBody,
   });
   return {
@@ -31,6 +32,7 @@ export async function get(uuid: User["uuid"]): Promise<User> {
     method: "POST",
     schema: UserGetRequestSchema,
     searchParams,
+    requestBody: undefined,
   });
   return {
     uuid,
