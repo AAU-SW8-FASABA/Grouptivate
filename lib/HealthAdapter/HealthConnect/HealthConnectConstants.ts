@@ -50,7 +50,10 @@ export const activityMapping: Record<SportActivity, number[]> = {
   [SportActivity.Yoga]: [83], // EXERCISE_TYPE_YOGA [83]
 };
 
-export const metricMap = {
+export const metricMap: Record<
+  Exclude<Metric, Metric.Count | Metric.Duration>,
+  RecordEnum
+> = {
   [Metric.Calories]: RecordEnum.ActiveCaloriesBurned,
   [Metric.Distance]: RecordEnum.Distance,
 };

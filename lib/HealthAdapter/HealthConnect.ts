@@ -1,5 +1,12 @@
-import { SportActivity, SportActivitySchema } from "../API/schemas/Activity";
-import { activityMapping } from "./HealthConnect/HealthConnectConstants";
+import {
+  OtherActivity,
+  SportActivity,
+  SportActivitySchema,
+} from "../API/schemas/Activity";
+import {
+  activityMapping,
+  metricMap,
+} from "./HealthConnect/HealthConnectConstants";
 import {
   CaloriesOnlyOptions,
   CountOnlyOptions,
@@ -15,9 +22,17 @@ import {
   getSdkStatus,
   SdkAvailabilityStatus,
   readRecords,
+  ActiveCaloriesBurnedRecord,
 } from "react-native-health-connect";
 
-import type { RecordType } from "react-native-health-connect";
+import type {
+  ReadRecordsResult,
+  RecordResult,
+  HealthConnectRecordResult,
+  HealthConnectRecord,
+  RecordType,
+} from "react-native-health-connect";
+import { RecordEnum } from "./HealthConnect/HealthConnectRecordEnum";
 
 class HealthConnectAdapter extends HealthAdapter {
   private _hasPermission: PermissionLevel;
@@ -104,7 +119,49 @@ class HealthConnectAdapter extends HealthAdapter {
     options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions
   ): Promise<number> {
     if (this._isInitialized) {
+      switch (options.type) {
+        case "sport":
+          return this.getActivityData(options);
+        case "calories":
+        case "count":
+          return this.getOtherData(options);
+      }
+    } else {
+      throw Error("HealthConnect is not initialized");
     }
+  }
+
+  getActivityData(options: SportOptions): number {
+    return 1;
+  }
+
+  async getOtherData(
+    options: CountOnlyOptions | CaloriesOnlyOptions
+  ): Promise<number> {
+    if (options.activity == OtherActivity.ActiveCaloriesBurned) {
+      try {
+        const calorieRecords = await readRecords("ActiveCaloriesBurned", {
+          timeRangeFilter: {
+            operator: "between",
+            startTime: options.startDate.toISOString(),
+            endTime: options.endDate.toISOString(),
+          },
+        });
+
+        calorieRecords.records.forEach((record) => {
+          record;
+        });
+      } catch (err) {}
+    }
+
+    readRecords("FloorsClimbed", {
+      timeRangeFilter: {
+        operator: "between",
+        startTime: options.startDate.toISOString(),
+        endTime: options.endDate.toISOString(),
+      },
+    });
+    return 1;
   }
 
   insertData(data?: InsertOptions): Promise<void> {
