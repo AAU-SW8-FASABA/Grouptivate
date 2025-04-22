@@ -20,13 +20,13 @@ import type { RecordType } from "react-native-health-connect";
 class HealthConnectAdapter extends HealthAdapter {
   private _hasPermission: PermissionLevel;
   private _hasHealthConnect: boolean;
-  private _isInitalized: boolean;
+  private _isInitialized: boolean;
 
   constructor() {
     super();
     this._hasPermission = PermissionLevel.None;
     this._hasHealthConnect = false;
-    this._isInitalized = false;
+    this._isInitialized = false;
   }
   get permissionGranted(): PermissionLevel {
     return this._hasPermission;
@@ -59,7 +59,7 @@ class HealthConnectAdapter extends HealthAdapter {
         }
       };
 
-      this._isInitalized = await initialize();
+      this._isInitialized = await initialize();
       if (this._hasHealthConnect && hasWritePermission) {
         const permissions = await requestPermission([
           { accessType: "read", recordType: "ActiveCaloriesBurned" },
@@ -101,7 +101,7 @@ class HealthConnectAdapter extends HealthAdapter {
   async getData(
     options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions
   ): Promise<number> {
-    if (this._isInitalized) {
+    if (this._isInitialized) {
     }
     throw new Error("Not Implemented");
   }

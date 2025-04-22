@@ -89,8 +89,12 @@ export class HealthKitAdapter extends HealthAdapter {
   }
 
   /**
-   * Initialize the HealthKit adapter and request permissions
-   * @returns Promise<void>
+   * Initializes the HealthKit adapter by checking platform availability and requesting permissions.
+   *
+   * @param requestWrite - A boolean indicating whether to request write permissions.
+   *                       Write permissions are only requested when running in development mode (`__DEV__`).
+   * @returns A promise that resolves when initialization is complete or rejects with an error if initialization fails.
+   * @throws An error if the platform is not supported or if permission initialization fails.
    */
   async init(requestWrite: boolean = false): Promise<void> {
     // Check HealthKit availability
@@ -153,6 +157,18 @@ export class HealthKitAdapter extends HealthAdapter {
     }
   }
 
+  /**
+   * Retrieves activity data based on the specified sport options and metric.
+   *
+   * @param options - The options specifying the activity type, date range, and metric to calculate.
+   * @returns A promise that resolves to a number representing the calculated metric value:
+   * - For `Metric.Calories`: Total calories burned.
+   * - For `Metric.Distance`: Total distance in meters.
+   * - For `Metric.Count`: Count of unique workout sessions.
+   * - For `Metric.Duration`: Total duration in seconds.
+   *
+   * @throws Will reject the promise if an error occurs while fetching or processing the data.
+   */
   private getActivityData(options: SportOptions): Promise<number> {
     // Creates object with the startdate and enddate
     const baseOptionsObject: HealthInputOptions = {
@@ -221,6 +237,24 @@ export class HealthKitAdapter extends HealthAdapter {
     });
   }
 
+  /**
+   * Retrieves data based on the provided options, either summing up active calories burned
+   * or other activity values over a specified date range.
+   *
+   * @param options - The options specifying the activity type and date range.
+   *   - `startDate`: The start date of the range.
+   *   - `endDate`: The end date of the range.
+   *   - `activity`: The type of activity to retrieve data for.
+   *     - If `activity` is `OtherActivity.ActiveCaloriesBurned`, the function calculates
+   *       the total active calories burned over the date range.
+   *     - For other activities, the function calculates the sum of values for each day
+   *       in the date range.
+   *
+   * @returns A promise that resolves to the total value of the specified metric over
+   * the date range.
+   *
+   * @throws An error if the underlying data retrieval function encounters an issue.
+   */
   private async getOtherData(
     options: CaloriesOnlyOptions | CountOnlyOptions
   ): Promise<number> {
@@ -246,30 +280,69 @@ export class HealthKitAdapter extends HealthAdapter {
           }
         );
       });
-    } else {
-      const valuePromises: Promise<number>[] = dates.map(
-        (date) =>
-          new Promise<number>((resolve, reject) => {
-            otherActivityFunctionMap[options.activity](
-              {
-                date: date.toISOString(),
-              },
-              (err, results) => {
-                if (err) {
-                  reject(err);
-                  return;
-                }
-                resolve(results.value);
-              }
-            );
-          })
-      );
-
-      const values = await Promise.all(valuePromises);
-      return values.reduce((sum, curr) => sum + curr, 0);
     }
+
+    const valuePromises: Promise<number>[] = dates.map(
+      (date) =>
+        new Promise<number>((resolve, reject) => {
+          otherActivityFunctionMap[options.activity](
+            {
+              date: date.toISOString(),
+            },
+            (err, results) => {
+              if (err) {
+                reject(err);
+                return;
+              }
+              resolve(results.value);
+            }
+          );
+        })
+    );
+
+    const values = await Promise.all(valuePromises);
+    return values.reduce((sum, curr) => sum + curr, 0);
   }
 
+  /**
+   * Inserts health data into HealthKit. This method supports inserting default data,
+   * step count data, or sport activity data based on the provided options.
+   *
+   * @param data - The options for the data to be inserted. If not provided, default
+   *               cycling activity data will be inserted.
+   *
+   * @throws {Error} If the required permissions are not granted.
+   * @throws {Error} If attempting to save a step count with an unsupported activity type.
+   *
+   * @example
+   * // Insert default cycling activity data
+   * await healthAdapter.insertData();
+   *
+   * @example
+   * // Insert step count data
+   * await healthAdapter.insertData({
+   *   type: "count",
+   *   activity: OtherActivity.Steps,
+   *   startDate: new Date(),
+   *   endDate: new Date(),
+   *   count: 1000,
+   * });
+   *
+   * @example
+   * // Insert sport activity data
+   * await healthAdapter.insertData({
+   *   type: "sport",
+   *   activity: SportActivity.Running,
+   *   startDate: new Date(),
+   *   endDate: new Date(),
+   *   caloriesBurned: 200,
+   *   distance: 5000,
+   * });
+   *
+   * @remarks
+   * - The `type` property in the `data` parameter determines the kind of data to be inserted.
+   * - For "count" type, only `OtherActivity.Steps` is supported.
+   */
   async insertData(data?: InsertOptions): Promise<void> {
     if (this.#permissionGranted !== PermissionLevel.ReadWrite) {
       throw new Error(
