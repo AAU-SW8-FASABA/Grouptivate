@@ -9,6 +9,7 @@ import { GoalContainer } from '@/components/GoalContainer';
 import { GroupContainer } from '@/components/GroupContainer';
 import { SportActivity } from '@/lib/API/schemas/Activity';
 import { Metric } from '@/lib/API/schemas/Metric';
+import { PermissionLevel } from '@/lib/HealthAdapter/HealthAdapter';
 
 export default function HomeScreen() {
   const [groups, setGroups] = useState([
@@ -34,7 +35,7 @@ export default function HomeScreen() {
   
   const [healthAdapter, _] = useState(new HealthKitAdapter())
   const [isAvailable, setIsAvailable] = useState(false)
-  const [permissionGranted, setPermissionGranted] = useState(false)
+  const [healthAdapterPermission, setHealthAdapterPermission] = useState(PermissionLevel.None)
   
   useEffect(() => {
     const asyncFunc = async () => {
@@ -46,23 +47,30 @@ export default function HomeScreen() {
   useEffect(() => {
     if (!isAvailable) return;
     const asyncFunc = async () => {
-      await healthAdapter.init()
-      setPermissionGranted(healthAdapter.permissionGranted);
+      await healthAdapter.init(true)
+      setHealthAdapterPermission(healthAdapter.permissionGranted);
     }
     asyncFunc()
   }, [isAvailable])
 
   useEffect(() => {
-    if (!permissionGranted) {
+    if (healthAdapterPermission === PermissionLevel.None) {
       return;
     };
+
     const asyncFunc = async () => {
+      if (healthAdapterPermission === PermissionLevel.ReadWrite) {
+        console.log("Inserting Data");
+        // await healthAdapter.insertTestData()
+      }
+
       console.log("Getting data - permissionGranted = ", healthAdapter.permissionGranted);
       const data = await healthAdapter.getData({type: "sport", activity: SportActivity.Biking, metric: Metric.Distance, startDate: new Date(2024, 1, 1), endDate: new Date(2025, 4, 17)});
       console.log("Got data: ", data);
     }
+    
     asyncFunc()
-  }, [permissionGranted])
+  }, [healthAdapterPermission])
 
   function addGroup() {
     setGroups(prev => [...prev, {

@@ -3,6 +3,8 @@
  */
 // External libraries
 import HealthKit, {
+  HealthActivity,
+  HealthActivityOptions,
   HealthInputOptions,
   HealthKitPermissions,
   HealthPermission,
@@ -14,8 +16,9 @@ import * as v from "valibot";
 import {
   CaloriesOnlyOptions,
   CountOnlyOptions,
-  HealthAdapter,
   SportOptions,
+  PermissionLevel,
+  HealthAdapter,
 } from "./HealthAdapter";
 
 // Internal modules - HealthKit
@@ -33,17 +36,45 @@ import { getDatesBetween } from "./Helpers";
 import { OtherActivity } from "../API/schemas/Activity";
 import { Metric } from "../API/schemas/Metric";
 
+type InsertOptions = {
+  type: keyof typeof HealthKit.Constants.Activities;
+  startDate: string;
+  endDate: string;
+  energyBurned: number;
+  energyBurnedUnit: "calorie" | "joule";
+  distance: number;
+  distanceUnit: "foot" | "inch" | "meter" | "mile";
+};
+
 /**
  * HealthKitAdapter Implementation
  */
 export class HealthKitAdapter extends HealthAdapter {
-  #permissionGranted = false;
+  #permissionGranted: PermissionLevel = PermissionLevel.None;
 
   /**
    * Getter / Setter functions for private members
    */
-  get permissionGranted(): boolean {
+  get permissionGranted(): PermissionLevel {
     return this.#permissionGranted;
+  }
+
+  generatePermissionObject(
+    requestWrite: boolean = false
+  ): HealthKitPermissions {
+    // Generate permission Set and object
+    const permissionSet: Set<HealthPermission> = new Set(
+      Object.values(permissionMap)
+    );
+
+    const permissionObject: HealthKitPermissions = {
+      permissions: {
+        read: [...permissionSet],
+        write: requestWrite ? [...permissionSet] : [],
+      },
+    };
+
+    return permissionObject;
   }
 
   /**
@@ -62,20 +93,15 @@ export class HealthKitAdapter extends HealthAdapter {
    * Initialize the HealthKit adapter and request permissions
    * @returns Promise<void>
    */
-  async init(): Promise<void> {
+  async init(requestWrite: boolean = false): Promise<void> {
     // Check HealthKit availability
     if (!(await this.isAvailable())) {
       throw new Error("Error: Platform not supported");
     }
 
-    // Generate permission Set and object
-    const permissionSet: Set<HealthPermission> = new Set(
-      Object.values(permissionMap)
-    );
-
-    const permissionObject: HealthKitPermissions = {
-      permissions: { read: [...permissionSet], write: [] },
-    };
+    // Only allow write requests when running in dev mode
+    const willRequestWrite = requestWrite && __DEV__;
+    const permissionObject = this.generatePermissionObject(willRequestWrite);
 
     // Create permission request promise
     return new Promise((resolve, reject) => {
@@ -87,7 +113,9 @@ export class HealthKitAdapter extends HealthAdapter {
             return;
           }
 
-          this.#permissionGranted = true;
+          this.#permissionGranted = willRequestWrite
+            ? PermissionLevel.ReadWrite
+            : PermissionLevel.Read;
           resolve();
         }
       );
@@ -97,7 +125,7 @@ export class HealthKitAdapter extends HealthAdapter {
   async getData(
     options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions
   ): Promise<number> {
-    if (!this.#permissionGranted) {
+    if (this.#permissionGranted === PermissionLevel.None) {
       throw new Error(
         "Error: Requesting data before having all permissions will crash the application"
       );
@@ -234,5 +262,31 @@ export class HealthKitAdapter extends HealthAdapter {
       const values = await Promise.all(valuePromises);
       return values.reduce((sum, curr) => sum + curr, 0);
     }
+  }
+
+  insertTestData(data?: InsertOptions): Promise<void> {
+    if (this.#permissionGranted !== PermissionLevel.ReadWrite) {
+      throw new Error(
+        `Error: Insufficient permissions - Has: ${
+          this.#permissionGranted
+        } Requires: ${PermissionLevel.ReadWrite}`
+      );
+    }
+
+    const defaultInsert: InsertOptions = {
+      type: HealthKit.Constants.Activities.Cycling, // See HealthActivity Enum
+      startDate: new Date(2020, 6, 2, 6, 0, 0).toISOString(),
+      endDate: new Date(2020, 6, 2, 6, 30, 0).toISOString(),
+      energyBurned: 50, // In Energy burned unit,
+      energyBurnedUnit: "calorie",
+      distance: 50, // In Distance unit
+      distanceUnit: "meter",
+    };
+
+    return new Promise<void>((resolve, reject) => {
+      HealthKit.saveWorkout(data ?? defaultInsert, (err, result) => {
+        err ? reject(err) : resolve();
+      });
+    });
   }
 }

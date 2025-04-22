@@ -26,12 +26,14 @@ export interface SportOptions {
   endDate: Date;
 }
 
-export function isSportActivity(value: any): value is SportActivity {
-  return Object.values(SportActivity).includes(value);
+export enum PermissionLevel {
+  None = "None",
+  Read = "Read",
+  ReadWrite = "ReadWrite",
 }
 
 export abstract class HealthAdapter {
-  abstract get permissionGranted(): boolean;
+  abstract get permissionGranted(): PermissionLevel;
 
   abstract init(): Promise<void>;
   abstract getData(
