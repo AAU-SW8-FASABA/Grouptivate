@@ -1,6 +1,6 @@
 import { RecordType } from "react-native-health-connect";
 
-export const RecordEnum: { [key: string]: RecordType } = {
+export const RecordEnum: { [K in RecordType]: K } = {
   ActiveCaloriesBurned: "ActiveCaloriesBurned",
   BasalBodyTemperature: "BasalBodyTemperature",
   BasalMetabolicRate: "BasalMetabolicRate",
@@ -39,4 +39,4 @@ export const RecordEnum: { [key: string]: RecordType } = {
   TotalCaloriesBurned: "TotalCaloriesBurned",
   OxygenSaturation: "OxygenSaturation",
   Power: "Power",
-} as const;
+};

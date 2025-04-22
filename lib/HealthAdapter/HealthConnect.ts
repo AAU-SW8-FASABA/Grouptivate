@@ -140,13 +140,16 @@ class HealthConnectAdapter extends HealthAdapter {
   ): Promise<number> {
     if (options.activity == OtherActivity.ActiveCaloriesBurned) {
       try {
-        const calorieRecords = await readRecords("ActiveCaloriesBurned", {
-          timeRangeFilter: {
-            operator: "between",
-            startTime: options.startDate.toISOString(),
-            endTime: options.endDate.toISOString(),
-          },
-        });
+        const calorieRecords = await readRecords(
+          RecordEnum.ActiveCaloriesBurned,
+          {
+            timeRangeFilter: {
+              operator: "between",
+              startTime: options.startDate.toISOString(),
+              endTime: options.endDate.toISOString(),
+            },
+          }
+        );
 
         calorieRecords.records.forEach((record) => {
           record;
