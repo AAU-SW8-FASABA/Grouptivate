@@ -1,13 +1,16 @@
 import {
   StyleSheet,
   Text,
+  TextInput,
   View,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { useState } from "react";
 import { Stack } from "expo-router";
+import { Dropdown } from "react-native-element-dropdown";
 
+import { CustomModal } from "@/components/CustomModal";
 import { Back } from "@/components/Back";
 import { Collapsible } from "@/components/Collapsible";
 import { SettingsMember } from "@/components/SettingsMember";
@@ -31,6 +34,48 @@ export default function GroupSettings() {
     { activity: "Walk", target: 200000, unit: "steps" },
     { activity: "Run", target: 200, unit: "km" },
   ]);
+  const [newGoalModalVisibility, setNewGoalModalVisibility] = useState(false);
+  const unitLookup = {
+    calories: "kcal",
+    count: "times",
+    distance: "km",
+    duration: "min",
+  };
+  function createGoal() {
+    setGroupGoals((prev) => [
+      ...prev,
+      {
+        activity: activityValue || "New Goal",
+        target: amountValue || 100,
+        unit: unitLookup[targetValue ?? "distance"],
+      },
+    ]);
+  }
+  const activities = [
+    { label: "Badminton", value: "badminton" },
+    { label: "Gaming", value: "gaming" },
+    { label: "Yoga", value: "yoga" },
+    { label: "Badminton", value: "badminton" },
+    { label: "Gaming", value: "gaming" },
+    { label: "Yoga", value: "yoga" },
+    { label: "Badminton", value: "badminton" },
+    { label: "Gaming", value: "gaming" },
+    { label: "Yoga", value: "yoga" },
+    { label: "Badminton", value: "badminton" },
+    { label: "Gaming", value: "gaming" },
+    { label: "Yoga", value: "yoga" },
+  ];
+  const [activityValue, setActivityValue] = useState(null);
+  const [isActivityFocus, setIsActivityFocus] = useState(false);
+  const targets = [
+    { label: "Calories", value: "calories" },
+    { label: "Count", value: "count" },
+    { label: "Distance", value: "distance" },
+    { label: "Duration", value: "duration" },
+  ];
+  const [targetValue, setTargetValue] = useState(null);
+  const [isTargetFocus, setIsTargetFocus] = useState(false);
+  const [amountValue, setAmountValue] = useState(0);
 
   return (
     <>
@@ -44,6 +89,88 @@ export default function GroupSettings() {
         style={styles.container}
         contentContainerStyle={{ paddingBottom: 20 }}
       >
+        <CustomModal
+          height={500}
+          title="New Goal"
+          isVisible={newGoalModalVisibility}
+          setIsVisible={setNewGoalModalVisibility}
+          createCallback={createGoal}
+        >
+          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+            Activity
+          </Text>
+          <Dropdown
+            style={[
+              styles.dropdown,
+              isActivityFocus && { borderColor: "blue" },
+            ]}
+            placeholderStyle={[styles.text, { fontSize: 20 }]}
+            selectedTextStyle={[styles.text, { fontSize: 20 }]}
+            itemTextStyle={[styles.text, { fontSize: 20 }]}
+            data={activities}
+            labelField="label"
+            valueField="label"
+            placeholder="Select"
+            onFocus={() => setIsActivityFocus(true)}
+            onBlur={() => setIsActivityFocus(false)}
+            value={activityValue}
+            onChange={(item) => {
+              setActivityValue(item.label);
+              setIsActivityFocus(false);
+            }}
+            renderRightIcon={() => (
+              <UniversalIcon
+                source={IconSource.FontAwesome6}
+                name="chevron-down"
+                size={20}
+                color="black"
+                style={{
+                  transform: [{ rotate: isActivityFocus ? "180deg" : "0deg" }],
+                  marginRight: 5,
+                }}
+              />
+            )}
+          />
+          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+            Target
+          </Text>
+          <Dropdown
+            style={[styles.dropdown, isTargetFocus && { borderColor: "blue" }]}
+            placeholderStyle={[styles.text, { fontSize: 20 }]}
+            selectedTextStyle={[styles.text, { fontSize: 20 }]}
+            itemTextStyle={[styles.text, { fontSize: 20 }]}
+            data={targets}
+            labelField="label"
+            valueField="value"
+            placeholder="Select"
+            onFocus={() => setIsTargetFocus(true)}
+            onBlur={() => setIsTargetFocus(false)}
+            value={targetValue}
+            onChange={(item) => {
+              setTargetValue(item.value);
+              setIsTargetFocus(false);
+            }}
+            renderRightIcon={() => (
+              <UniversalIcon
+                source={IconSource.FontAwesome6}
+                name="chevron-down"
+                size={20}
+                color="black"
+                style={{
+                  transform: [{ rotate: isTargetFocus ? "180deg" : "0deg" }],
+                  marginRight: 5,
+                }}
+              />
+            )}
+          />
+          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+            Amount
+          </Text>
+          <TextInput
+            style={[styles.input, { fontSize: 20 }]}
+            onChangeText={(text) => setAmountValue(Number(text))}
+          ></TextInput>
+        </CustomModal>
         <Collapsible title="Members">
           {members.map((member, index) => (
             <SettingsMember key={index} name={member} />
@@ -78,14 +205,7 @@ export default function GroupSettings() {
               name="circle-plus"
               size={24}
             />
-            <TouchableOpacity
-              onPress={() =>
-                setGroupGoals([
-                  ...groupGoals,
-                  { activity: "Run", target: 10, unit: "km" },
-                ])
-              }
-            >
+            <TouchableOpacity onPress={() => setNewGoalModalVisibility(true)}>
               <Text style={[styles.text, styles.buttonText]}>Create goal</Text>
             </TouchableOpacity>
           </View>
@@ -152,5 +272,17 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 20,
     marginLeft: 5,
+  },
+  input: {
+    backgroundColor: "#EFEFF3",
+    borderRadius: 8,
+  },
+  dropdown: {
+    backgroundColor: "#EFEFF3",
+    borderColor: "black",
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
   },
 });

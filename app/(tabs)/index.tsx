@@ -48,7 +48,7 @@ export default function Main() {
   const [intervalValue, setIntervalValue] = useState(null);
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
 
-  function addGroup() {
+  function createGroup() {
     setGroups((prev) => [
       ...prev,
       {
@@ -73,7 +73,7 @@ export default function Main() {
         title="New Group"
         isVisible={newGroupModalVisibility}
         setIsVisible={setNewGroupModalVisibility}
-        createCallback={addGroup}
+        createCallback={createGroup}
       >
         <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
         <TextInput style={[styles.input, { fontSize: 20 }]}></TextInput>
@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: "#EFEFF3",
+    borderRadius: 8,
   },
   dropdown: {
     backgroundColor: "#EFEFF3",
