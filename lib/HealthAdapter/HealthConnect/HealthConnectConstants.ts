@@ -1,3 +1,4 @@
+import { Metric } from "@/lib/API/schemas/Metric";
 import { SportActivity } from "../../API/schemas/Activity";
 
 // Active calories is not a sport :( )
@@ -46,4 +47,11 @@ export const activityMapping: Record<SportActivity, number[]> = {
   [SportActivity.WaterPolo]: [80], // EXERCISE_TYPE_WATER_POLO [80]
   [SportActivity.Wheelchair]: [82], // EXERCISE_TYPE_WHEELCHAIR [82]
   [SportActivity.Yoga]: [83], // EXERCISE_TYPE_YOGA [83]
+};
+
+export const metricMap: Record<Metric, string> = {
+  [Metric.Calories]: "ActiveCaloriesBurned",
+  [Metric.Distance]: "Distance",
+  [Metric.Duration]: "Duration",
+  [Metric.Count]: "Count",
 };

@@ -4,6 +4,7 @@ import {
   CaloriesOnlyOptions,
   CountOnlyOptions,
   HealthAdapter,
+  InsertOptions,
   PermissionLevel,
   SportOptions,
 } from "./HealthAdapter";
@@ -13,6 +14,7 @@ import {
   requestPermission,
   getSdkStatus,
   SdkAvailabilityStatus,
+  readRecords,
 } from "react-native-health-connect";
 
 import type { RecordType } from "react-native-health-connect";
@@ -103,6 +105,9 @@ class HealthConnectAdapter extends HealthAdapter {
   ): Promise<number> {
     if (this._isInitialized) {
     }
-    throw new Error("Not Implemented");
+  }
+
+  insertData(data?: InsertOptions): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 }
