@@ -3,8 +3,6 @@
  */
 // External libraries
 import HealthKit, {
-  HealthActivity,
-  HealthActivityOptions,
   HealthInputOptions,
   HealthKitPermissions,
   HealthPermission,
@@ -13,6 +11,7 @@ import HealthKit, {
 import * as v from "valibot";
 
 // Internal modules - Adapters
+import type { InsertOptions } from "./HealthAdapter";
 import {
   CaloriesOnlyOptions,
   CountOnlyOptions,
@@ -36,7 +35,7 @@ import { getDatesBetween } from "./Helpers";
 import { OtherActivity } from "../API/schemas/Activity";
 import { Metric } from "../API/schemas/Metric";
 
-type InsertOptions = {
+type HealthKitInsertOptions = {
   type: keyof typeof HealthKit.Constants.Activities;
   startDate: string;
   endDate: string;
@@ -104,7 +103,7 @@ export class HealthKitAdapter extends HealthAdapter {
     const permissionObject = this.generatePermissionObject(willRequestWrite);
 
     // Create permission request promise
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       HealthKit.initHealthKit(
         permissionObject,
         (err: string, results: HealthValue) => {
@@ -137,7 +136,10 @@ export class HealthKitAdapter extends HealthAdapter {
         activity: options.activity,
       });
     } else if (options.type === "calories" && options.type === "calories") {
-      return this.getOtherData({ ...options, activity: options.activity });
+      return await this.getOtherData({
+        ...options,
+        activity: options.activity,
+      });
     } else {
       throw new Error("Unexpected Error: Invalid option type");
     }
@@ -224,7 +226,7 @@ export class HealthKitAdapter extends HealthAdapter {
     const dates = getDatesBetween(options.startDate, options.endDate);
 
     if (options.activity === OtherActivity.ActiveCaloriesBurned) {
-      const number = new Promise<number>((resolve, reject) => {
+      return await new Promise<number>((resolve, reject) => {
         otherActivityFunctionMap[options.activity](
           baseOptionsObject,
           (err, results) => {
@@ -236,8 +238,6 @@ export class HealthKitAdapter extends HealthAdapter {
           }
         );
       });
-
-      return await number;
     } else {
       let valuePromises: Promise<number>[] = [];
       for (const date of dates) {
@@ -264,7 +264,7 @@ export class HealthKitAdapter extends HealthAdapter {
     }
   }
 
-  insertTestData(data?: InsertOptions): Promise<void> {
+  async insertData(data?: InsertOptions): Promise<void> {
     if (this.#permissionGranted !== PermissionLevel.ReadWrite) {
       throw new Error(
         `Error: Insufficient permissions - Has: ${
@@ -273,7 +273,7 @@ export class HealthKitAdapter extends HealthAdapter {
       );
     }
 
-    const defaultInsert: InsertOptions = {
+    const defaultData: HealthKitInsertOptions = {
       type: HealthKit.Constants.Activities.Cycling, // See HealthActivity Enum
       startDate: new Date(2020, 6, 2, 6, 0, 0).toISOString(),
       endDate: new Date(2020, 6, 2, 6, 30, 0).toISOString(),
@@ -283,8 +283,46 @@ export class HealthKitAdapter extends HealthAdapter {
       distanceUnit: "meter",
     };
 
+    if (!data) {
+      return await this.insertHealthKitData(defaultData);
+    }
+
+    switch (data.type) {
+      case "count":
+        if (data.activity !== OtherActivity.Steps) {
+          throw new Error(
+            "The HealthKit adapter only supports saving 'OtherActivity.Steps'"
+          );
+        }
+
+        const stepsData = {
+          startDate: data.startDate.toISOString(),
+          endDate: data.endDate.toISOString(),
+          value: data.count,
+        };
+
+        return await new Promise<void>((resolve, reject) => {
+          HealthKit.saveSteps(stepsData, (err, result) => {
+            err ? reject(err) : resolve();
+          });
+        });
+      case "sport":
+        const activityData: HealthKitInsertOptions = {
+          type: sportActivityHealthKitMap[data.activity][0], // Insert as the first activity in the map
+          startDate: data.startDate.toISOString(),
+          endDate: data.endDate.toISOString(),
+          energyBurned: data.caloriesBurned,
+          energyBurnedUnit: "calorie",
+          distance: data.distance,
+          distanceUnit: "meter",
+        };
+        return await this.insertHealthKitData(activityData);
+    }
+  }
+
+  private insertHealthKitData(data: HealthKitInsertOptions): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      HealthKit.saveWorkout(data ?? defaultInsert, (err, result) => {
+      HealthKit.saveWorkout(data, (err, result) => {
         err ? reject(err) : resolve();
       });
     });
