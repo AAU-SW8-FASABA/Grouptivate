@@ -26,7 +26,7 @@ export async function create(
 
 export async function get(user: User["uuid"]): Promise<Invite[]> {
   const invites = await fetchApi({
-    path: "/group",
+    path: "/group/invite",
     method: "GET",
     schema: InviteGetRequestSchema,
     searchParams: { user },
