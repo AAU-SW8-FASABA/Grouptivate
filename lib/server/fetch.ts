@@ -16,43 +16,32 @@ if (!SERVER_URL) throw new Error("Missing a SERVER_URL in env");
 const url = new URL(SERVER_URL);
 
 export async function fetchApi<
-  S extends RequestSchema<P, R, D>,
   P extends SearchParametersSchema,
   R extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
   D extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
 >(_: {
   path: string;
   method: "GET" | "POST" | "DELETE";
-  schema: S;
+  schema: RequestSchema<P, R, D>;
   searchParams: { [K in keyof P]: InferInput<P[K]> };
-  requestBody: S["requestBody"] extends BaseSchema<
-    unknown,
-    unknown,
-    BaseIssue<unknown>
-  >
-    ? InferInput<S["requestBody"]>
+  requestBody: R extends BaseSchema<unknown, unknown, BaseIssue<unknown>>
+    ? InferInput<R>
     : undefined;
-}): Promise<InferOutput<S["responseBody"]>>;
+}): Promise<InferOutput<D>>;
 export async function fetchApi<
-  S extends RequestSchema<P, R, D>,
   P extends SearchParametersSchema,
   R extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
   D extends undefined,
 >(_: {
   path: string;
   method: "POST" | "DELETE";
-  schema: S;
+  schema: RequestSchema<P, R, D>;
   searchParams: { [K in keyof P]: InferInput<P[K]> };
-  requestBody: S["requestBody"] extends BaseSchema<
-    unknown,
-    unknown,
-    BaseIssue<unknown>
-  >
-    ? InferInput<S["requestBody"]>
+  requestBody: R extends BaseSchema<unknown, unknown, BaseIssue<unknown>>
+    ? InferInput<R>
     : undefined;
 }): Promise<void>;
 export async function fetchApi<
-  S extends RequestSchema<P, R, D>,
   P extends SearchParametersSchema,
   R extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
   D extends BaseSchema<unknown, unknown, BaseIssue<unknown>> | undefined,
@@ -65,7 +54,7 @@ export async function fetchApi<
 }: {
   path: string;
   method: "GET" | "POST" | "DELETE";
-  schema: S;
+  schema: RequestSchema<P, R, D>;
   searchParams: { [K in keyof P]: InferInput<P[K]> };
   requestBody: R extends BaseSchema<unknown, unknown, BaseIssue<unknown>>
     ? InferInput<R>

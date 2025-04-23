@@ -3,18 +3,19 @@ import {
   UserCreateRequestSchema,
   UserGetRequestSchema,
 } from "@/lib/API/schemas/User";
-import { fetchApi } from "../fetch";
+import type { Password } from "../API/schemas/Password";
+import { fetchApi } from "./fetch";
 
-export async function create(name: User["name"]): Promise<User> {
-  const requestBody = {
-    name,
-  };
+export async function create(
+  name: User["name"],
+  password: Password,
+): Promise<User> {
   const response = await fetchApi({
     path: "/user",
-    method: "GET",
+    method: "POST",
     schema: UserCreateRequestSchema,
     searchParams: {},
-    requestBody,
+    requestBody: { name, password },
   });
   return {
     name,
@@ -24,14 +25,11 @@ export async function create(name: User["name"]): Promise<User> {
 }
 
 export async function get(uuid: User["uuid"]): Promise<User> {
-  const searchParams = {
-    uuid,
-  };
   const response = await fetchApi({
     path: "/user",
-    method: "POST",
+    method: "GET",
     schema: UserGetRequestSchema,
-    searchParams,
+    searchParams: { uuid },
     requestBody: undefined,
   });
   return {
