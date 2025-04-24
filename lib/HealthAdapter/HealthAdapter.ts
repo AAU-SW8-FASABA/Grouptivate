@@ -7,27 +7,44 @@ import { OtherActivity, SportActivity } from "../API/schemas/Activity";
 export interface DefaultOptions {
   startDate: Date;
   endDate: Date;
+  activity: SportActivity | OtherActivity;
+  metric: Metric;
 }
 
 /**
  * Options that limit the metric based on activity
  */
 export interface CaloriesOnlyOptions extends DefaultOptions {
-  type: "calories";
   activity: OtherActivity.ActiveCaloriesBurned;
   metric: Metric.Calories;
 }
+export function isCaloriesOnlyOptions(options: {
+  activity: string;
+}): options is CaloriesOnlyOptions {
+  return OtherActivity.ActiveCaloriesBurned === options.activity;
+}
 
 export interface CountOnlyOptions extends DefaultOptions {
-  type: "count";
   activity: OtherActivity.FloorsClimbed | OtherActivity.Steps;
   metric: Metric.Count;
 }
+export function isCountOnlyOptions(options: {
+  activity: string;
+}): options is CountOnlyOptions {
+  return (
+    OtherActivity.FloorsClimbed === options.activity ||
+    OtherActivity.Steps === options.activity
+  );
+}
 
 export interface SportOptions extends DefaultOptions {
-  type: "sport";
   activity: SportActivity;
   metric: Metric;
+}
+export function isSportOptions(options: {
+  activity: string;
+}): options is SportOptions {
+  return Object.keys(SportActivity).includes(options.activity);
 }
 
 /**
@@ -52,8 +69,6 @@ export abstract class HealthAdapter {
   abstract get permissionGranted(): PermissionLevel;
 
   abstract init(): Promise<void>;
-  abstract getData(
-    options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions,
-  ): Promise<number>;
+  abstract getData(options: DefaultOptions): Promise<number>;
   abstract insertData(data?: InsertOptions): Promise<void>;
 }

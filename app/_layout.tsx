@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { ActivitySync } from "@/lib/ActivitySync";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -21,6 +22,8 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     Roboto: require("../assets/fonts/Roboto.ttf"),
   });
+
+  ActivitySync();
 
   useEffect(() => {
     if (loaded) {
