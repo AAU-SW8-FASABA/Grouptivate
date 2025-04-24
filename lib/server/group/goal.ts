@@ -51,7 +51,6 @@ export async function create(
       requestBody: goal,
     });
     return {
-      group,
       ...goal,
       ...response,
     };
