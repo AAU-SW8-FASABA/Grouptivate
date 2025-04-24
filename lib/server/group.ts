@@ -25,6 +25,7 @@ export async function create(
     name,
     interval,
     users: [],
+    goals: [],
     streak: 0,
     ...response,
   };
