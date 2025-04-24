@@ -34,7 +34,7 @@ export async function create(
       path: "/group/goal",
       method: "POST",
       schema: IndividualGoalCreateRequestSchema,
-      searchParams: { user, group },
+      searchParams: { createruuid: user, group },
       requestBody: goal,
     });
     return {
