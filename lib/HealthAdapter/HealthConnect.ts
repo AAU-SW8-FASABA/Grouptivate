@@ -1,4 +1,4 @@
-import { OtherActivity, SportActivity } from "../API/schemas/Activity";
+import { OtherActivity } from "../API/schemas/Activity";
 import { activityMapping } from "./HealthConnect/HealthConnectConstants";
 import {
   CaloriesOnlyOptions,
@@ -22,6 +22,8 @@ import {
 import { RecordEnum } from "./HealthConnect/HealthConnectRecordEnum";
 import { Metric } from "../API/schemas/Metric";
 
+/* The `HealthConnectAdapter` class extends `HealthAdapter` and provides
+methods for initializing, retrieving, and inserting health-related data using a health-connect SDK. */
 class HealthConnectAdapter extends HealthAdapter {
   private _hasPermission: PermissionLevel;
   private _hasHealthConnect: boolean;
@@ -41,6 +43,14 @@ class HealthConnectAdapter extends HealthAdapter {
     return this._hasHealthConnect;
   }
 
+  /**
+   * The `init` function in TypeScript initializes the Health Connect SDK, checks availability, requests
+   * permissions, and handles errors.
+   *
+   * @param {boolean} [requestWrite=false] - The `requestWrite` parameter in the `init` function is a
+   * boolean parameter that determines whether to request write permission. If `requestWrite` is `true`
+   * and the application is in development mode (`__DEV__` is true)
+   */
   async init(requestWrite: boolean = false): Promise<void> {
     try {
       const hasWritePermission: boolean = requestWrite && __DEV__;
@@ -103,6 +113,12 @@ class HealthConnectAdapter extends HealthAdapter {
     }
   }
 
+  /**
+   *
+   * @param {CaloriesOnlyOptions | CountOnlyOptions | SportOptions} options
+   *
+   * @returns The `getData` function returns an amount of the given activity
+   */
   async getData(
     options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions
   ): Promise<number> {
@@ -120,6 +136,12 @@ class HealthConnectAdapter extends HealthAdapter {
     }
   }
 
+  /**
+   * The function `getActivityData` retrieves and calculates activity data based on specified options
+   * such as activity type, date range, and metric.
+   * @param {SportOptions} options
+   * @returns The `getActivityData` function is returning a number of the amount of sport done
+   */
   async getActivityData(options: SportOptions): Promise<number> {
     let result: number = 0;
     let activityNums: number[] = activityMapping[options.activity];
@@ -161,6 +183,15 @@ class HealthConnectAdapter extends HealthAdapter {
     }
   }
 
+  /**
+   * The function `getOtherData` retrieves data based on the specified activity type such as active
+   * calories burned, steps, or floors climbed within a given time range.
+   *
+   * @param {CountOnlyOptions | CaloriesOnlyOptions} options
+   *
+   * @returns The function `getOtherData` returns a Promise that resolves to a number. The specific
+   * number returned depends on the activity specified in the `options` parameter.
+   */
   async getOtherData(
     options: CountOnlyOptions | CaloriesOnlyOptions
   ): Promise<number> {
@@ -246,6 +277,16 @@ class HealthConnectAdapter extends HealthAdapter {
     return 1;
   }
 
+  /**
+   * Retrieves the total distance covered during a specified time range for a
+   * sport activity.
+   * @param {Date} start - The `start` parameter is a Date object representing the start time for the
+   * activity data you are trying to retrieve.
+   * @param {Date} end - The `end` parameter in the `getSportDistance` function represents the end time
+   *
+   * @returns The `getSportDistance` function returns a Promise that resolves to a number representing
+   * the total distance covered in meters for a specific sport activity within the given time range.
+   */
   private async getSportDistance(start: Date, end: Date): Promise<number> {
     try {
       let distance: number = 0;
@@ -267,6 +308,16 @@ class HealthConnectAdapter extends HealthAdapter {
     }
   }
 
+  /**
+   * The function `getSportCalories` retrieves the total calories burned during a specified time range
+   * for sport activities.
+   *
+   * @param {Date} startDate - The `startDate` parameter represents the starting date and time
+   * @param {Date} endDate - The `endDate` parameter represents the ending date and time
+   *
+   * @returns The `getSportCalories` function returns a Promise that resolves to a number representing
+   * the total calories burned during a sport activity within the specified time range.
+   */
   private async getSportCalories(
     startDate: Date,
     endDate: Date
@@ -293,6 +344,14 @@ class HealthConnectAdapter extends HealthAdapter {
     }
   }
 
+  /**
+   * The `insertData` function in TypeScript inserts default or specific health data records based on
+   * the provided options.
+   * @param {InsertOptions} [data] - The `insertData` function is an asynchronous function that takes
+   * an optional parameter `data` of type `InsertOptions`. If the `data` parameter is not provided, it
+   * inserts a default record of ActiveCaloriesBurned with specific details like energy, start time,
+   * end time, and metadata.
+   */
   async insertData(data?: InsertOptions): Promise<void> {
     if (!data) {
       try {
@@ -336,6 +395,13 @@ class HealthConnectAdapter extends HealthAdapter {
     }
   }
 
+  /**
+   * The function `insertFloorsClimbedData` inserts records of climbed floors data with specific
+   * details into Health Connect.
+   *
+   * @param {InsertOptions} data - Contains the timerange for the data and the amount of Floors climbed.
+   *
+   */
   private async insertFloorsClimbedData(data: InsertOptions): Promise<void> {
     try {
       await insertRecords([
@@ -360,6 +426,11 @@ class HealthConnectAdapter extends HealthAdapter {
     } catch (error) {}
   }
 
+  /**
+   * The function `insertStepCountData` inserts step count data with specific details into Health Connect
+   *
+   * @param {InsertOptions} data - Contains the timerange for the data and the amount of steps.
+   */
   private async insertStepCountData(data: InsertOptions): Promise<void> {
     try {
       await insertRecords([
@@ -384,6 +455,15 @@ class HealthConnectAdapter extends HealthAdapter {
     } catch (error) {}
   }
 
+  /**
+   * The function `insertSportData` asynchronously inserts exercise session and active calories burned
+   * records with specified data.
+   *
+   * @param {InsertOptions} data - Contains the data for creating a exercise session enrty.
+   * @param {number} activity - The `activity` parameter in the `insertSportData` function represents
+   * the type of exercise activity being recorded. It is a number that corresponds to a specific
+   * exercise type.
+   */
   private async insertSportData(
     data: InsertOptions,
     activity: number
