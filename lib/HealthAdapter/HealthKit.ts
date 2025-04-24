@@ -59,11 +59,11 @@ export class HealthKitAdapter extends HealthAdapter {
   }
 
   generatePermissionObject(
-    requestWrite: boolean = false
+    requestWrite: boolean = false,
   ): HealthKitPermissions {
     // Generate permission Set and object
     const permissionSet: Set<HealthPermission> = new Set(
-      Object.values(permissionMap)
+      Object.values(permissionMap),
     );
 
     const permissionObject: HealthKitPermissions = {
@@ -83,7 +83,11 @@ export class HealthKitAdapter extends HealthAdapter {
   isAvailable(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       HealthKit.isAvailable((err, results) => {
-        err ? reject(err) : resolve(results);
+        if (err) {
+          reject(err);
+        } else {
+          resolve(results);
+        }
       });
     });
   }
@@ -120,7 +124,7 @@ export class HealthKitAdapter extends HealthAdapter {
             ? PermissionLevel.ReadWrite
             : PermissionLevel.Read;
           resolve();
-        }
+        },
       );
     });
   }
@@ -140,11 +144,11 @@ export class HealthKitAdapter extends HealthAdapter {
    * @throws {Error} If an invalid option type is provided.
    */
   async getData(
-    options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions
+    options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions,
   ): Promise<number> {
     if (this.#permissionGranted === PermissionLevel.None) {
       throw new Error(
-        "Error: Requesting data before having all permissions will crash the application"
+        "Error: Requesting data before having all permissions will crash the application",
       );
     }
 
@@ -191,7 +195,7 @@ export class HealthKitAdapter extends HealthAdapter {
           if (
             parsedWorkout.success &&
             sportActivityHealthKitMap[options.activity].includes(
-              parsedWorkout.output.activityName
+              parsedWorkout.output.activityName,
             )
           ) {
             relevantWorkouts.push(parsedWorkout.output);
@@ -202,23 +206,23 @@ export class HealthKitAdapter extends HealthAdapter {
         switch (options.metric) {
           case Metric.Calories:
             resolve(
-              relevantWorkouts.reduce((sum, curr) => sum + curr.calories, 0)
+              relevantWorkouts.reduce((sum, curr) => sum + curr.calories, 0),
             );
             break;
           case Metric.Distance:
             resolve(
               relevantWorkouts.reduce(
                 (sum, curr) => sum + curr.distance * 1.609344 * 1000, // Convert miles -> kilometers -> meters
-                0
-              )
+                0,
+              ),
             );
             break;
           case Metric.Count:
             resolve(
               relevantWorkouts.reduce(
                 (set, curr) => set.add(curr.id),
-                new Set<string>()
-              ).size
+                new Set<string>(),
+              ).size,
             );
             break;
           case Metric.Duration:
@@ -228,8 +232,8 @@ export class HealthKitAdapter extends HealthAdapter {
                   sum +
                   (new Date(curr.end).getTime() -
                     new Date(curr.start).getTime()),
-                0
-              ) / 1000 // Milliseconds to seconds
+                0,
+              ) / 1000, // Milliseconds to seconds
             );
             break;
         }
@@ -256,7 +260,7 @@ export class HealthKitAdapter extends HealthAdapter {
    * @throws An error if the underlying data retrieval function encounters an issue.
    */
   private async getOtherData(
-    options: CaloriesOnlyOptions | CountOnlyOptions
+    options: CaloriesOnlyOptions | CountOnlyOptions,
   ): Promise<number> {
     // Creates object with the startdate and enddate
     const baseOptionsObject: HealthInputOptions = {
@@ -277,7 +281,7 @@ export class HealthKitAdapter extends HealthAdapter {
               return;
             }
             resolve(results.reduce((sum, curr) => sum + curr.value, 0));
-          }
+          },
         );
       });
     }
@@ -295,9 +299,9 @@ export class HealthKitAdapter extends HealthAdapter {
                 return;
               }
               resolve(results.value);
-            }
+            },
           );
-        })
+        }),
     );
 
     const values = await Promise.all(valuePromises);
@@ -348,7 +352,7 @@ export class HealthKitAdapter extends HealthAdapter {
       throw new Error(
         `Error: Insufficient permissions - Has: ${
           this.#permissionGranted
-        } Requires: ${PermissionLevel.ReadWrite}`
+        } Requires: ${PermissionLevel.ReadWrite}`,
       );
     }
 
@@ -371,7 +375,7 @@ export class HealthKitAdapter extends HealthAdapter {
       case "count":
         if (data.activity !== OtherActivity.Steps) {
           throw new Error(
-            "The HealthKit adapter only supports saving 'OtherActivity.Steps'"
+            "The HealthKit adapter only supports saving 'OtherActivity.Steps'",
           );
         }
 
@@ -383,7 +387,11 @@ export class HealthKitAdapter extends HealthAdapter {
 
         return await new Promise<void>((resolve, reject) => {
           HealthKit.saveSteps(stepsData, (err, result) => {
-            err ? reject(err) : resolve();
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
           });
         });
       case "sport":
@@ -403,7 +411,11 @@ export class HealthKitAdapter extends HealthAdapter {
   private insertHealthKitData(data: HealthKitInsertOptions): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       HealthKit.saveWorkout(data, (err, result) => {
-        err ? reject(err) : resolve();
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
       });
     });
   }

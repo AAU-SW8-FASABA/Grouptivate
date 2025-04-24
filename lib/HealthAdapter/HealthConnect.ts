@@ -16,7 +16,6 @@ import {
   SdkAvailabilityStatus,
   readRecords,
   insertRecords,
-  DeviceType,
   RecordingMethod,
 } from "react-native-health-connect";
 import { RecordEnum } from "./HealthConnect/HealthConnectRecordEnum";
@@ -69,7 +68,7 @@ export class HealthConnectAdapter extends HealthAdapter {
           SdkAvailabilityStatus.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED
         ) {
           console.log(
-            "SDK is not available, provider update or install required"
+            "SDK is not available, provider update or install required",
           );
         }
       };
@@ -117,7 +116,7 @@ export class HealthConnectAdapter extends HealthAdapter {
    * @returns The `getData` function returns an amount of the given activity
    */
   async getData(
-    options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions
+    options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions,
   ): Promise<number> {
     if (this._isInitialized) {
       switch (options.type) {
@@ -152,7 +151,7 @@ export class HealthConnectAdapter extends HealthAdapter {
             startTime: options.startDate.toISOString(),
             endTime: options.endDate.toISOString(),
           },
-        }
+        },
       );
 
       exerciseSessionRecords.records.forEach(async (record) => {
@@ -190,9 +189,9 @@ export class HealthConnectAdapter extends HealthAdapter {
    * number returned depends on the activity specified in the `options` parameter.
    */
   async getOtherData(
-    options: CountOnlyOptions | CaloriesOnlyOptions
+    options: CountOnlyOptions | CaloriesOnlyOptions,
   ): Promise<number> {
-    if (options.activity == OtherActivity.ActiveCaloriesBurned) {
+    if (options.activity === OtherActivity.ActiveCaloriesBurned) {
       try {
         let calorieTotal: number = 0;
 
@@ -204,7 +203,7 @@ export class HealthConnectAdapter extends HealthAdapter {
               startTime: options.startDate.toISOString(),
               endTime: options.endDate.toISOString(),
             },
-          }
+          },
         );
 
         calorieRecords.records.forEach((record) => {
@@ -218,7 +217,7 @@ export class HealthConnectAdapter extends HealthAdapter {
       }
     }
 
-    if (options.activity == OtherActivity.Steps) {
+    if (options.activity === OtherActivity.Steps) {
       try {
         let stepCount: number = 0;
 
@@ -241,7 +240,7 @@ export class HealthConnectAdapter extends HealthAdapter {
       }
     }
 
-    if (options.activity == OtherActivity.FloorsClimbed) {
+    if (options.activity === OtherActivity.FloorsClimbed) {
       try {
         let floorsClimbedCount = 0;
 
@@ -317,7 +316,7 @@ export class HealthConnectAdapter extends HealthAdapter {
    */
   private async getSportCalories(
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<number> {
     try {
       let calResult: number = 0;
@@ -407,6 +406,7 @@ export class HealthConnectAdapter extends HealthAdapter {
         console.log("Records inserted", { ids });
       });
     } catch (error) {
+      console.log("Could not create record: ", error);
       throw new Error("Could not create record");
     }
   }
@@ -433,7 +433,8 @@ export class HealthConnectAdapter extends HealthAdapter {
         console.log("Records inserted", { ids });
       });
     } catch (error) {
-      throw new Error("Could not  insert step count data");
+      console.log("Could not insert step count data", error);
+      throw new Error("Could not insert step count data");
     }
   }
 
@@ -448,7 +449,7 @@ export class HealthConnectAdapter extends HealthAdapter {
    */
   private async insertSportData(
     data: InsertOptions,
-    activity: number
+    activity: number,
   ): Promise<void> {
     try {
       await insertRecords([
@@ -477,6 +478,7 @@ export class HealthConnectAdapter extends HealthAdapter {
         },
       ]);
     } catch (error) {
+      console.log("Could not insert sport session", error);
       throw new Error("Could not insert sport session");
     }
   }
