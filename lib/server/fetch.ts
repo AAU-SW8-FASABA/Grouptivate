@@ -64,12 +64,12 @@ export async function fetchApi<
   for (const [key, value] of Object.entries(searchParams)) {
     newUrl.searchParams.set(key, JSON.stringify(value));
   }
-  const response = await fetch(url, {
+  const response = await fetch(newUrl, {
     method,
     body: requestBody ? JSON.stringify(requestBody) : undefined,
   });
   if (!response.ok) {
-    throw new Error("Received bad response.");
+    throw new Error(`Received bad response: ${await response.text()}`);
   }
   if (schema.responseBody) {
     return parse(schema.responseBody, await response.json());

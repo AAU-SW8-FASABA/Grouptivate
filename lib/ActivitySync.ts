@@ -22,17 +22,17 @@ export function ActivitySync() {
 }
 
 async function sync() {
-  const user = await getUser(uuid);
-
-  const groups = await Promise.all(user.groups.map((group) => getGroup(group)));
-
   const healthAdapter = await getHealthAdapter();
   if (!healthAdapter) {
     console.log(
-      "Unable to sync healt because there is no health adapter available",
+      "Unable to sync health because there is no health adapter available",
     );
     return;
   }
+
+  const user = await getUser(uuid);
+
+  const groups = await Promise.all(user.groups.map((group) => getGroup(group)));
 
   const goalUpdates = await Promise.all(
     groups

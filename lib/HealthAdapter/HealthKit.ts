@@ -2,6 +2,7 @@
  * IMPORTS
  */
 // External libraries
+import { Platform } from "react-native";
 import HealthKit, {
   HealthInputOptions,
   HealthKitPermissions,
@@ -84,6 +85,7 @@ export class HealthKitAdapter extends HealthAdapter {
    */
   static isAvailable(): Promise<boolean> {
     return new Promise((resolve, reject) => {
+      if (Platform.OS !== "ios") resolve(false);
       HealthKit.isAvailable((err, results) => {
         if (err) {
           reject(err);
