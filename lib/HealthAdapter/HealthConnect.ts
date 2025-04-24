@@ -5,6 +5,8 @@ import {
   CountOnlyOptions,
   HealthAdapter,
   InsertOptions,
+  isCountOnlyOptions,
+  isSportOptions,
   PermissionLevel,
   SportOptions,
 } from "./HealthAdapter";
@@ -25,26 +27,44 @@ import { Metric } from "../API/schemas/Metric";
 methods for initializing, retrieving, and inserting health-related data using a health-connect SDK. */
 export class HealthConnectAdapter extends HealthAdapter {
   private _hasPermission: PermissionLevel;
-  private _hasHealthConnect: boolean;
   private _isInitialized: boolean;
 
   constructor() {
     super();
     this._hasPermission = PermissionLevel.None;
-    this._hasHealthConnect = false;
     this._isInitialized = false;
   }
   get permissionGranted(): PermissionLevel {
     return this._hasPermission;
   }
 
-  get hasHealthConnect(): boolean {
-    return this._hasHealthConnect;
+  /**
+   * Check if HealthConnect is available on the given platform
+   * @returns Promise<boolean>
+   */
+  static async isAvailable(): Promise<boolean> {
+    const status = await getSdkStatus();
+    if (status === SdkAvailabilityStatus.SDK_AVAILABLE) {
+      console.log("SDK is available");
+      return true;
+    }
+    if (status === SdkAvailabilityStatus.SDK_UNAVAILABLE) {
+      console.log("SDK is not available");
+      return false;
+    }
+    if (
+      status === SdkAvailabilityStatus.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED
+    ) {
+      console.log("SDK is not available, provider update or install required");
+      return false;
+    }
+    console.log("SDK is not available for unknown reason");
+    return false;
   }
 
   /**
-   * The `init` function in TypeScript initializes the Health Connect SDK, checks availability, requests
-   * permissions, and handles errors.
+   * The `init` function in TypeScript initializes the Health Connect SDK, requests permissions,
+   * and handles errors.
    *
    * @param {boolean} [requestWrite=false] - The `requestWrite` parameter in the `init` function is a
    * boolean parameter that determines whether to request write permission. If `requestWrite` is `true`
@@ -54,27 +74,8 @@ export class HealthConnectAdapter extends HealthAdapter {
     try {
       const hasWritePermission: boolean = requestWrite && __DEV__;
 
-      const checkAvailability = async () => {
-        const status = await getSdkStatus();
-        if (status === SdkAvailabilityStatus.SDK_AVAILABLE) {
-          this._hasHealthConnect = true;
-          console.log("SDK is available");
-        }
-        if (status === SdkAvailabilityStatus.SDK_UNAVAILABLE) {
-          console.log("SDK is not available");
-        }
-        if (
-          status ===
-          SdkAvailabilityStatus.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED
-        ) {
-          console.log(
-            "SDK is not available, provider update or install required",
-          );
-        }
-      };
-      checkAvailability();
       this._isInitialized = await initialize();
-      if (this._hasHealthConnect && hasWritePermission) {
+      if (hasWritePermission) {
         const permissions = await requestPermission([
           { accessType: "read", recordType: "ActiveCaloriesBurned" },
           { accessType: "read", recordType: "ExerciseSession" },
@@ -91,7 +92,7 @@ export class HealthConnectAdapter extends HealthAdapter {
         if (permissions.length > 0) {
           this._hasPermission = PermissionLevel.ReadWrite;
         }
-      } else if (this._hasHealthConnect) {
+      } else {
         const permissions = await requestPermission([
           { accessType: "read", recordType: "ActiveCaloriesBurned" },
           { accessType: "read", recordType: "ExerciseSession" },
@@ -119,13 +120,10 @@ export class HealthConnectAdapter extends HealthAdapter {
     options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions,
   ): Promise<number> {
     if (this._isInitialized) {
-      switch (options.type) {
-        case "sport":
-          return await this.getActivityData(options);
-        case "calories":
-          return await this.getOtherData(options);
-        case "count":
-          return await this.getOtherData(options);
+      if (isSportOptions(options)) {
+        return await this.getActivityData(options);
+      } else {
+        return await this.getOtherData(options);
       }
     } else {
       throw Error("HealthConnect is not initialized");
@@ -366,18 +364,15 @@ export class HealthConnectAdapter extends HealthAdapter {
         throw new Error("Could not insert default data");
       }
     } else {
-      switch (data.type) {
-        case "count":
-          if (data.activity === OtherActivity.FloorsClimbed) {
-            await this.insertFloorsClimbedData(data);
-          } else {
-            await this.insertStepCountData(data);
-          }
-          break;
-
-        case "sport":
-          let activity: number = activityMapping[data.activity].indexOf(0);
-          await this.insertSportData(data, activity);
+      if (isSportOptions(data)) {
+        let activity: number = activityMapping[data.activity].indexOf(0);
+        await this.insertSportData(data, activity);
+      } else if (isCountOnlyOptions(data)) {
+        if (data.activity === OtherActivity.FloorsClimbed) {
+          await this.insertFloorsClimbedData(data);
+        } else {
+          await this.insertStepCountData(data);
+        }
       }
     }
   }
