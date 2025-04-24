@@ -10,6 +10,7 @@ import { Stack } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 
 import { CustomModal } from "@/components/CustomModal";
+import { DeleteConfirmationModal } from "@/components/DeleteConfirmationModal";
 import { Back } from "@/components/Back";
 import { Collapsible } from "@/components/Collapsible";
 import { SettingsMember } from "@/components/SettingsMember";
@@ -27,6 +28,71 @@ export default function GroupSettings() {
     "Aske",
     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   ]);
+
+  const [inviteModalVisibility, setInviteModalVisibility] = useState(false);
+  const [newMemberName, setNewMemberName] = useState("");
+  const [deleteModalVisibility, setDeleteModalVisibility] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState({
+    type: "", // 'member' or 'goal'
+    index: -1,
+    name: "",
+    memberIndex: -1,
+  });
+
+  function inviteMember() {
+    if (newMemberName.trim() !== "") {
+      setMembers((prev) => [...prev, newMemberName]);
+      setNewMemberName("");
+      setInviteModalVisibility(false);
+    }
+  }
+
+  function promptRemoveMember(index: number) {
+    setItemToDelete({
+      type: "member",
+      index,
+      name: members[index],
+      memberIndex: -1,
+    });
+    setDeleteModalVisibility(true);
+  }
+
+  function promptRemoveGoal(index: number) {
+    setItemToDelete({
+      type: "groupGoal",
+      index,
+      name: groupGoals[index].activity,
+      memberIndex: -1,
+    });
+    setDeleteModalVisibility(true);
+  }
+
+  function promptRemoveIndividualGoal(goalIndex: number, memberIndex: number) {
+    setItemToDelete({
+      type: "individualGoal",
+      index: goalIndex,
+      name: individualGoals[goalIndex].activity,
+      memberIndex: memberIndex,
+    });
+    setDeleteModalVisibility(true);
+  }
+
+  function confirmDelete() {
+    if (itemToDelete.index >= 0) {
+      if (itemToDelete.type === "member") {
+        setMembers((prev) => prev.filter((_, i) => i !== itemToDelete.index));
+      } else if (itemToDelete.type === "groupGoal") {
+        setGroupGoals((prev) =>
+          prev.filter((_, i) => i !== itemToDelete.index),
+        );
+      } else if (itemToDelete.type === "individualGoal") {
+        setIndividualGoals((prev) =>
+          prev.filter((_, i) => i !== itemToDelete.index),
+        );
+      }
+    }
+  }
+
   const [groupGoals, setGroupGoals] = useState([
     { activity: "Walk", target: 100000, unit: "steps" },
     { activity: "Run", target: 100, unit: "km" },
@@ -35,7 +101,8 @@ export default function GroupSettings() {
     { activity: "Walk", target: 200000, unit: "steps" },
     { activity: "Run", target: 200, unit: "km" },
   ]);
-  const [newGoalModalVisibility, setNewGoalModalVisibility] = useState(false);
+  const [newGroupGoalModalVisibility, setNewGroupGoalModalVisibility] =
+    useState(false);
   const unitLookup = {
     calories: "kcal",
     count: "times",
@@ -78,6 +145,19 @@ export default function GroupSettings() {
   const [isTargetFocus, setIsTargetFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
 
+  function getDeleteConfirmationText() {
+    switch (itemToDelete.type) {
+      case "member":
+        return `Are you sure you want to remove ${itemToDelete.name}?`;
+      case "groupGoal":
+        return `Are you sure you want to delete the group goal "${itemToDelete.name}"?`;
+      case "individualGoal":
+        return `Are you sure you want to delete the individual goal "${itemToDelete.name}"?`;
+      default:
+        return "Are you sure you want to delete this item?";
+    }
+  }
+
   return (
     <>
       <Stack.Screen
@@ -90,8 +170,8 @@ export default function GroupSettings() {
         <CustomModal
           height={500}
           title="New Goal"
-          isVisible={newGoalModalVisibility}
-          setIsVisible={setNewGoalModalVisibility}
+          isVisible={newGroupGoalModalVisibility}
+          setIsVisible={setNewGroupGoalModalVisibility}
           createCallback={createGoal}
         >
           <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
@@ -169,21 +249,45 @@ export default function GroupSettings() {
             onChangeText={(text) => setAmountValue(Number(text))}
           ></TextInput>
         </CustomModal>
+
+        <CustomModal
+          height={300}
+          title="Invite Member"
+          isVisible={inviteModalVisibility}
+          setIsVisible={setInviteModalVisibility}
+          createCallback={inviteMember}
+        >
+          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+            Name
+          </Text>
+          <TextInput
+            style={globalStyles.inputField}
+            placeholder="Enter user and hash: User#123"
+            value={newMemberName}
+            onChangeText={(text) => setNewMemberName(text)}
+          />
+        </CustomModal>
+
         <Collapsible title="Members" style={{ marginTop: 6 }}>
           {members.map((member, index) => (
-            <SettingsMember key={index} name={member} />
+            <SettingsMember
+              key={index}
+              name={member}
+              onRemove={() => promptRemoveMember(index)}
+            />
           ))}
           <View
             style={[styles.row, { justifyContent: "center", marginBottom: 8 }]}
           >
-            <UniversalIcon
-              source={IconSource.FontAwesome6}
-              name="circle-plus"
-              size={24}
-            />
             <TouchableOpacity
-              onPress={() => setMembers([...members, "New Member"])}
+              style={styles.row}
+              onPress={() => setInviteModalVisibility(true)}
             >
+              <UniversalIcon
+                source={IconSource.FontAwesome6}
+                name="circle-plus"
+                size={24}
+              />
               <Text style={[styles.text, styles.buttonText]}>
                 Invite Member
               </Text>
@@ -191,27 +295,51 @@ export default function GroupSettings() {
           </View>
         </Collapsible>
 
+        <DeleteConfirmationModal
+          height={200}
+          title="Confirm Delete"
+          isVisible={deleteModalVisibility}
+          setIsVisible={setDeleteModalVisibility}
+          deleteCallback={confirmDelete}
+        >
+          <Text
+            style={[
+              styles.text,
+              { fontSize: 18, marginTop: 10, textAlign: "center" },
+            ]}
+          >
+            {getDeleteConfirmationText()}
+          </Text>
+        </DeleteConfirmationModal>
+
         <Collapsible title="Group Goals">
           {groupGoals.map((goal, index) => (
-            <SettingsGoal key={index} {...goal} />
+            <SettingsGoal
+              key={index}
+              {...goal}
+              onRemove={() => promptRemoveGoal(index)}
+            />
           ))}
           <View
             style={[styles.row, { justifyContent: "center", marginBottom: 8 }]}
           >
-            <UniversalIcon
-              source={IconSource.FontAwesome6}
-              name="circle-plus"
-              size={24}
-            />
-            <TouchableOpacity onPress={() => setNewGoalModalVisibility(true)}>
+            <TouchableOpacity
+              style={styles.row}
+              onPress={() => setNewGroupGoalModalVisibility(true)}
+            >
+              <UniversalIcon
+                source={IconSource.FontAwesome6}
+                name="circle-plus"
+                size={24}
+              />
               <Text style={[styles.text, styles.buttonText]}>Create goal</Text>
             </TouchableOpacity>
           </View>
         </Collapsible>
 
         <Collapsible title="Individual Goals">
-          {members.map((member, index) => (
-            <CollapsibleContainer key={index}>
+          {members.map((member, memberIndex) => (
+            <CollapsibleContainer key={memberIndex}>
               <View
                 style={[
                   styles.row,
@@ -241,8 +369,15 @@ export default function GroupSettings() {
                 </TouchableOpacity>
               </View>
               <>
-                {individualGoals.map((goal, index) => (
-                  <SettingsGoal key={index} {...goal} padding={0} />
+                {individualGoals.map((goal, goalIndex) => (
+                  <SettingsGoal
+                    key={goalIndex}
+                    {...goal}
+                    padding={0}
+                    onRemove={() =>
+                      promptRemoveIndividualGoal(goalIndex, memberIndex)
+                    }
+                  />
                 ))}
               </>
             </CollapsibleContainer>
@@ -277,5 +412,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 100,
+  },
+  cancelButton: {
+    backgroundColor: "#EFEFF3",
+    borderWidth: 1,
+    borderColor: "#DDD",
+  },
+  deleteButton: {
+    backgroundColor: "#FF3B30",
   },
 });
