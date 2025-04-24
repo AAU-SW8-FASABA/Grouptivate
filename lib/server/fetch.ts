@@ -10,7 +10,7 @@ import {
   SearchParametersSchema,
 } from "../API/containers/Request";
 
-const SERVER_URL = process.env.SERVER_URL;
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 if (!SERVER_URL) throw new Error("Missing a SERVER_URL in env");
 
 const url = new URL(SERVER_URL);
