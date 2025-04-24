@@ -1,6 +1,4 @@
-import { Metric } from "@/lib/API/schemas/Metric";
 import { SportActivity } from "../../API/schemas/Activity";
-import { RecordEnum } from "./HealthConnectRecordEnum";
 
 // Active calories is not a sport :( )
 export const activityMapping: Record<SportActivity, number[]> = {

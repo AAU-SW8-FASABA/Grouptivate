@@ -1,4 +1,3 @@
-import { Interval } from "../API/schemas/Interval";
 import { Metric } from "../API/schemas/Metric";
 import { OtherActivity, SportActivity } from "../API/schemas/Activity";
 
@@ -54,7 +53,7 @@ export abstract class HealthAdapter {
 
   abstract init(): Promise<void>;
   abstract getData(
-    options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions
+    options: CaloriesOnlyOptions | CountOnlyOptions | SportOptions,
   ): Promise<number>;
   abstract insertData(data?: InsertOptions): Promise<void>;
 }
