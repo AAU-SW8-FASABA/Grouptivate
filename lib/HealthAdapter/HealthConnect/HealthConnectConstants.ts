@@ -49,11 +49,3 @@ export const activityMapping: Record<SportActivity, number[]> = {
   [SportActivity.Wheelchair]: [82], // EXERCISE_TYPE_WHEELCHAIR [82]
   [SportActivity.Yoga]: [83], // EXERCISE_TYPE_YOGA [83]
 };
-
-export const metricMap: Record<
-  Exclude<Metric, Metric.Count | Metric.Duration>,
-  RecordEnum
-> = {
-  [Metric.Calories]: RecordEnum.ActiveCaloriesBurned,
-  [Metric.Distance]: RecordEnum.Distance,
-};
