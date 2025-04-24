@@ -5,10 +5,11 @@ import { Platform } from "react-native";
 import { HapticTab } from "@/components/HapticTab";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import TabBarBackground from "@/components/ui/TabBarBackground";
-import { ActivitySync } from "@/lib/ActivitySync";
+//import { ActivitySync } from "@/lib/ActivitySync";
 
 export default function TabLayout() {
-  ActivitySync();
+  // TODO: udkommenter mig når det virker
+  //ActivitySync();
 
   return (
     <Tabs
