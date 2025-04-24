@@ -24,7 +24,7 @@ import { Metric } from "../API/schemas/Metric";
 
 /* The `HealthConnectAdapter` class extends `HealthAdapter` and provides
 methods for initializing, retrieving, and inserting health-related data using a health-connect SDK. */
-class HealthConnectAdapter extends HealthAdapter {
+export class HealthConnectAdapter extends HealthAdapter {
   private _hasPermission: PermissionLevel;
   private _hasHealthConnect: boolean;
   private _isInitialized: boolean;
@@ -73,7 +73,7 @@ class HealthConnectAdapter extends HealthAdapter {
           );
         }
       };
-
+      checkAvailability();
       this._isInitialized = await initialize();
       if (this._hasHealthConnect && hasWritePermission) {
         const permissions = await requestPermission([
@@ -82,13 +82,11 @@ class HealthConnectAdapter extends HealthAdapter {
           { accessType: "read", recordType: "Steps" },
           { accessType: "read", recordType: "Distance" },
           { accessType: "read", recordType: "FloorsClimbed" },
-          { accessType: "read", recordType: "WheelchairPushes" },
           { accessType: "write", recordType: "ActiveCaloriesBurned" },
           { accessType: "write", recordType: "ExerciseSession" },
           { accessType: "write", recordType: "Steps" },
           { accessType: "write", recordType: "Distance" },
           { accessType: "write", recordType: "FloorsClimbed" },
-          { accessType: "write", recordType: "WheelchairPushes" },
         ]);
 
         if (permissions.length > 0) {
@@ -101,7 +99,6 @@ class HealthConnectAdapter extends HealthAdapter {
           { accessType: "read", recordType: "Steps" },
           { accessType: "read", recordType: "Distance" },
           { accessType: "read", recordType: "FloorsClimbed" },
-          { accessType: "read", recordType: "WheelchairPushes" },
         ]);
 
         if (permissions.length > 0) {
@@ -355,21 +352,12 @@ class HealthConnectAdapter extends HealthAdapter {
   async insertData(data?: InsertOptions): Promise<void> {
     if (!data) {
       try {
-        insertRecords([
+        await insertRecords([
           {
-            recordType: "ActiveCaloriesBurned",
-            energy: { unit: "kilocalories", value: 10000 },
+            recordType: RecordEnum.Steps,
+            count: 100,
             startTime: new Date(2020, 6, 2, 6, 0, 0).toISOString(),
             endTime: new Date(2020, 6, 2, 6, 30, 0).toISOString(),
-            metadata: {
-              recordingMethod:
-                RecordingMethod.RECORDING_METHOD_AUTOMATICALLY_RECORDED,
-              device: {
-                manufacturer: "Google",
-                model: "Pixel 4",
-                type: DeviceType.TYPE_PHONE,
-              },
-            },
           },
         ]).then((ids) => {
           console.log("Records inserted ", { ids });
@@ -413,17 +401,14 @@ class HealthConnectAdapter extends HealthAdapter {
           metadata: {
             recordingMethod:
               RecordingMethod.RECORDING_METHOD_AUTOMATICALLY_RECORDED,
-            device: {
-              manufacturer: "Google",
-              model: "Pixel 4",
-              type: DeviceType.TYPE_PHONE,
-            },
           },
         },
       ]).then((ids) => {
         console.log("Records inserted", { ids });
       });
-    } catch (error) {}
+    } catch (error) {
+      throw new Error("Could not create record");
+    }
   }
 
   /**
@@ -442,17 +427,14 @@ class HealthConnectAdapter extends HealthAdapter {
           metadata: {
             recordingMethod:
               RecordingMethod.RECORDING_METHOD_AUTOMATICALLY_RECORDED,
-            device: {
-              manufacturer: "Google",
-              model: "Pixel 7",
-              type: DeviceType.TYPE_PHONE,
-            },
           },
         },
       ]).then((ids) => {
         console.log("Records inserted", { ids });
       });
-    } catch (error) {}
+    } catch (error) {
+      throw new Error("Could not  insert step count data");
+    }
   }
 
   /**
@@ -478,11 +460,6 @@ class HealthConnectAdapter extends HealthAdapter {
           title: "BingBong",
           metadata: {
             recordingMethod: RecordingMethod.RECORDING_METHOD_ACTIVELY_RECORDED,
-            device: {
-              manufacturer: "Google",
-              model: "Pixel 6",
-              type: DeviceType.TYPE_PHONE,
-            },
           },
         },
         {
@@ -496,14 +473,11 @@ class HealthConnectAdapter extends HealthAdapter {
           metadata: {
             recordingMethod:
               RecordingMethod.RECORDING_METHOD_AUTOMATICALLY_RECORDED,
-            device: {
-              manufacturer: "Google",
-              model: "Pixel 6",
-              type: DeviceType.TYPE_PHONE,
-            },
           },
         },
       ]);
-    } catch (error) {}
+    } catch (error) {
+      throw new Error("Could not insert sport session");
+    }
   }
 }
