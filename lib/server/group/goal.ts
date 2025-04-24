@@ -5,6 +5,7 @@ import { Group } from "@/lib/API/schemas/Group";
 import {
   Goal,
   GoalDeleteRequestSchema,
+  GoalPatchRequestSchema,
   GroupGoal,
   GroupGoalCreateRequestSchema,
   IndividualGoal,
@@ -55,6 +56,19 @@ export async function create(
       ...response,
     };
   }
+}
+
+export async function patch(
+  user: User["uuid"],
+  goals: { uuid: Goal["uuid"]; progress: IndividualGoal["progress"] }[],
+): Promise<void> {
+  await fetchApi({
+    path: "/group/goal",
+    method: "PATCH",
+    schema: GoalPatchRequestSchema,
+    searchParams: { user },
+    requestBody: goals,
+  });
 }
 
 export async function _delete(
