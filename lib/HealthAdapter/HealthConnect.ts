@@ -1,4 +1,3 @@
-import { Platform } from "react-native";
 import { OtherActivity } from "../API/schemas/Activity";
 import { activityMapping } from "./HealthConnect/HealthConnectConstants";
 import {
@@ -44,7 +43,6 @@ export class HealthConnectAdapter extends HealthAdapter {
    * @returns Promise<boolean>
    */
   static async isAvailable(): Promise<boolean> {
-    if (Platform.OS !== "android") return false;
     const status = await getSdkStatus();
     if (status === SdkAvailabilityStatus.SDK_AVAILABLE) {
       console.log("SDK is available");
