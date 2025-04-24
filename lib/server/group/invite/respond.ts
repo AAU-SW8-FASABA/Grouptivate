@@ -8,13 +8,13 @@ import {
 export async function respond(
   user: User["uuid"],
   invite: Invite["uuid"],
-  response: boolean,
+  accepted: boolean,
 ): Promise<void> {
   await fetchApi({
     path: "/group/invite/respond",
     method: "POST",
     schema: InviteRespondRequestSchema,
     searchParams: { user, invite },
-    requestBody: response,
+    requestBody: { accepted },
   });
 }
