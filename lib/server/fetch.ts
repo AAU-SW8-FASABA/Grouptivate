@@ -21,7 +21,7 @@ export async function fetchApi<
   D extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
 >(_: {
   path: string;
-  method: "GET" | "POST" | "DELETE";
+  method: "GET" | "POST" | "PATCH" | "DELETE";
   schema: RequestSchema<P, R, D>;
   searchParams: { [K in keyof P]: InferInput<P[K]> };
   requestBody: R extends BaseSchema<unknown, unknown, BaseIssue<unknown>>
@@ -34,7 +34,7 @@ export async function fetchApi<
   D extends undefined,
 >(_: {
   path: string;
-  method: "POST" | "DELETE";
+  method: "POST" | "PATCH" | "DELETE";
   schema: RequestSchema<P, R, D>;
   searchParams: { [K in keyof P]: InferInput<P[K]> };
   requestBody: R extends BaseSchema<unknown, unknown, BaseIssue<unknown>>
@@ -53,7 +53,7 @@ export async function fetchApi<
   requestBody,
 }: {
   path: string;
-  method: "GET" | "POST" | "DELETE";
+  method: "GET" | "POST" | "PATCH" | "DELETE";
   schema: RequestSchema<P, R, D>;
   searchParams: { [K in keyof P]: InferInput<P[K]> };
   requestBody: R extends BaseSchema<unknown, unknown, BaseIssue<unknown>>
