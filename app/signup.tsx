@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import globalStyles from "@/constants/styles";
 import { useRouter } from "expo-router";
 
 export default function Login() {
@@ -29,7 +30,7 @@ export default function Login() {
         <Text style={[styles.text, { fontSize: 20, color: "black" }]}>
           Username
         </Text>
-        <TextInput style={styles.input}></TextInput>
+        <TextInput style={globalStyles.inputField}></TextInput>
       </View>
       <View style={styles.buttons}>
         <TouchableOpacity
@@ -68,9 +69,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     marginHorizontal: 25,
-  },
-  input: {
-    backgroundColor: "#EFEFF3",
   },
   buttons: {
     flex: 1,

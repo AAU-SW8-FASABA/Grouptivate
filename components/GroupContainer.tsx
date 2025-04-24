@@ -1,9 +1,16 @@
-import { StyleSheet, View, Text, Image } from "react-native";
+import {
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+  View,
+  Text,
+  Image,
+} from "react-native";
 
 import { HR } from "./HR";
 import { IconSource } from "./ui/UniversalIcon";
 import { Container } from "./Container";
-import { ProgressBarIcon } from "./ProgressBarIcon";
+import { ProgressBarIcon } from "./ProgressBar/ProgressBarIcon";
 
 export function GroupContainer({
   name,
@@ -12,6 +19,7 @@ export function GroupContainer({
   groupTarget,
   individualProgress,
   individualTarget,
+  style,
 }: {
   name: string;
   days: number;
@@ -19,9 +27,10 @@ export function GroupContainer({
   groupTarget: number;
   individualProgress: number;
   individualTarget: number;
+  style?: StyleProp<ViewStyle>;
 }) {
   return (
-    <Container>
+    <Container style={style}>
       <View style={styles.row}>
         <View style={{ flexDirection: "row" }}>
           <Image

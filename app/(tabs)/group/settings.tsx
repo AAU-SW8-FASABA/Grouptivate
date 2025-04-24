@@ -3,7 +3,6 @@ import {
   Text,
   TextInput,
   View,
-  ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { useState } from "react";
@@ -17,6 +16,8 @@ import { SettingsMember } from "@/components/SettingsMember";
 import { SettingsGoal } from "@/components/SettingsGoal";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { CollapsibleContainer } from "@/components/CollapsibleContainer";
+import globalStyles from "@/constants/styles";
+import { CustomScrollView } from "@/components/CusomScrollView";
 
 export default function GroupSettings() {
   const [members, setMembers] = useState([
@@ -85,10 +86,7 @@ export default function GroupSettings() {
           headerLeft: () => <Back />,
         }}
       />
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      >
+      <CustomScrollView style={globalStyles.viewContainer}>
         <CustomModal
           height={500}
           title="New Goal"
@@ -167,16 +165,16 @@ export default function GroupSettings() {
             Amount
           </Text>
           <TextInput
-            style={[styles.input, { fontSize: 20 }]}
+            style={globalStyles.inputField}
             onChangeText={(text) => setAmountValue(Number(text))}
           ></TextInput>
         </CustomModal>
-        <Collapsible title="Members">
+        <Collapsible title="Members" style={{ marginTop: 6 }}>
           {members.map((member, index) => (
             <SettingsMember key={index} name={member} />
           ))}
           <View
-            style={[styles.row, { marginTop: 10, justifyContent: "center" }]}
+            style={[styles.row, { justifyContent: "center", marginBottom: 8 }]}
           >
             <UniversalIcon
               source={IconSource.FontAwesome6}
@@ -193,12 +191,12 @@ export default function GroupSettings() {
           </View>
         </Collapsible>
 
-        <Collapsible title="Group Goals" style={{ marginTop: 25 }}>
+        <Collapsible title="Group Goals">
           {groupGoals.map((goal, index) => (
             <SettingsGoal key={index} {...goal} />
           ))}
           <View
-            style={[styles.row, { marginTop: 10, justifyContent: "center" }]}
+            style={[styles.row, { justifyContent: "center", marginBottom: 8 }]}
           >
             <UniversalIcon
               source={IconSource.FontAwesome6}
@@ -211,7 +209,7 @@ export default function GroupSettings() {
           </View>
         </Collapsible>
 
-        <Collapsible title="Individual Goals" style={{ marginTop: 25 }}>
+        <Collapsible title="Individual Goals">
           {members.map((member, index) => (
             <CollapsibleContainer key={index}>
               <View
@@ -222,7 +220,7 @@ export default function GroupSettings() {
               >
                 <Text
                   numberOfLines={1}
-                  style={[styles.text, { fontSize: 24, flex: 1 }]}
+                  style={[styles.text, { fontSize: 20, flex: 1 }]}
                 >
                   {member}
                 </Text>
@@ -250,17 +248,12 @@ export default function GroupSettings() {
             </CollapsibleContainer>
           ))}
         </Collapsible>
-      </ScrollView>
+      </CustomScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    padding: 20,
-    paddingTop: 10,
-  },
   text: {
     fontFamily: "Roboto",
     fontWeight: 500,

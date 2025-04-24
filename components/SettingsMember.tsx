@@ -1,12 +1,17 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, StyleProp, ViewStyle } from "react-native";
 
 import { Container } from "./Container";
 import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
 
-export function SettingsMember({ name }: { name: string }) {
+interface Props {
+  name: string;
+  style?: StyleProp<ViewStyle>;
+}
+
+export function SettingsMember({ name, style }: Props) {
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, style]}>
       <Container>
         <Text numberOfLines={1} style={styles.text}>
           {name}
@@ -26,10 +31,11 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: "Roboto",
     fontWeight: 500,
-    fontSize: 24,
+    fontSize: 20,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 8,
   },
 });

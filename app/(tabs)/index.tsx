@@ -5,7 +5,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
@@ -15,6 +14,8 @@ import { Collapsible } from "@/components/Collapsible";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { GoalContainer } from "@/components/GoalContainer";
 import { GroupContainer } from "@/components/GroupContainer";
+import globalStyles from "@/constants/styles";
+import { CustomScrollView } from "@/components/CusomScrollView";
 
 export default function Main() {
   const router = useRouter();
@@ -64,10 +65,7 @@ export default function Main() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 20 }}
-    >
+    <CustomScrollView style={globalStyles.viewContainer}>
       <CustomModal
         height={410}
         title="New Group"
@@ -76,7 +74,7 @@ export default function Main() {
         createCallback={createGroup}
       >
         <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
-        <TextInput style={[styles.input, { fontSize: 20 }]}></TextInput>
+        <TextInput style={globalStyles.inputField}></TextInput>
         <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
           Interval
         </Text>
@@ -110,7 +108,7 @@ export default function Main() {
           )}
         />
       </CustomModal>
-      <Collapsible title="Goals">
+      <Collapsible title="Goals" style={{ marginTop: 6 }}>
         <GoalContainer
           activity="Swim"
           unit="kcal"
@@ -132,15 +130,15 @@ export default function Main() {
           iconSize={20}
         />
       </Collapsible>
-      <View style={[styles.row, { marginTop: 25 }]}>
-        <Text style={[styles.text, { fontSize: 28 }]}>Groups</Text>
+      <View style={[styles.row]}>
+        <Text style={globalStyles.sectionHeader}>Groups</Text>
         <TouchableOpacity onPress={() => setNewGroupModalVisibility(true)}>
           <UniversalIcon
             source={IconSource.FontAwesome6}
             name="plus"
             size={23}
             color="black"
-            style={{ marginTop: 11, marginRight: 5, marginBottom: 6 }}
+            style={{ marginRight: 5 }}
           />
         </TouchableOpacity>
       </View>
@@ -161,19 +159,15 @@ export default function Main() {
             groupTarget={group.groupTarget}
             individualProgress={group.individualProgress}
             individualTarget={group.individualTarget}
+            style={{ marginBottom: 8 }}
           />
         </TouchableOpacity>
       ))}
-    </ScrollView>
+    </CustomScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    padding: 20,
-    paddingTop: 10,
-  },
   text: {
     fontFamily: "Roboto",
     fontWeight: 500,
@@ -182,10 +176,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  input: {
-    backgroundColor: "#EFEFF3",
-    borderRadius: 8,
   },
   dropdown: {
     backgroundColor: "#EFEFF3",

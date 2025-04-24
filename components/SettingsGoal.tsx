@@ -1,25 +1,29 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, StyleProp, ViewStyle } from "react-native";
 
 import { Container } from "./Container";
 import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
+
+interface Props {
+  activity: string;
+  target: number;
+  unit: string;
+  padding?: number;
+  style?: StyleProp<ViewStyle>;
+}
 
 export function SettingsGoal({
   activity,
   target,
   unit,
   padding = 10,
-}: {
-  activity: string;
-  target: number;
-  unit: string;
-  padding?: number;
-}) {
+  style,
+}: Props) {
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { marginBottom: 8 }]}>
       <Container style={{ padding }}>
         <View style={styles.row}>
-          <Text numberOfLines={1} style={[styles.text, { fontSize: 24 }]}>
+          <Text numberOfLines={1} style={[styles.text, { fontSize: 20 }]}>
             {activity}
           </Text>
           <View style={styles.targetContainer}>

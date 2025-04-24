@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { Container } from "./Container";
+import { primaryColor } from "@/constants/styles";
 
 export function ContainerWithBlueBox({
   text1,
@@ -24,7 +25,7 @@ export function ContainerWithBlueBox({
 
 const styles = StyleSheet.create({
   blueContainer: {
-    backgroundColor: "#2B70CA",
+    backgroundColor: primaryColor,
     borderRadius: 5,
     marginTop: 5,
     padding: 5,

@@ -1,7 +1,7 @@
 import { StyleSheet, View } from "react-native";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
-import { ProgressBarPercentage } from "@/components/ProgressBarPercentage";
+import { ProgressBarPercentage } from "@/components/ProgressBar/ProgressBarPercentage";
 
 export function ProgressBarIcon({
   progress,

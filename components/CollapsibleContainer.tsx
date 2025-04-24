@@ -1,13 +1,21 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 
 import { HR } from "./HR";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 
 export function CollapsibleContainer({
   children,
+  style,
 }: {
   children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [child1, child2] = React.Children.toArray(children);
@@ -47,9 +55,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFEFF3",
     width: "100%",
     borderRadius: 5,
-    marginTop: 10,
     padding: 10,
     flex: 1,
+    marginBottom: 8,
   },
   collapse: {
     position: "absolute",

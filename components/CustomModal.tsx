@@ -17,7 +17,12 @@ export function CustomModal({
 }) {
   return (
     <>
-      <Modal visible={isVisible} transparent={true}>
+      <Modal
+        visible={isVisible}
+        onRequestClose={() => setIsVisible(false)}
+        transparent={true}
+        animationType="none"
+      >
         <View
           style={{
             height: "100%",
@@ -25,13 +30,6 @@ export function CustomModal({
             opacity: 0.75,
           }}
         />
-      </Modal>
-      <Modal
-        visible={isVisible}
-        onRequestClose={() => setIsVisible(false)}
-        transparent={true}
-        animationType="slide"
-      >
         <View
           style={{
             position: "absolute",
