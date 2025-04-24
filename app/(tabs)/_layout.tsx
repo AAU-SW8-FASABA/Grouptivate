@@ -8,7 +8,6 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { ActivitySync } from "@/lib/ActivitySync";
 
 export default function TabLayout() {
-
   ActivitySync();
 
   return (
