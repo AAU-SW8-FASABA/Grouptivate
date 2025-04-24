@@ -1,24 +1,36 @@
-import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { PropsWithChildren, useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
+import globalStyles from "@/constants/styles";
 
-export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
+export function Collapsible({
+  children,
+  title,
+  style,
+}: PropsWithChildren & { title: string; style?: StyleProp<ViewStyle> }) {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <View>
+    <View style={style}>
       <TouchableOpacity
         style={styles.heading}
         onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}>
-        <Text style={styles.text}>{title}</Text>
-        <IconSymbol
-          name="chevron.right"
-          size={32}
-          weight="medium"
+      >
+        <Text style={globalStyles.sectionHeader}>{title}</Text>
+        <UniversalIcon
+          source={IconSource.FontAwesome6}
+          name={isOpen ? "chevron-up" : "chevron-down"}
+          size={23}
           color="black"
-          style={{ transform: [{ rotate: isOpen ? '270deg' : '90deg' }] }}
+          style={{ marginRight: 5 }}
         />
       </TouchableOpacity>
       {isOpen && <View style={styles.content}>{children}</View>}
@@ -29,16 +41,10 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
 const styles = StyleSheet.create({
   heading: {
     backgroundColor: "white",
-    color: "black",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
-  },
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-    fontSize: 28,
+    alignItems: "center",
   },
   content: {
     backgroundColor: "white",

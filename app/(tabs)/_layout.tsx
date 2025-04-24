@@ -1,27 +1,28 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Tabs } from "expo-router";
+import React from "react";
+import { Platform } from "react-native";
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
+import { HapticTab } from "@/components/HapticTab";
+import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
+import TabBarBackground from "@/components/ui/TabBarBackground";
 
 export default function TabLayout() {
   return (
     <Tabs
+      backBehavior="history"
       screenOptions={{
         tabBarActiveTintColor: "#1E4E8C",
-        headerTitle: "Grouptivate",
         headerTitleAlign: "center",
         tabBarLabelStyle: {
           fontFamily: "Roboto",
         },
         headerTitleStyle: {
           fontFamily: "Roboto",
-          fontSize: 32,
+          color: "white",
+          fontSize: 28,
         },
         headerStyle: {
-          height: 50,
+          height: 100,
           backgroundColor: "#1E4E8C",
         },
         tabBarButton: HapticTab,
@@ -29,30 +30,57 @@ export default function TabLayout() {
         tabBarStyle: Platform.select({
           ios: {
             // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-            height: 50,
-            borderTopWidth: 0
+            position: "absolute",
+            borderTopWidth: 0,
           },
           default: {
             // Use a solid background on Android
-            backgroundColor: '#ffffff',
-            height: 50,
-            borderTopWidth: 0
+            backgroundColor: "#ffffff",
+            borderTopWidth: 0,
           },
         }),
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={32} name="house.fill" color={color} />,
+          title: "Home",
+          headerTitle: "Grouptivate",
+          tabBarIcon: ({ color }) => (
+            <UniversalIcon
+              source={IconSource.FontAwesome6}
+              name={"house"}
+              size={21}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <IconSymbol size={32} name="person.fill" color={color} />,
+          title: "Profile",
+          headerTitle: "Grouptivate",
+          tabBarIcon: ({ color }) => (
+            <UniversalIcon
+              source={IconSource.FontAwesome6}
+              name={"user-large"}
+              size={21}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="group/index"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="group/settings"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
