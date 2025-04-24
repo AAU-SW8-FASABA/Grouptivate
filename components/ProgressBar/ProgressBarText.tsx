@@ -1,3 +1,4 @@
+import { primaryColor } from "@/constants/styles";
 import { StyleSheet, View, Text } from "react-native";
 import { Bar } from "react-native-progress";
 
@@ -21,7 +22,7 @@ export function ProgressBarText({
         width={null}
         height={32}
         borderWidth={0}
-        color="#2B70CA"
+        color={primaryColor}
         unfilledColor="#FFFFFF"
       ></Bar>
       <Text
@@ -31,7 +32,7 @@ export function ProgressBarText({
             ? {
                 left: `${progressPercentage}%`,
                 transform: [{ translateX: indent }, { translateY: "-50%" }],
-                color: "#2B70CA",
+                color: primaryColor,
               }
             : {
                 right: `${100 - progressPercentage}%`,

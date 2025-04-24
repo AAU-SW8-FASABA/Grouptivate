@@ -1,24 +1,30 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, StyleProp, ViewStyle } from "react-native";
 
 import { Container } from "./Container";
 import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
 
-export function SettingsGroupGoal({
-  name,
-  target,
-  unit,
-}: {
-  name: string;
+interface Props {
+  activity: string;
   target: number;
   unit: string;
-}) {
+  padding?: number;
+  style?: StyleProp<ViewStyle>;
+}
+
+export function SettingsGoal({
+  activity,
+  target,
+  unit,
+  padding = 10,
+  style,
+}: Props) {
   return (
-    <View style={styles.row}>
-      <Container>
+    <View style={[styles.row, { marginBottom: 8 }]}>
+      <Container style={{ padding }}>
         <View style={styles.row}>
-          <Text numberOfLines={1} style={[styles.text, { fontSize: 24 }]}>
-            {name}
+          <Text numberOfLines={1} style={[styles.text, { fontSize: 20 }]}>
+            {activity}
           </Text>
           <View style={styles.targetContainer}>
             <Text style={[styles.text, { fontSize: 16 }]}>
@@ -41,7 +47,6 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: "Roboto",
     fontWeight: 500,
-    textOverflow: "ellipsis",
   },
   row: {
     flexDirection: "row",

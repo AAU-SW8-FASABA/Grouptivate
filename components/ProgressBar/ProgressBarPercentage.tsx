@@ -1,3 +1,4 @@
+import { primaryColor } from "@/constants/styles";
 import { StyleSheet, View, Text } from "react-native";
 import { Bar } from "react-native-progress";
 
@@ -10,7 +11,7 @@ export function ProgressBarPercentage({
 }) {
   const progressPercentage = Math.min((progress / target) * 100, 100);
   const isRightAligned = progressPercentage < 90;
-  const indent = 5;
+  const indent = 5.5;
 
   return (
     <View style={styles.progress}>
@@ -19,7 +20,7 @@ export function ProgressBarPercentage({
         width={null}
         height={32}
         borderWidth={0}
-        color="#2B70CA"
+        color={primaryColor}
         unfilledColor="#FFFFFF"
       ></Bar>
       <Text
@@ -28,12 +29,12 @@ export function ProgressBarPercentage({
           isRightAligned
             ? {
                 left: `${progressPercentage}%`,
-                transform: [{ translateX: indent }, { translateY: "-50%" }],
-                color: "#2B70CA",
+                transform: [{ translateX: indent }],
+                color: primaryColor,
               }
             : {
                 right: `${100 - progressPercentage}%`,
-                transform: [{ translateX: -indent }, { translateY: "-50%" }],
+                transform: [{ translateX: -indent }],
                 color: "#FFFFFF",
               },
         ]}
@@ -45,19 +46,14 @@ export function ProgressBarPercentage({
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   progress: {
     flex: 1,
+    justifyContent: "center",
   },
   progressText: {
     fontFamily: "Roboto",
     fontWeight: 500,
     fontSize: 16,
     position: "absolute",
-    top: "50%",
   },
 });

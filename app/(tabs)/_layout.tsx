@@ -19,7 +19,7 @@ export default function TabLayout() {
         headerTitleStyle: {
           fontFamily: "Roboto",
           color: "white",
-          fontSize: 32,
+          fontSize: 28,
         },
         headerStyle: {
           height: 100,

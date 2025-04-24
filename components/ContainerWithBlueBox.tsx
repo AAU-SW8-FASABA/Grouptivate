@@ -2,14 +2,21 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { Container } from "./Container";
+import { primaryColor } from "@/constants/styles";
 
-export function ContainerWithBlueBox({ text }: { text: string }) {
+export function ContainerWithBlueBox({
+  text1,
+  text2,
+}: {
+  text1: string;
+  text2: string;
+}) {
   return (
     <Container>
-      <Text style={[styles.text, styles.bigText]}>Days Left</Text>
+      <Text style={[styles.text, styles.bigText]}>{text1}</Text>
       <View style={styles.blueContainer}>
         <Text style={[styles.text, styles.bigText, { color: "white" }]}>
-          {text}
+          {text2}
         </Text>
       </View>
     </Container>
@@ -18,7 +25,7 @@ export function ContainerWithBlueBox({ text }: { text: string }) {
 
 const styles = StyleSheet.create({
   blueContainer: {
-    backgroundColor: "#2B70CA",
+    backgroundColor: primaryColor,
     borderRadius: 5,
     marginTop: 5,
     padding: 5,

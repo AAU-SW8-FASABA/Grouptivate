@@ -1,28 +1,23 @@
-import { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { Back } from "@/components/Back";
 import { Container } from "@/components/Container";
 import { ContainerWithBlueBox } from "@/components/ContainerWithBlueBox";
-import { ProgressBarPercentage } from "@/components/ProgressBarPercentage";
-import { ProgressBarIcon } from "@/components/ProgressBarIcon";
-import { ProgressBarTextIcon } from "@/components/ProgressBarTextIcon";
+import { ProgressBarPercentage } from "@/components/ProgressBar/ProgressBarPercentage";
+import { ProgressBarIcon } from "@/components/ProgressBar/ProgressBarIcon";
+import { ProgressBarTextIcon } from "@/components/ProgressBar/ProgressBarTextIcon";
 import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import { NameProgress } from "@/components/NameProgress";
+import globalStyles from "@/constants/styles";
+import { CustomScrollView } from "@/components/CusomScrollView";
 
 export default function Group() {
   const { name } = useLocalSearchParams();
   const router = useRouter();
 
-  const [members, _] = useState([
+  const members = [
     {
       name: "Anders",
       activities: [
@@ -62,7 +57,7 @@ export default function Group() {
         },
       ],
     },
-  ]);
+  ];
 
   return (
     <>
@@ -85,16 +80,13 @@ export default function Group() {
           ),
         }}
       />
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      >
-        <View style={{ flexDirection: "row", gap: 10 }}>
-          <ContainerWithBlueBox text="23" />
-          <ContainerWithBlueBox text="13🔥" />
+      <CustomScrollView style={globalStyles.viewContainer}>
+        <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
+          <ContainerWithBlueBox text1="Days Left" text2="23" />
+          <ContainerWithBlueBox text1="Streak" text2="13🔥" />
         </View>
 
-        <Container>
+        <Container style={{ marginTop: 8 }}>
           <View
             style={{
               flexDirection: "row",
@@ -112,8 +104,10 @@ export default function Group() {
           </View>
         </Container>
 
-        <View style={{ marginTop: 25 }}>
-          <Text style={[styles.text, { fontSize: 28 }]}>Group Goals</Text>
+        <View style={globalStyles.section}>
+          <Text style={[globalStyles.sectionHeader, { marginTop: 6 }]}>
+            Group Goals
+          </Text>
           <CollapsibleContainer>
             <View>
               <View style={styles.row}>
@@ -149,15 +143,15 @@ export default function Group() {
           </CollapsibleContainer>
         </View>
 
-        <View style={{ marginTop: 25 }}>
-          <Text style={[styles.text, { fontSize: 28 }]}>Members</Text>
+        <View style={globalStyles.section}>
+          <Text style={globalStyles.sectionHeader}>Members</Text>
           {members.map((member) => (
             <View key={member.name}>
               <CollapsibleContainer>
                 <View style={styles.row}>
                   <Text
                     numberOfLines={1}
-                    style={[styles.text, { fontSize: 24 }]}
+                    style={[styles.text, { fontSize: 22 }]}
                   >
                     {member.name}
                   </Text>
@@ -191,26 +185,20 @@ export default function Group() {
             </View>
           ))}
         </View>
-      </ScrollView>
+      </CustomScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    padding: 20,
-    paddingTop: 10,
-  },
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-    textOverflow: "ellipsis",
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  text: {
+    fontFamily: "Roboto",
+    fontWeight: 500,
   },
   box: {
     display: "flex",

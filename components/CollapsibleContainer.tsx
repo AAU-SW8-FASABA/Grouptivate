@@ -1,13 +1,21 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 
 import { HR } from "./HR";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 
 export function CollapsibleContainer({
   children,
+  style,
 }: {
   children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [child1, child2] = React.Children.toArray(children);
@@ -17,15 +25,14 @@ export function CollapsibleContainer({
       <TouchableOpacity
         style={styles.collapse}
         onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}
       >
         <UniversalIcon
           source={IconSource.FontAwesome6}
-          name={"chevron-right"}
+          name={"chevron-down"}
           size={20}
           color="black"
           style={{
-            transform: [{ rotate: isOpen ? "270deg" : "90deg" }],
+            transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
             marginTop: 5,
             marginRight: 5,
           }}
@@ -48,9 +55,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFEFF3",
     width: "100%",
     borderRadius: 5,
-    marginTop: 10,
     padding: 10,
     flex: 1,
+    marginBottom: 8,
   },
   collapse: {
     position: "absolute",

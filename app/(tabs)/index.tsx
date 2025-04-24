@@ -3,20 +3,25 @@ import {
   StyleSheet,
   View,
   Text,
+  TextInput,
   TouchableOpacity,
-  ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { Dropdown } from "react-native-element-dropdown";
 
+import { CustomModal } from "@/components/CustomModal";
 import { Collapsible } from "@/components/Collapsible";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { GoalContainer } from "@/components/GoalContainer";
 import { GroupContainer } from "@/components/GroupContainer";
+import globalStyles from "@/constants/styles";
+import { CustomScrollView } from "@/components/CusomScrollView";
 import { SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
 
 export default function Main() {
   const router = useRouter();
+  const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
 
   const [groups, setGroups] = useState([
     {
@@ -38,8 +43,15 @@ export default function Main() {
       individualTarget: 100,
     },
   ]);
+  const intervals = [
+    { label: "Daily", value: "daily" },
+    { label: "Weekly", value: "weekly" },
+    { label: "Monthly", value: "monthly" },
+  ];
+  const [intervalValue, setIntervalValue] = useState(null);
+  const [isIntervalFocus, setIsIntervalFocus] = useState(false);
 
-  function addGroup() {
+  function createGroup() {
     setGroups((prev) => [
       ...prev,
       {
@@ -55,11 +67,50 @@ export default function Main() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 20 }}
-    >
-      <Collapsible title="Goals">
+    <CustomScrollView style={globalStyles.viewContainer}>
+      <CustomModal
+        height={410}
+        title="New Group"
+        isVisible={newGroupModalVisibility}
+        setIsVisible={setNewGroupModalVisibility}
+        createCallback={createGroup}
+      >
+        <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
+        <TextInput style={globalStyles.inputField}></TextInput>
+        <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          Interval
+        </Text>
+        <Dropdown
+          style={[styles.dropdown, isIntervalFocus && { borderColor: "blue" }]}
+          placeholderStyle={[styles.text, { fontSize: 20 }]}
+          selectedTextStyle={[styles.text, { fontSize: 20 }]}
+          itemTextStyle={[styles.text, { fontSize: 20 }]}
+          data={intervals}
+          labelField="label"
+          valueField="value"
+          placeholder="Select"
+          onFocus={() => setIsIntervalFocus(true)}
+          onBlur={() => setIsIntervalFocus(false)}
+          value={intervalValue}
+          onChange={(item) => {
+            setIntervalValue(item.value);
+            setIsIntervalFocus(false);
+          }}
+          renderRightIcon={() => (
+            <UniversalIcon
+              source={IconSource.FontAwesome6}
+              name="chevron-down"
+              size={20}
+              color="black"
+              style={{
+                transform: [{ rotate: isIntervalFocus ? "180deg" : "0deg" }],
+                marginRight: 5,
+              }}
+            />
+          )}
+        />
+      </CustomModal>
+      <Collapsible title="Goals" style={{ marginTop: 6 }}>
         <GoalContainer
           activity={SportActivity.Swimming}
           metric={Metric.Calories}
@@ -75,15 +126,15 @@ export default function Main() {
           days={2}
         />
       </Collapsible>
-      <View style={[styles.row, { marginTop: 25 }]}>
-        <Text style={[styles.text, { fontSize: 28 }]}>Groups</Text>
-        <TouchableOpacity onPress={addGroup} activeOpacity={0.8}>
+      <View style={[styles.row]}>
+        <Text style={globalStyles.sectionHeader}>Groups</Text>
+        <TouchableOpacity onPress={() => setNewGroupModalVisibility(true)}>
           <UniversalIcon
             source={IconSource.FontAwesome6}
             name="plus"
             size={23}
             color="black"
-            style={{ marginTop: 11, marginRight: 5, marginBottom: 6 }}
+            style={{ marginRight: 5 }}
           />
         </TouchableOpacity>
       </View>
@@ -104,19 +155,15 @@ export default function Main() {
             groupTarget={group.groupTarget}
             individualProgress={group.individualProgress}
             individualTarget={group.individualTarget}
+            style={{ marginBottom: 8 }}
           />
         </TouchableOpacity>
       ))}
-    </ScrollView>
+    </CustomScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    padding: 20,
-    paddingTop: 10,
-  },
   text: {
     fontFamily: "Roboto",
     fontWeight: 500,
@@ -125,5 +172,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  dropdown: {
+    backgroundColor: "#EFEFF3",
+    borderColor: "black",
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
   },
 });

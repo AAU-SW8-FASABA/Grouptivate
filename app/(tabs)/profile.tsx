@@ -1,18 +1,13 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 
 import { Container } from "@/components/Container";
+import globalStyles from "@/constants/styles";
+import { CustomScrollView } from "@/components/CusomScrollView";
 
 export default function Profile() {
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.center}>
+    <CustomScrollView style={globalStyles.viewContainer}>
+      <View style={[styles.center, { marginTop: 8 }]}>
         <Image
           source={require("@/assets/images/Aske.png")}
           borderRadius={100}
@@ -22,7 +17,7 @@ export default function Profile() {
         <Text style={[styles.text, { fontSize: 32, marginTop: 50 }]}>
           Invitations
         </Text>
-        <Container>
+        <Container style={{ marginBottom: 8 }}>
           <View style={styles.column}>
             <View>
               <Text style={[styles.text, { fontSize: 12, color: "#4A4A4A" }]}>
@@ -57,16 +52,11 @@ export default function Profile() {
           </View>
         </Container>
       </View>
-    </ScrollView>
+    </CustomScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    padding: 20,
-    paddingTop: 10,
-  },
   text: {
     fontFamily: "Roboto",
     fontWeight: 500,

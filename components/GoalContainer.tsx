@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text } from "react-native";
 import { Container } from "./Container";
-import { ProgressBarIcon } from "./ProgressBarIcon";
+import { ProgressBarIcon } from "./ProgressBar/ProgressBarIcon";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import {
   otherActivityMetadata,
@@ -28,7 +28,7 @@ export function GoalContainer({
   const mMeta = metricMetadata[metric];
 
   return (
-    <Container>
+    <Container style={{ marginBottom: 8 }}>
       <View style={styles.row}>
         <View style={styles.box}>
           <Text style={[styles.text, { fontSize: 24, marginRight: "auto" }]}>
@@ -82,14 +82,14 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     textAlign: "center",
   },
-  box: {
-    display: "flex",
-    justifyContent: "center",
-    flex: 1,
-  },
   row: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+  },
+  box: {
+    display: "flex",
+    justifyContent: "center",
+    flex: 1,
   },
 });
