@@ -24,7 +24,11 @@
         "android.permission.health.READ_DISTANCE",
         "android.permission.health.READ_FLOORS_CLIMBED",
         "android.permission.health.READ_STEPS",
-        "android.permission.health.READ_WHEELCHAIR_PUSHES"
+        "android.permission.health.WRITE_ACTIVE_CALORIES_BURNED",
+        "android.permission.health.WRITE_EXERCISE",
+        "android.permission.health.WRITE_DISTANCE",
+        "android.permission.health.WRITE_FLOORS_CLIMBED",
+        "android.permission.health.WRITE_STEPS"
       ]
     },
     "web": {
