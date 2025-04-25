@@ -128,7 +128,6 @@ export function DeveloperTools() {
                 startDate: new Date(Date.now() - 1000),
                 endDate: new Date(),
                 activity: activityValue,
-                progress: amountValue,
               };
               if (isSportInsertOptions(options)) {
                 if (metricValue === Metric.Distance) {

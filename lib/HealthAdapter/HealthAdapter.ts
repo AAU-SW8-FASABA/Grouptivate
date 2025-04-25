@@ -53,15 +53,18 @@ export function isSportOptions(options: {
  * Insert options that remove metric and adds required fields
  */
 export type InsertOptions =
-  | (Omit<CountOnlyOptions, "metric"> & {
+  | (Omit<CountOnlyOptions, "metric" | "progress"> & {
       count: number;
     })
-  | (Omit<SportOptions, "metric"> & {
+  | (Omit<SportOptions, "metric" | "progress"> & {
       distance: number;
       caloriesBurned: number;
     });
 
-export type CountOnlyInsertOptions = Omit<CountOnlyOptions, "metric"> & {
+export type CountOnlyInsertOptions = Omit<
+  CountOnlyOptions,
+  "metric" | "progress"
+> & {
   count: number;
 };
 export function isCountOnlyInsertOptions(options: {
@@ -70,7 +73,7 @@ export function isCountOnlyInsertOptions(options: {
   return isCountOnlyOptions(options);
 }
 
-export type SportInsertOptions = Omit<SportOptions, "metric"> & {
+export type SportInsertOptions = Omit<SportOptions, "metric" | "progress"> & {
   distance: number;
   caloriesBurned: number;
 };
