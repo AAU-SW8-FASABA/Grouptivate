@@ -63,7 +63,7 @@ export function DeveloperTools() {
           onBlur={() => setIsActivityFocus(false)}
           value={activityValue}
           onChange={(item) => {
-            setActivityValue(item.label);
+            setActivityValue(item.value);
             setIsActivityFocus(false);
           }}
           renderRightIcon={() => (
