@@ -18,6 +18,9 @@ import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
+import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
+import { prettyName } from "@/lib/PrettyName";
+import { Metric } from "@/lib/API/schemas/Metric";
 
 export default function GroupSettings() {
   const [members, setMembers] = useState([
@@ -114,34 +117,26 @@ export default function GroupSettings() {
       {
         activity: activityValue || "New Goal",
         target: amountValue || 100,
-        unit: unitLookup[targetValue ?? "distance"],
+        unit: unitLookup[metricValue ?? "distance"],
       },
     ]);
   }
   const activities = [
-    { label: "Badminton", value: "badminton" },
-    { label: "Gaming", value: "gaming" },
-    { label: "Yoga", value: "yoga" },
-    { label: "Badminton", value: "badminton" },
-    { label: "Gaming", value: "gaming" },
-    { label: "Yoga", value: "yoga" },
-    { label: "Badminton", value: "badminton" },
-    { label: "Gaming", value: "gaming" },
-    { label: "Yoga", value: "yoga" },
-    { label: "Badminton", value: "badminton" },
-    { label: "Gaming", value: "gaming" },
-    { label: "Yoga", value: "yoga" },
-  ];
+    ...Object.values(SportActivity),
+    ...Object.values(OtherActivity),
+  ]
+    .filter((value) => value !== OtherActivity.ActiveCaloriesBurned)
+    .map((value) => ({ label: prettyName(value), value }));
   const [activityValue, setActivityValue] = useState(null);
   const [isActivityFocus, setIsActivityFocus] = useState(false);
-  const targets = [
-    { label: "Calories", value: "calories" },
-    { label: "Count", value: "count" },
-    { label: "Distance", value: "distance" },
-    { label: "Duration", value: "duration" },
-  ];
-  const [targetValue, setTargetValue] = useState(null);
-  const [isTargetFocus, setIsTargetFocus] = useState(false);
+  const metrics = [Metric.Distance, Metric.Calories, Metric.Count].map(
+    (value) => ({
+      label: prettyName(value),
+      value,
+    }),
+  );
+  const [metricValue, setMericValue] = useState(null);
+  const [isMetricFocus, setIsMetricFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
 
   function getDeleteConfirmationText() {
@@ -193,13 +188,13 @@ export default function GroupSettings() {
             itemTextStyle={[styles.text, { fontSize: 20 }]}
             data={activities}
             labelField="label"
-            valueField="label"
+            valueField="value"
             placeholder="Select"
             onFocus={() => setIsActivityFocus(true)}
             onBlur={() => setIsActivityFocus(false)}
             value={activityValue}
             onChange={(item) => {
-              setActivityValue(item.label);
+              setActivityValue(item.value);
               setIsActivityFocus(false);
             }}
             renderRightIcon={() => (
@@ -219,20 +214,20 @@ export default function GroupSettings() {
             Target
           </Text>
           <Dropdown
-            style={[styles.dropdown, isTargetFocus && { borderColor: "blue" }]}
+            style={[styles.dropdown, isMetricFocus && { borderColor: "blue" }]}
             placeholderStyle={[styles.text, { fontSize: 20 }]}
             selectedTextStyle={[styles.text, { fontSize: 20 }]}
             itemTextStyle={[styles.text, { fontSize: 20 }]}
-            data={targets}
+            data={metrics}
             labelField="label"
             valueField="value"
             placeholder="Select"
-            onFocus={() => setIsTargetFocus(true)}
-            onBlur={() => setIsTargetFocus(false)}
-            value={targetValue}
+            onFocus={() => setIsMetricFocus(true)}
+            onBlur={() => setIsMetricFocus(false)}
+            value={metricValue}
             onChange={(item) => {
-              setTargetValue(item.value);
-              setIsTargetFocus(false);
+              setMericValue(item.value);
+              setIsMetricFocus(false);
             }}
             renderRightIcon={() => (
               <UniversalIcon
@@ -241,7 +236,7 @@ export default function GroupSettings() {
                 size={20}
                 color="black"
                 style={{
-                  transform: [{ rotate: isTargetFocus ? "180deg" : "0deg" }],
+                  transform: [{ rotate: isMetricFocus ? "180deg" : "0deg" }],
                   marginRight: 5,
                 }}
               />
