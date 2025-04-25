@@ -39,7 +39,7 @@ export function DeveloperTools() {
   );
   const [metricValue, setMetricValue] = useState<Metric>(Metric.Distance);
   const [isMetricFocus, setIsMetricFocus] = useState(false);
-  const [amountValue, setAmountValue] = useState(0);
+  const [amountValue, setAmountValue] = useState(100);
 
   const healthAdapterPromise = getHealthAdapter();
 
