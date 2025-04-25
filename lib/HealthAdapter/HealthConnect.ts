@@ -365,7 +365,8 @@ export class HealthConnectAdapter extends HealthAdapter {
       }
     } else {
       if (isSportOptions(data)) {
-        let activity: number = activityMapping[data.activity].indexOf(0);
+        const activities: number[] = activityMapping[data.activity];
+        const activity: number = activities?.[0];
         await this.insertSportData(data, activity);
       } else if (isCountOnlyOptions(data)) {
         if (data.activity === OtherActivity.FloorsClimbed) {
@@ -447,7 +448,7 @@ export class HealthConnectAdapter extends HealthAdapter {
     activity: number,
   ): Promise<void> {
     try {
-      await insertRecords([
+      let ids = await insertRecords([
         {
           recordType: RecordEnum.ExerciseSession,
           exerciseType: activity,
@@ -458,20 +459,8 @@ export class HealthConnectAdapter extends HealthAdapter {
             recordingMethod: RecordingMethod.RECORDING_METHOD_ACTIVELY_RECORDED,
           },
         },
-        {
-          recordType: RecordEnum.ActiveCaloriesBurned,
-          energy: {
-            value: 720,
-            unit: "calories",
-          },
-          startTime: data.startDate.toISOString(),
-          endTime: data.endDate.toISOString(),
-          metadata: {
-            recordingMethod:
-              RecordingMethod.RECORDING_METHOD_AUTOMATICALLY_RECORDED,
-          },
-        },
       ]);
+      console.log("Inserted: ", ids);
     } catch (error) {
       console.log("Could not insert sport session", error);
       throw new Error("Could not insert sport session");
