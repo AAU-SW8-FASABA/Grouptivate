@@ -5,7 +5,7 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Stack } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 
@@ -26,6 +26,10 @@ import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { prettyName } from "@/lib/PrettyName";
 import { Metric } from "@/lib/API/schemas/Metric";
 import { metricMetadata } from "@/lib/MetricMetadata";
+import {
+  otherActivityMetadata,
+  sportActivityMetadata,
+} from "@/lib/ActivityMetadata";
 
 export default function GroupSettings() {
   const [members, setMembers] = useState([
@@ -134,14 +138,23 @@ export default function GroupSettings() {
     ...Object.values(OtherActivity),
   ].map((value) => ({ label: prettyName(value), value }));
 
-  const [activityValue, setActivityValue] = useState(null);
+  const [activityValue, setActivityValue] = useState<
+    SportActivity | OtherActivity | null
+  >(null);
   const [isActivityFocus, setIsActivityFocus] = useState(false);
 
-  const metrics = Object.values(Metric).map((value) => ({
-    label: prettyName(value),
-    value,
-  }));
-  const [metricValue, setMetricValue] = useState(null);
+  const metrics = useMemo(() => {
+    const supportedMetrics = activityValue
+      ? ({ ...sportActivityMetadata, ...otherActivityMetadata }[activityValue]
+          ?.metrics ?? Object.values(Metric))
+      : Object.values(Metric);
+
+    return supportedMetrics.map((value) => ({
+      label: prettyName(value),
+      value,
+    }));
+  }, [activityValue]);
+  const [metricValue, setMetricValue] = useState<Metric | null>(null);
   const [isMetricFocus, setIsMetricFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
 
