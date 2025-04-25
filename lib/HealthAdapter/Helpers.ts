@@ -35,6 +35,7 @@ export async function getHealthAdapter(): Promise<HealthAdapter | undefined> {
       }
     }
     await _healthAdapter?.init();
+    healthAdapterInitialised = true;
   }
   return _healthAdapter;
 }
