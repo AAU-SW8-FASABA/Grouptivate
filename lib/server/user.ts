@@ -1,22 +1,29 @@
+import { setToken } from "./config";
+import { fetchApi } from "./fetch";
 import {
   User,
   UserCreateRequestSchema,
   UserGetRequestSchema,
 } from "@/lib/API/schemas/User";
 import type { Password } from "../API/schemas/Password";
-import { fetchApi } from "./fetch";
 
 export async function create(
   name: User["name"],
   password: Password,
-): Promise<User> {
-  const response = await fetchApi({
-    path: "/user",
-    method: "POST",
-    schema: UserCreateRequestSchema,
-    searchParams: {},
-    requestBody: { name, password },
-  });
+): Promise<User | false> {
+  let response;
+  try {
+    response = await fetchApi({
+      path: "/user",
+      method: "POST",
+      schema: UserCreateRequestSchema,
+      searchParams: {},
+      requestBody: { name, password },
+    });
+  } catch {
+    return false;
+  }
+  await setToken(response.token);
   return {
     name,
     groups: [],
@@ -24,16 +31,13 @@ export async function create(
   };
 }
 
-export async function get(uuid: User["uuid"]): Promise<User> {
+export async function get(): Promise<User> {
   const response = await fetchApi({
     path: "/user",
     method: "GET",
     schema: UserGetRequestSchema,
-    searchParams: { uuid },
+    searchParams: {},
     requestBody: undefined,
   });
-  return {
-    uuid,
-    ...response,
-  };
+  return response;
 }

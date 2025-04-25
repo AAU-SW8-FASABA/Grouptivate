@@ -6,7 +6,6 @@ import {
 } from "../../../API/schemas/Invite";
 
 export async function respond(
-  user: User["uuid"],
   invite: Invite["uuid"],
   accepted: boolean,
 ): Promise<void> {
@@ -14,7 +13,7 @@ export async function respond(
     path: "/group/invite/respond",
     method: "POST",
     schema: InviteRespondRequestSchema,
-    searchParams: { user, invite },
+    searchParams: { invite },
     requestBody: { accepted },
   });
 }

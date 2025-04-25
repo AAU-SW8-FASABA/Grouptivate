@@ -3,11 +3,9 @@ import {
   GroupCreateRequestSchema,
   GroupGetRequestSchema,
 } from "@/lib/API/schemas/Group";
-import { User } from "../API/schemas/User";
 import { fetchApi } from "./fetch";
 
 export async function create(
-  user: User["uuid"],
   name: Group["name"],
   interval: Group["interval"],
 ): Promise<Group> {
@@ -15,7 +13,7 @@ export async function create(
     path: "/group",
     method: "POST",
     schema: GroupCreateRequestSchema,
-    searchParams: { user },
+    searchParams: {},
     requestBody: {
       name,
       interval,
