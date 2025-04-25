@@ -5,6 +5,10 @@ export enum modalMode {
   Create = "create",
   Delete = "delete",
 }
+export enum GoalCreationType {
+  GroupGoal = "groupGoal",
+  IndividualGoal = "individualGoal",
+}
 
 export function CustomModal({
   children,
@@ -20,10 +24,10 @@ export function CustomModal({
   isVisible: boolean;
   mode: modalMode;
   setIsVisible: (value: boolean) => void;
-  callback: () => void;
+  callback: (goal: GoalCreationType) => void;
 }) {
   const handleConfirm = () => {
-    callback();
+    callback(GoalCreationType.GroupGoal);
     setIsVisible(false);
   };
 
