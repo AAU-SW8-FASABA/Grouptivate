@@ -178,9 +178,9 @@ export default function GroupSettings() {
 
   function createGoal() {
     const newGoal = {
-      activity: activityValue || "New Goal",
-      target: amountValue || 100,
-      unit: metricMetadata[metricValue ?? "distance"].unit,
+      activity: activityValue || OtherActivity.Steps,
+      target: amountValue || 1,
+      unit: metricMetadata[metricValue ?? Metric.Count].unit,
     };
 
     if (currentGoalType === GoalCreationType.GroupGoal) {
