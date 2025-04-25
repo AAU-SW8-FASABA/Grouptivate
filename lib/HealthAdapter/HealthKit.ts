@@ -367,8 +367,10 @@ export class HealthKitAdapter extends HealthAdapter {
     }
 
     if (isSportOptions(data)) {
+      const sportsActivities = sportActivityHealthKitMap[data.activity];
+      const activity = sportsActivities?.[0];
       const activityData: HealthKitInsertOptions = {
-        type: sportActivityHealthKitMap[data.activity][0], // Insert as the first activity in the map
+        type: activity, // Insert as the first activity in the map
         startDate: data.startDate.toISOString(),
         endDate: data.endDate.toISOString(),
         energyBurned: data.caloriesBurned,
@@ -408,6 +410,7 @@ export class HealthKitAdapter extends HealthAdapter {
         if (err) {
           reject(err);
         } else {
+          console.log("Inserted data:", data);
           resolve();
         }
       });

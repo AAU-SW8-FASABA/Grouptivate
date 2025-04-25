@@ -8,6 +8,7 @@ import {
 } from "@/lib/ActivityMetadata";
 import { Metric } from "@/lib/API/schemas/Metric";
 import { metricMetadata } from "@/lib/MetricMetadata";
+import { prettyName } from "@/lib/PrettyName";
 
 export function GoalContainer({
   activity,
@@ -54,26 +55,6 @@ export function GoalContainer({
       />
     </Container>
   );
-}
-
-/**
- * Take an id such as "fancyId" and returns the pretty version of it:
- * "Fancy id"
- */
-function prettyName(id: string) {
-  if (!id) return "";
-
-  let formatted = id[0].toUpperCase();
-
-  for (const char of id.slice(1)) {
-    if (char === char.toUpperCase() && char !== char.toLowerCase()) {
-      formatted += " " + char.toLowerCase();
-    } else {
-      formatted += char;
-    }
-  }
-
-  return formatted;
 }
 
 const styles = StyleSheet.create({

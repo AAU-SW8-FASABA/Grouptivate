@@ -34,7 +34,8 @@ export async function getHealthAdapter(): Promise<HealthAdapter | undefined> {
         _healthAdapter = new HealthKitAdapter();
       }
     }
-    await _healthAdapter?.init();
+    await _healthAdapter?.init(__DEV__);
+    healthAdapterInitialised = true;
   }
   return _healthAdapter;
 }
