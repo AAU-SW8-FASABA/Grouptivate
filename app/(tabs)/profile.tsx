@@ -1,11 +1,37 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-
-import { Container } from "@/components/Container";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { DeveloperTools } from "@/components/DeveloperTools";
+import { Invite, InviteAnswer } from "@/components/Invite";
+import { useEffect, useState } from "react";
+
+function inviteAnswer(answer: InviteAnswer): boolean {
+  if (answer === InviteAnswer.Accept) {
+    return true;
+  } else if (answer === InviteAnswer.Decline) {
+    return false;
+  } else {
+    return false;
+  }
+}
+
+function fetchInvites(): string {
+  console.log("Anton er en peepeepoopoo");
+  return "Anton er en peepeepoopoo";
+}
 
 export default function Profile() {
+  useEffect(() => {
+    // Call the initiate fetch of invites here
+    fetchInvites();
+  }, []);
+
+  const [invites, setInvites] = useState([
+    { inviter: "Bong", groupname: "Bongers" },
+    { inviter: "Bing", groupname: "Bingers" },
+  ]);
+
+
   return (
     <CustomScrollView style={globalStyles.viewContainer}>
       <View style={[styles.center, { marginTop: 8 }]}>
@@ -18,40 +44,15 @@ export default function Profile() {
         <Text style={[styles.text, { fontSize: 32, marginTop: 50 }]}>
           Invitations
         </Text>
-        <Container style={{ marginBottom: 8 }}>
-          <View style={styles.column}>
-            <View>
-              <Text style={[styles.text, { fontSize: 12, color: "#4A4A4A" }]}>
-                Hald #81 invited you to:
-              </Text>
-              <Text style={[styles.text, { fontSize: 24 }]}>The Gulops</Text>
-            </View>
-            <View style={{ width: "50%" }}>
-              <TouchableOpacity style={{ marginBottom: 5 }}>
-                <Text
-                  style={[
-                    styles.text,
-                    styles.button,
-                    { backgroundColor: "#57A773", color: "white" },
-                  ]}
-                >
-                  Accept
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text
-                  style={[
-                    styles.text,
-                    styles.button,
-                    { backgroundColor: "#D0312D", color: "white" },
-                  ]}
-                >
-                  Decline
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Container>
+        {invites.map((invite, index) => (
+          <Invite
+            key={index}
+            {...invite}
+            handleInvite={(answer: InviteAnswer) => {
+              inviteAnswer(answer);
+            }}
+          />
+        ))}
         <Text
           style={[
             styles.text,
