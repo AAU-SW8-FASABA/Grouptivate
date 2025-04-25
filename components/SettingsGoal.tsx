@@ -10,6 +10,7 @@ import {
 
 import { Container } from "./Container";
 import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
+import { prettyName } from "@/lib/PrettyName";
 
 interface Props {
   activity: string;
@@ -33,7 +34,7 @@ export function SettingsGoal({
       <Container style={{ padding }}>
         <View style={styles.row}>
           <Text numberOfLines={1} style={[styles.text, { fontSize: 20 }]}>
-            {activity}
+            {prettyName(activity)}
           </Text>
           <View style={styles.targetContainer}>
             <Text style={[styles.text, { fontSize: 16 }]}>

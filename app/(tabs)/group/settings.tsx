@@ -25,6 +25,7 @@ import { CustomScrollView } from "@/components/CusomScrollView";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { prettyName } from "@/lib/PrettyName";
 import { Metric } from "@/lib/API/schemas/Metric";
+import { metricMetadata } from "@/lib/MetricMetadata";
 
 export default function GroupSettings() {
   const [members, setMembers] = useState([
@@ -128,13 +129,6 @@ export default function GroupSettings() {
   );
   const [selectedMemberIndex, setSelectedMemberIndex] = useState(-1);
 
-  const unitLookup = {
-    calories: "kcal",
-    count: "times",
-    distance: "km",
-    duration: "min",
-  };
-
   const activities = [
     ...Object.values(SportActivity),
     ...Object.values(OtherActivity),
@@ -173,7 +167,7 @@ export default function GroupSettings() {
     const newGoal = {
       activity: activityValue || "New Goal",
       target: amountValue || 100,
-      unit: unitLookup[metricValue ?? "distance"],
+      unit: metricMetadata[metricValue ?? "distance"].unit,
     };
 
     if (currentGoalType === GoalCreationType.GroupGoal) {
