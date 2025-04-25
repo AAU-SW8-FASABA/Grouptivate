@@ -57,7 +57,7 @@ export function DeveloperTools() {
           itemTextStyle={[styles.text, { fontSize: 20 }]}
           data={activities}
           labelField="label"
-          valueField="label"
+          valueField="value"
           placeholder="Select"
           onFocus={() => setIsActivityFocus(true)}
           onBlur={() => setIsActivityFocus(false)}
@@ -116,6 +116,7 @@ export function DeveloperTools() {
         </Text>
         <TextInput
           style={globalStyles.inputField}
+          value="100"
           onChangeText={(text) => setAmountValue(Number(text))}
         ></TextInput>
         <View style={{ width: "50%" }}>
