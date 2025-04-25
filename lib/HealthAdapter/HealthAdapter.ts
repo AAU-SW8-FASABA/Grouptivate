@@ -87,7 +87,7 @@ export enum PermissionLevel {
 export abstract class HealthAdapter {
   abstract get permissionGranted(): PermissionLevel;
 
-  abstract init(): Promise<void>;
+  abstract init(requestWrite: boolean): Promise<void>;
   abstract getData(options: DefaultOptions): Promise<number>;
   abstract insertData(data?: InsertOptions): Promise<void>;
 }
