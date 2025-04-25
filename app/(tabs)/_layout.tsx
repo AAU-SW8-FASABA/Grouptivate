@@ -5,8 +5,12 @@ import { Platform } from "react-native";
 import { HapticTab } from "@/components/HapticTab";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import TabBarBackground from "@/components/ui/TabBarBackground";
+//import { SetupActivitySync } from "@/lib/ActivitySync";
 
 export default function TabLayout() {
+  // TODO: udkommenter mig når det virker
+  //SetupActivitySync();
+
   return (
     <Tabs
       backBehavior="history"

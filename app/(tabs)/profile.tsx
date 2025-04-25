@@ -5,6 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import { Container } from "@/components/Container";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
+import { DeveloperTools } from "@/components/DeveloperTools";
 
 export default function Profile() {
   const router = useRouter();
@@ -71,6 +72,15 @@ export default function Profile() {
             Log out (dev)
           </Text>
         </TouchableOpacity>
+        <Text
+          style={[
+            styles.text,
+            { fontSize: 32, marginTop: 50, marginBottom: 10 },
+          ]}
+        >
+          Developer tools
+        </Text>
+        <DeveloperTools />
       </View>
     </CustomScrollView>
   );

@@ -10,7 +10,7 @@ import {
   SearchParametersSchema,
 } from "../API/containers/Request";
 
-const SERVER_URL = process.env.SERVER_URL;
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 if (!SERVER_URL) throw new Error("Missing a SERVER_URL in env");
 
 const url = new URL(SERVER_URL);
@@ -64,12 +64,12 @@ export async function fetchApi<
   for (const [key, value] of Object.entries(searchParams)) {
     newUrl.searchParams.set(key, JSON.stringify(value));
   }
-  const response = await fetch(url, {
+  const response = await fetch(newUrl, {
     method,
     body: requestBody ? JSON.stringify(requestBody) : undefined,
   });
   if (!response.ok) {
-    throw new Error("Received bad response.");
+    throw new Error(`Received bad response: ${await response.text()}`);
   }
   if (schema.responseBody) {
     return parse(schema.responseBody, await response.json());

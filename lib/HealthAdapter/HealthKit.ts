@@ -18,6 +18,8 @@ import {
   SportOptions,
   PermissionLevel,
   HealthAdapter,
+  isSportOptions,
+  isCountOnlyOptions,
 } from "./HealthAdapter";
 
 // Internal modules - HealthKit
@@ -80,7 +82,7 @@ export class HealthKitAdapter extends HealthAdapter {
    * Check if HealthKit is available on the given platform
    * @returns Promise<boolean>
    */
-  isAvailable(): Promise<boolean> {
+  static isAvailable(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       HealthKit.isAvailable((err, results) => {
         if (err) {
@@ -93,7 +95,7 @@ export class HealthKitAdapter extends HealthAdapter {
   }
 
   /**
-   * Initializes the HealthKit adapter by checking platform availability and requesting permissions.
+   * Initializes the HealthKit adapter by requesting permissions.
    *
    * @param requestWrite - A boolean indicating whether to request write permissions.
    *                       Write permissions are only requested when running in development mode (`__DEV__`).
@@ -101,11 +103,6 @@ export class HealthKitAdapter extends HealthAdapter {
    * @throws An error if the platform is not supported or if permission initialization fails.
    */
   async init(requestWrite: boolean = false): Promise<void> {
-    // Check HealthKit availability
-    if (!(await this.isAvailable())) {
-      throw new Error("Error: Platform not supported");
-    }
-
     // Only allow write requests when running in dev mode
     const willRequestWrite = requestWrite && __DEV__;
     const permissionObject = this.generatePermissionObject(willRequestWrite);
@@ -152,12 +149,10 @@ export class HealthKitAdapter extends HealthAdapter {
       );
     }
 
-    switch (options.type) {
-      case "sport":
-        return await this.getActivityData(options);
-      case "calories":
-      case "count":
-        return await this.getOtherData(options);
+    if (isSportOptions(options)) {
+      return await this.getActivityData(options);
+    } else {
+      return await this.getOtherData(options);
     }
   }
 
@@ -371,40 +366,41 @@ export class HealthKitAdapter extends HealthAdapter {
       return await this.insertHealthKitData(defaultData);
     }
 
-    switch (data.type) {
-      case "count":
-        if (data.activity !== OtherActivity.Steps) {
-          throw new Error(
-            "The HealthKit adapter only supports saving 'OtherActivity.Steps'",
-          );
-        }
+    if (isSportOptions(data)) {
+      const sportsActivities = sportActivityHealthKitMap[data.activity];
+      const activity = sportsActivities?.[0];
+      const activityData: HealthKitInsertOptions = {
+        type: activity, // Insert as the first activity in the map
+        startDate: data.startDate.toISOString(),
+        endDate: data.endDate.toISOString(),
+        energyBurned: data.caloriesBurned,
+        energyBurnedUnit: "calorie",
+        distance: data.distance,
+        distanceUnit: "meter",
+      };
+      return await this.insertHealthKitData(activityData);
+    } else if (isCountOnlyOptions(data)) {
+      if (data.activity !== OtherActivity.Steps) {
+        throw new Error(
+          "The HealthKit adapter only supports saving 'OtherActivity.Steps'",
+        );
+      }
 
-        const stepsData = {
-          startDate: data.startDate.toISOString(),
-          endDate: data.endDate.toISOString(),
-          value: data.count,
-        };
+      const stepsData = {
+        startDate: data.startDate.toISOString(),
+        endDate: data.endDate.toISOString(),
+        value: data.count,
+      };
 
-        return await new Promise<void>((resolve, reject) => {
-          HealthKit.saveSteps(stepsData, (err, result) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          });
+      return await new Promise<void>((resolve, reject) => {
+        HealthKit.saveSteps(stepsData, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
         });
-      case "sport":
-        const activityData: HealthKitInsertOptions = {
-          type: sportActivityHealthKitMap[data.activity][0], // Insert as the first activity in the map
-          startDate: data.startDate.toISOString(),
-          endDate: data.endDate.toISOString(),
-          energyBurned: data.caloriesBurned,
-          energyBurnedUnit: "calorie",
-          distance: data.distance,
-          distanceUnit: "meter",
-        };
-        return await this.insertHealthKitData(activityData);
+      });
     }
   }
 
@@ -414,6 +410,7 @@ export class HealthKitAdapter extends HealthAdapter {
         if (err) {
           reject(err);
         } else {
+          console.log("Inserted data:", data);
           resolve();
         }
       });
