@@ -13,23 +13,17 @@ export function CustomModal({
   isVisible,
   mode,
   setIsVisible,
-  createCallback,
-  deleteCallback,
+  callback,
 }: PropsWithChildren & {
   title: string;
   height: number;
   isVisible: boolean;
   mode: modalMode;
   setIsVisible: (value: boolean) => void;
-  createCallback: () => void;
-  deleteCallback: () => void;
+  callback: () => void;
 }) {
   const handleConfirm = () => {
-    if (mode === modalMode.Create) {
-      createCallback();
-    } else if (mode === modalMode.Delete) {
-      deleteCallback();
-    }
+    callback();
     setIsVisible(false);
   };
 

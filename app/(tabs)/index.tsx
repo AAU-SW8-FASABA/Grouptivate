@@ -74,8 +74,7 @@ export default function Main() {
         isVisible={newGroupModalVisibility}
         mode={modalMode.Create}
         setIsVisible={setNewGroupModalVisibility}
-        createCallback={createGroup}
-        deleteCallback={() => {}}
+        callback={createGroup}
       >
         <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
         <TextInput style={globalStyles.inputField}></TextInput>

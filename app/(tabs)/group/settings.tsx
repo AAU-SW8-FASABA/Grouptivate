@@ -178,8 +178,7 @@ export default function GroupSettings() {
           isVisible={newGroupGoalModalVisibility}
           mode={modalMode.Create}
           setIsVisible={setNewGroupGoalModalVisibility}
-          createCallback={createGoal}
-          deleteCallback={() => {}}
+          callback={createGoal}
         >
           <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
             Activity
@@ -263,8 +262,7 @@ export default function GroupSettings() {
           isVisible={inviteModalVisibility}
           mode={modalMode.Create}
           setIsVisible={setInviteModalVisibility}
-          createCallback={inviteMember}
-          deleteCallback={() => {}}
+          callback={inviteMember}
         >
           <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
             Name
@@ -310,8 +308,7 @@ export default function GroupSettings() {
           isVisible={deleteModalVisibility}
           mode={modalMode.Delete}
           setIsVisible={setDeleteModalVisibility}
-          createCallback={() => {}}
-          deleteCallback={confirmDelete}
+          callback={confirmDelete}
         >
           <Text
             style={[
