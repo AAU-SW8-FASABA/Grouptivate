@@ -5,11 +5,15 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Stack } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 
-import { CustomModal, modalMode } from "@/components/CustomModal";
+import {
+  CustomModal,
+  modalMode,
+  GoalCreationType,
+} from "@/components/CustomModal";
 import { Back } from "@/components/Back";
 import { Collapsible } from "@/components/Collapsible";
 import { SettingsMember } from "@/components/SettingsMember";
@@ -18,6 +22,14 @@ import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
+import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
+import { prettyName } from "@/lib/PrettyName";
+import { Metric } from "@/lib/API/schemas/Metric";
+import { metricMetadata } from "@/lib/MetricMetadata";
+import {
+  otherActivityMetadata,
+  sportActivityMetadata,
+} from "@/lib/ActivityMetadata";
 
 export default function GroupSettings() {
   const [members, setMembers] = useState([
@@ -70,7 +82,7 @@ export default function GroupSettings() {
     setItemToDelete({
       type: settingsDeletion.IndividualGoal,
       index: goalIndex,
-      name: individualGoals[goalIndex].activity,
+      name: memberGoals[memberIndex][goalIndex].activity,
       memberIndex: memberIndex,
     });
     setDeleteModalVisibility(true);
@@ -80,69 +92,114 @@ export default function GroupSettings() {
     if (itemToDelete.index >= 0) {
       if (itemToDelete.type === settingsDeletion.Member) {
         setMembers((prev) => prev.filter((_, i) => i !== itemToDelete.index));
+        setMemberGoals((prev) =>
+          prev.filter((_, i) => i !== itemToDelete.index),
+        );
       } else if (itemToDelete.type === settingsDeletion.GroupGoal) {
         setGroupGoals((prev) =>
           prev.filter((_, i) => i !== itemToDelete.index),
         );
       } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
-        setIndividualGoals((prev) =>
-          prev.filter((_, i) => i !== itemToDelete.index),
-        );
+        setMemberGoals((prev) => {
+          const newMemberGoals = [...prev];
+          newMemberGoals[itemToDelete.memberIndex] = newMemberGoals[
+            itemToDelete.memberIndex
+          ].filter((_, i) => i !== itemToDelete.index);
+          return newMemberGoals;
+        });
       }
     }
+    setDeleteModalVisibility(false);
   }
 
   const [groupGoals, setGroupGoals] = useState([
     { activity: "Walk", target: 100000, unit: "steps" },
     { activity: "Run", target: 100, unit: "km" },
   ]);
-  const [individualGoals, setIndividualGoals] = useState([
-    { activity: "Walk", target: 200000, unit: "steps" },
-    { activity: "Run", target: 200, unit: "km" },
-  ]);
-  const [newGroupGoalModalVisibility, setNewGroupGoalModalVisibility] =
-    useState(false);
-  const unitLookup = {
-    calories: "kcal",
-    count: "times",
-    distance: "km",
-    duration: "min",
-  };
-  function createGoal() {
-    setGroupGoals((prev) => [
-      ...prev,
-      {
-        activity: activityValue || "New Goal",
-        target: amountValue || 100,
-        unit: unitLookup[targetValue ?? "distance"],
-      },
-    ]);
-  }
+
+  // Store individual goals per member
+  const [memberGoals, setMemberGoals] = useState(
+    Array(members.length)
+      .fill([])
+      .map(() => [
+        { activity: "Walk", target: 200000, unit: "steps" },
+        { activity: "Run", target: 200, unit: "km" },
+      ]),
+  );
+
+  const [goalModalVisibility, setGoalModalVisibility] = useState(false);
+  const [currentGoalType, setCurrentGoalType] = useState(
+    GoalCreationType.GroupGoal,
+  );
+  const [selectedMemberIndex, setSelectedMemberIndex] = useState(-1);
+
   const activities = [
-    { label: "Badminton", value: "badminton" },
-    { label: "Gaming", value: "gaming" },
-    { label: "Yoga", value: "yoga" },
-    { label: "Badminton", value: "badminton" },
-    { label: "Gaming", value: "gaming" },
-    { label: "Yoga", value: "yoga" },
-    { label: "Badminton", value: "badminton" },
-    { label: "Gaming", value: "gaming" },
-    { label: "Yoga", value: "yoga" },
-    { label: "Badminton", value: "badminton" },
-    { label: "Gaming", value: "gaming" },
-    { label: "Yoga", value: "yoga" },
-  ];
-  const [activityValue, setActivityValue] = useState(null);
+    ...Object.values(SportActivity),
+    ...Object.values(OtherActivity),
+  ].map((value) => ({ label: prettyName(value), value }));
+
+  const [activityValue, setActivityValue] = useState<
+    SportActivity | OtherActivity | null
+  >(null);
   const [isActivityFocus, setIsActivityFocus] = useState(false);
-  const targets = [
-    { label: "Calories", value: "calories" },
-    { label: "Count", value: "count" },
-    { label: "Distance", value: "distance" },
-    { label: "Duration", value: "duration" },
-  ];
-  const [targetValue, setTargetValue] = useState(null);
-  const [isTargetFocus, setIsTargetFocus] = useState(false);
+
+  const metrics = useMemo(() => {
+    const supportedMetrics = activityValue
+      ? ({ ...sportActivityMetadata, ...otherActivityMetadata }[activityValue]
+          ?.metrics ?? Object.values(Metric))
+      : Object.values(Metric);
+
+    return supportedMetrics.map((value) => ({
+      label: prettyName(value),
+      value,
+    }));
+  }, [activityValue]);
+  const [metricValue, setMetricValue] = useState<Metric | null>(null);
+  const [isMetricFocus, setIsMetricFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
+
+  function openGroupGoalModal() {
+    setCurrentGoalType(GoalCreationType.GroupGoal);
+    resetGoalForm();
+    setGoalModalVisibility(true);
+  }
+
+  function openIndividualGoalModal(memberIndex: number) {
+    setCurrentGoalType(GoalCreationType.IndividualGoal);
+    setSelectedMemberIndex(memberIndex);
+    resetGoalForm();
+    setGoalModalVisibility(true);
+  }
+
+  function resetGoalForm() {
+    setActivityValue(null);
+    setAmountValue(0);
+  }
+
+  function createGoal() {
+    const newGoal = {
+      activity: activityValue || OtherActivity.Steps,
+      target: amountValue || 1,
+      unit: metricMetadata[metricValue ?? Metric.Count].unit,
+    };
+
+    if (currentGoalType === GoalCreationType.GroupGoal) {
+      setGroupGoals((prev) => [...prev, newGoal]);
+    } else if (
+      currentGoalType === GoalCreationType.IndividualGoal &&
+      selectedMemberIndex >= 0
+    ) {
+      setMemberGoals((prev) => {
+        const newMemberGoals = [...prev];
+        newMemberGoals[selectedMemberIndex] = [
+          ...newMemberGoals[selectedMemberIndex],
+          newGoal,
+        ];
+        return newMemberGoals;
+      });
+    }
+    setGoalModalVisibility(false);
+  }
 
   function getDeleteConfirmationText() {
     switch (itemToDelete.type) {
@@ -151,9 +208,17 @@ export default function GroupSettings() {
       case settingsDeletion.GroupGoal:
         return `Are you sure you want to delete the group goal "${itemToDelete.name}"?`;
       case settingsDeletion.IndividualGoal:
-        return `Are you sure you want to delete the individual goal "${itemToDelete.name}"?`;
+        return `Are you sure you want to delete the individual goal "${itemToDelete.name}" for ${members[itemToDelete.memberIndex]}?`;
       default:
         return "Are you sure you want to delete this item?";
+    }
+  }
+
+  function getGoalModalTitle() {
+    if (currentGoalType === GoalCreationType.GroupGoal) {
+      return "New Group Goal";
+    } else {
+      return `New Goal for ${members[selectedMemberIndex]}`;
     }
   }
 
@@ -173,11 +238,11 @@ export default function GroupSettings() {
       />
       <CustomScrollView style={globalStyles.viewContainer}>
         <CustomModal
-          height={350}
-          title="New Goal"
-          isVisible={newGroupGoalModalVisibility}
+          height={500}
+          title={getGoalModalTitle()}
+          isVisible={goalModalVisibility}
           mode={modalMode.Create}
-          setIsVisible={setNewGroupGoalModalVisibility}
+          setIsVisible={setGoalModalVisibility}
           callback={createGoal}
         >
           <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
@@ -193,13 +258,13 @@ export default function GroupSettings() {
             itemTextStyle={[styles.text, { fontSize: 20 }]}
             data={activities}
             labelField="label"
-            valueField="label"
+            valueField="value"
             placeholder="Select"
             onFocus={() => setIsActivityFocus(true)}
             onBlur={() => setIsActivityFocus(false)}
             value={activityValue}
             onChange={(item) => {
-              setActivityValue(item.label);
+              setActivityValue(item.value);
               setIsActivityFocus(false);
             }}
             renderRightIcon={() => (
@@ -209,30 +274,30 @@ export default function GroupSettings() {
                 size={20}
                 color="black"
                 style={{
-                  transform: [{ rotate: isActivityFocus ? "180deg" : "0deg" }],
+                  transform: [{ rotate: isMetricFocus ? "180deg" : "0deg" }],
                   marginRight: 5,
                 }}
               />
             )}
           />
           <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
-            Target
+            Metric
           </Text>
           <Dropdown
-            style={[styles.dropdown, isTargetFocus && { borderColor: "blue" }]}
+            style={[styles.dropdown, isMetricFocus && { borderColor: "blue" }]}
             placeholderStyle={[styles.text, { fontSize: 20 }]}
             selectedTextStyle={[styles.text, { fontSize: 20 }]}
             itemTextStyle={[styles.text, { fontSize: 20 }]}
-            data={targets}
+            data={metrics}
             labelField="label"
             valueField="value"
             placeholder="Select"
-            onFocus={() => setIsTargetFocus(true)}
-            onBlur={() => setIsTargetFocus(false)}
-            value={targetValue}
+            onFocus={() => setIsMetricFocus(true)}
+            onBlur={() => setIsMetricFocus(false)}
+            value={metricValue}
             onChange={(item) => {
-              setTargetValue(item.value);
-              setIsTargetFocus(false);
+              setMetricValue(item.value);
+              setIsMetricFocus(false);
             }}
             renderRightIcon={() => (
               <UniversalIcon
@@ -241,7 +306,7 @@ export default function GroupSettings() {
                 size={20}
                 color="black"
                 style={{
-                  transform: [{ rotate: isTargetFocus ? "180deg" : "0deg" }],
+                  transform: [{ rotate: isMetricFocus ? "180deg" : "0deg" }],
                   marginRight: 5,
                 }}
               />
@@ -252,8 +317,10 @@ export default function GroupSettings() {
           </Text>
           <TextInput
             style={globalStyles.inputField}
+            keyboardType="numeric"
+            value={amountValue ? String(amountValue) : ""}
             onChangeText={(text) => setAmountValue(Number(text))}
-          ></TextInput>
+          />
         </CustomModal>
 
         <CustomModal
@@ -331,10 +398,7 @@ export default function GroupSettings() {
           <View
             style={[styles.row, { justifyContent: "center", marginBottom: 8 }]}
           >
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => setNewGroupGoalModalVisibility(true)}
-            >
+            <TouchableOpacity style={styles.row} onPress={openGroupGoalModal}>
               <UniversalIcon
                 source={IconSource.FontAwesome6}
                 name="circle-plus"
@@ -361,12 +425,7 @@ export default function GroupSettings() {
                   {member}
                 </Text>
                 <TouchableOpacity
-                  onPress={() =>
-                    setIndividualGoals([
-                      ...individualGoals,
-                      { activity: "Run", target: 10, unit: "km" },
-                    ])
-                  }
+                  onPress={() => openIndividualGoalModal(memberIndex)}
                 >
                   <UniversalIcon
                     source={IconSource.FontAwesome6}
@@ -377,7 +436,7 @@ export default function GroupSettings() {
                 </TouchableOpacity>
               </View>
               <>
-                {individualGoals.map((goal, goalIndex) => (
+                {memberGoals[memberIndex].map((goal, goalIndex) => (
                   <SettingsGoal
                     key={goalIndex}
                     {...goal}
