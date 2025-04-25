@@ -10,15 +10,15 @@ import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import globalStyles from "@/constants/styles";
 
-export default function Signup() {
+export default function Signin() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  async function createAccount() {
+  async function login() {
     // TODO: Input Validation
 
-    const response = await fetch("http://10.0.2.2:3000/user", {
+    const response = await fetch("http://10.0.2.2:3000/login", {
       method: "POST",
       body: JSON.stringify({ name: username, password }),
       headers: {
@@ -27,7 +27,7 @@ export default function Signup() {
     });
     if (!response.ok) {
       // TODO: Handle error
-      console.log("Error creating account");
+      console.log("Error signing in");
       return;
     }
 
@@ -41,7 +41,7 @@ export default function Signup() {
     <>
       <View style={styles.header}>
         <Text style={[styles.text, { fontSize: 40, color: "black" }]}>
-          Create account
+          Log in
         </Text>
         <Text
           style={[
@@ -49,7 +49,7 @@ export default function Signup() {
             { fontSize: 20, color: "black", textAlign: "center" },
           ]}
         >
-          To create an account you must select a unique username
+          Please enter username and password
         </Text>
       </View>
       <View style={styles.inputView}>
@@ -76,10 +76,10 @@ export default function Signup() {
       <View style={styles.buttons}>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: "#4062BB" }]}
-          onPress={() => createAccount()}
+          onPress={() => login()}
         >
           <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
-            Create account
+            Log in
           </Text>
         </TouchableOpacity>
         <TouchableOpacity

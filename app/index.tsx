@@ -1,8 +1,30 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useEffect } from "react";
 import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 
-export default function Login() {
+export default function Authentication() {
   const router = useRouter();
+
+  //TODO: Splash screen?
+  useEffect(() => {
+    async function fetchData() {
+      const token = await SecureStore.getItemAsync("sessionToken");
+      if (token) {
+        const response = await fetch("http://10.0.2.2:3000/verify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          router.push("/(tabs)");
+        }
+      }
+    }
+    fetchData();
+  }, [router]);
 
   return (
     <>
@@ -17,7 +39,7 @@ export default function Login() {
       <View style={styles.buttons}>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: "#4062BB" }]}
-          onPress={() => router.push("/(tabs)")}
+          onPress={() => router.push("/signin")}
         >
           <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
             Sign in
