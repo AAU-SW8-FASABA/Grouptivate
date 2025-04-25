@@ -13,15 +13,15 @@ const uuid = "TODO"; //TODO
 /**
  * Sync new activity information to the server.
  */
-export function ActivitySync() {
+export function SetupActivitySync() {
   // Runs every time the app is opened or closed
-  AppState.addEventListener("change", sync);
+  AppState.addEventListener("change", SyncActivity);
 
   // Run once at app startup
-  sync();
+  SyncActivity();
 }
 
-async function sync() {
+export async function SyncActivity() {
   const healthAdapter = await getHealthAdapter();
   if (!healthAdapter) {
     console.log(

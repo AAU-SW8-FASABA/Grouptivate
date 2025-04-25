@@ -59,6 +59,25 @@ export type InsertOptions =
       caloriesBurned: number;
     });
 
+export type CountOnlyInsertOptions = Omit<CountOnlyOptions, "metric"> & {
+  count: number;
+};
+export function isCountOnlyInsertOptions(options: {
+  activity: string;
+}): options is CountOnlyInsertOptions {
+  return isCountOnlyOptions(options);
+}
+
+export type SportInsertOptions = Omit<SportOptions, "metric"> & {
+  distance: number;
+  caloriesBurned: number;
+};
+export function isSportInsertOptions(options: {
+  activity: string;
+}): options is SportInsertOptions {
+  return isSportOptions(options);
+}
+
 export enum PermissionLevel {
   None = "None",
   Read = "Read",
