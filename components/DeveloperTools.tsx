@@ -21,8 +21,6 @@ import {
 import { SyncActivity } from "@/lib/ActivitySync";
 
 export function DeveloperTools() {
-  if (!__DEV__) return null;
-
   const activities = [
     ...Object.values(SportActivity),
     ...Object.values(OtherActivity),
@@ -45,7 +43,7 @@ export function DeveloperTools() {
 
   const healthAdapterPromise = getHealthAdapter();
 
-  return (
+  return __DEV__ ? (
     <View>
       <Container>
         <Text style={[styles.headerText]}>Perform activity</Text>
@@ -169,7 +167,7 @@ export function DeveloperTools() {
         </View>
       </Container>
     </View>
-  );
+  ) : null;
 }
 
 const styles = StyleSheet.create({
