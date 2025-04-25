@@ -1,5 +1,4 @@
 import { fetchApi } from "../../fetch";
-import { User } from "../../../API/schemas/User";
 import {
   Invite,
   InviteRespondRequestSchema,
