@@ -22,6 +22,18 @@ import {
 } from "react-native-health-connect";
 import { RecordEnum } from "./HealthConnect/HealthConnectRecordEnum";
 import { Metric } from "../API/schemas/Metric";
+import {
+  Energy,
+  Length,
+} from "react-native-health-connect/lib/typescript/types/base.types";
+
+type HealthConnectInsertData = {
+  activity: number;
+  calories: Energy;
+  distance: Length;
+  startDate: string;
+  endDate: string;
+};
 
 /* The `HealthConnectAdapter` class extends `HealthAdapter` and provides
 methods for initializing, retrieving, and inserting health-related data using a health-connect SDK. */
@@ -367,7 +379,20 @@ export class HealthConnectAdapter extends HealthAdapter {
       if (isSportOptions(data)) {
         const activities: number[] = activityMapping[data.activity];
         const activity: number = activities?.[0];
-        await this.insertSportData(data, activity);
+        const sportInsertData: HealthConnectInsertData = {
+          activity: activity,
+          distance: {
+            value: data.distance,
+            unit: "meters",
+          },
+          calories: {
+            value: data.caloriesBurned,
+            unit: "calories",
+          },
+          startDate: data.startDate.toISOString(),
+          endDate: data.endDate.toISOString(),
+        };
+        await this.insertSportData(sportInsertData);
       } else if (isCountOnlyOptions(data)) {
         if (data.activity === OtherActivity.FloorsClimbed) {
           await this.insertFloorsClimbedData(data);
@@ -443,17 +468,14 @@ export class HealthConnectAdapter extends HealthAdapter {
    * the type of exercise activity being recorded. It is a number that corresponds to a specific
    * exercise type.
    */
-  private async insertSportData(
-    data: InsertOptions,
-    activity: number,
-  ): Promise<void> {
+  private async insertSportData(data: HealthConnectInsertData): Promise<void> {
     try {
       let ids = await insertRecords([
         {
           recordType: RecordEnum.ExerciseSession,
-          exerciseType: activity,
-          startTime: data.startDate.toISOString(),
-          endTime: data.endDate.toISOString(),
+          exerciseType: data.activity,
+          startTime: data.startDate,
+          endTime: data.endDate,
           title: "BingBong",
           metadata: {
             recordingMethod: RecordingMethod.RECORDING_METHOD_ACTIVELY_RECORDED,
@@ -461,6 +483,37 @@ export class HealthConnectAdapter extends HealthAdapter {
         },
       ]);
       console.log("Inserted: ", ids);
+
+      if (data.calories.value > 0) {
+        let calorieInsert = await insertRecords([
+          {
+            recordType: RecordEnum.ActiveCaloriesBurned,
+            energy: data.calories,
+            startTime: data.startDate,
+            endTime: data.endDate,
+            metadata: {
+              recordingMethod:
+                RecordingMethod.RECORDING_METHOD_ACTIVELY_RECORDED,
+            },
+          },
+        ]);
+        console.log(`Inserted calories: ${calorieInsert}`);
+      }
+      if (data.distance.value > 0) {
+        let distanceInsert = await insertRecords([
+          {
+            recordType: RecordEnum.Distance,
+            startTime: data.startDate,
+            endTime: data.endDate,
+            distance: data.distance,
+            metadata: {
+              recordingMethod:
+                RecordingMethod.RECORDING_METHOD_ACTIVELY_RECORDED,
+            },
+          },
+        ]);
+        console.log(`Inserted distance: ${distanceInsert}`);
+      }
     } catch (error) {
       console.log("Could not insert sport session", error);
       throw new Error("Could not insert sport session");
