@@ -7,8 +7,8 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import globalStyles from "@/constants/styles";
+import { create } from "@/lib/server/user";
 
 export default function Signup() {
   const router = useRouter();
@@ -18,21 +18,12 @@ export default function Signup() {
   async function createAccount() {
     // TODO: Input Validation
 
-    const response = await fetch("http://10.0.2.2:3000/user", {
-      method: "POST",
-      body: JSON.stringify({ name: username, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
+    const success = await create(username, password);
+    if (!success) {
       // TODO: Handle error
       console.log("Error creating account");
       return;
     }
-
-    const data = await response.json();
-    await SecureStore.setItemAsync("sessionToken", data.token);
 
     router.push("/(tabs)");
   }

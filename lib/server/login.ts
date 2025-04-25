@@ -1,8 +1,13 @@
 import { setToken } from "./config";
 import { fetchApi } from "./fetch";
-import { Login, LoginRequestSchema } from "../API/schemas/Login";
+import { Token } from "../API/schemas/Token";
+import {
+  Login,
+  LoginRequestSchema,
+  VerifyRequestSchema,
+} from "../API/schemas/Login";
 
-export async function create(
+export async function login(
   name: Login["name"],
   password: Login["password"],
 ): Promise<boolean> {
@@ -19,5 +24,20 @@ export async function create(
     return false;
   }
   await setToken(response.token);
+  return true;
+}
+
+export async function verify(token: Token): Promise<boolean> {
+  try {
+    await fetchApi({
+      path: "/login",
+      method: "POST",
+      schema: VerifyRequestSchema,
+      searchParams: {},
+      requestBody: { token },
+    });
+  } catch {
+    return false;
+  }
   return true;
 }

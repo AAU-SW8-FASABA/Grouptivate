@@ -7,8 +7,8 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import globalStyles from "@/constants/styles";
+import { login as loginApi } from "@/lib/server/login";
 
 export default function Signin() {
   const router = useRouter();
@@ -18,21 +18,12 @@ export default function Signin() {
   async function login() {
     // TODO: Input Validation
 
-    const response = await fetch("http://10.0.2.2:3000/login", {
-      method: "POST",
-      body: JSON.stringify({ name: username, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
+    const success = await loginApi(username, password);
+    if (!success) {
       // TODO: Handle error
       console.log("Error signing in");
       return;
     }
-
-    const data = await response.json();
-    await SecureStore.setItemAsync("sessionToken", data.token);
 
     router.push("/(tabs)");
   }

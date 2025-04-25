@@ -1,7 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
+import { getToken } from "@/lib/server/config";
+import { verify } from "@/lib/server/login";
 
 export default function Authentication() {
   const router = useRouter();
@@ -9,16 +10,10 @@ export default function Authentication() {
   //TODO: Splash screen?
   useEffect(() => {
     async function fetchData() {
-      const token = await SecureStore.getItemAsync("sessionToken");
+      const token = await getToken();
       if (token) {
-        const response = await fetch("http://10.0.2.2:3000/verify", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
+        const isValid = await verify(token);
+        if (isValid) {
           router.push("/(tabs)");
         }
       }
