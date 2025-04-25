@@ -14,3 +14,6 @@ export async function setToken(token: Token) {
 export async function getToken() {
   return await SecureStore.getItemAsync(SESSION_TOKEN_NAME);
 }
+export async function deleteToken(){
+  return await SecureStore.deleteItemAsync(SESSION_TOKEN_NAME);
+}

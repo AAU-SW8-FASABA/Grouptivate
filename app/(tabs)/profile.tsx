@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 
+import { deleteToken } from "@/lib/server/config";
 import { Container } from "@/components/Container";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
@@ -11,7 +11,7 @@ export default function Profile() {
   const router = useRouter();
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync("sessionToken");
+    await deleteToken();
     router.dismissAll();
   };
 
