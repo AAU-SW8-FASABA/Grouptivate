@@ -116,7 +116,7 @@ export function DeveloperTools() {
         </Text>
         <TextInput
           style={globalStyles.inputField}
-          value="100"
+          value={String(amountValue)}
           onChangeText={(text) => setAmountValue(Number(text))}
         ></TextInput>
         <View style={{ width: "50%" }}>
