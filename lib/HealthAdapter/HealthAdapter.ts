@@ -44,7 +44,9 @@ export interface SportOptions extends DefaultOptions {
 export function isSportOptions(options: {
   activity: string;
 }): options is SportOptions {
-  return Object.keys(SportActivity).includes(options.activity);
+  return Object.values(SportActivity).includes(
+    options.activity as SportActivity,
+  );
 }
 
 /**

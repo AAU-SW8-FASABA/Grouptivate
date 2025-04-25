@@ -150,7 +150,7 @@ export function DeveloperTools() {
                   console.error("This activity only supports count");
                 }
               } else {
-                console.error("Unexpected activity and metric type");
+                console.error("Unexpected activity type");
               }
               SyncActivity();
             }}
