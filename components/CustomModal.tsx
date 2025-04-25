@@ -1,20 +1,40 @@
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { PropsWithChildren } from "react";
 
+export enum modalMode {
+  Create = "create",
+  Delete = "delete",
+}
+
 export function CustomModal({
   children,
   title,
   height,
   isVisible,
+  mode,
   setIsVisible,
   createCallback,
+  deleteCallback,
 }: PropsWithChildren & {
   title: string;
   height: number;
   isVisible: boolean;
+  mode: modalMode;
   setIsVisible: (value: boolean) => void;
   createCallback: () => void;
+  deleteCallback: () => void;
 }) {
+  const handleConfirm = () => {
+    if (mode === modalMode.Create) {
+      createCallback();
+    } else if (mode === modalMode.Delete) {
+      deleteCallback();
+    }
+    setIsVisible(false);
+  };
+
+  const confirmButtonText = mode === modalMode.Create ? "Create" : "Delete";
+
   return (
     <>
       <Modal
@@ -55,17 +75,11 @@ export function CustomModal({
             <View style={styles.box}>
               <Text style={styles.text}>{title}</Text>
             </View>
-            <TouchableOpacity
-              style={styles.box}
-              onPress={() => {
-                createCallback();
-                setIsVisible(false);
-              }}
-            >
+            <TouchableOpacity style={styles.box} onPress={handleConfirm}>
               <Text
                 style={[styles.text, { marginLeft: "auto", fontWeight: 700 }]}
               >
-                Create
+                {confirmButtonText}
               </Text>
             </TouchableOpacity>
           </View>

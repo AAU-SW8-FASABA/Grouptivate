@@ -9,8 +9,7 @@ import { useState } from "react";
 import { Stack } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 
-import { CustomModal } from "@/components/CustomModal";
-import { DeleteConfirmationModal } from "@/components/DeleteConfirmationModal";
+import { CustomModal, modalMode } from "@/components/CustomModal";
 import { Back } from "@/components/Back";
 import { Collapsible } from "@/components/Collapsible";
 import { SettingsMember } from "@/components/SettingsMember";
@@ -33,7 +32,7 @@ export default function GroupSettings() {
   const [newMemberName, setNewMemberName] = useState("");
   const [deleteModalVisibility, setDeleteModalVisibility] = useState(false);
   const [itemToDelete, setItemToDelete] = useState({
-    type: "", // 'member' or 'goal'
+    type: "", // "member", "groupGoal", or "individualGoal"
     index: -1,
     name: "",
     memberIndex: -1,
@@ -49,7 +48,7 @@ export default function GroupSettings() {
 
   function promptRemoveMember(index: number) {
     setItemToDelete({
-      type: "member",
+      type: settingsDeletion.Member,
       index,
       name: members[index],
       memberIndex: -1,
@@ -59,7 +58,7 @@ export default function GroupSettings() {
 
   function promptRemoveGoal(index: number) {
     setItemToDelete({
-      type: "groupGoal",
+      type: settingsDeletion.GroupGoal,
       index,
       name: groupGoals[index].activity,
       memberIndex: -1,
@@ -69,7 +68,7 @@ export default function GroupSettings() {
 
   function promptRemoveIndividualGoal(goalIndex: number, memberIndex: number) {
     setItemToDelete({
-      type: "individualGoal",
+      type: settingsDeletion.IndividualGoal,
       index: goalIndex,
       name: individualGoals[goalIndex].activity,
       memberIndex: memberIndex,
@@ -79,13 +78,13 @@ export default function GroupSettings() {
 
   function confirmDelete() {
     if (itemToDelete.index >= 0) {
-      if (itemToDelete.type === "member") {
+      if (itemToDelete.type === settingsDeletion.Member) {
         setMembers((prev) => prev.filter((_, i) => i !== itemToDelete.index));
-      } else if (itemToDelete.type === "groupGoal") {
+      } else if (itemToDelete.type === settingsDeletion.GroupGoal) {
         setGroupGoals((prev) =>
           prev.filter((_, i) => i !== itemToDelete.index),
         );
-      } else if (itemToDelete.type === "individualGoal") {
+      } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
         setIndividualGoals((prev) =>
           prev.filter((_, i) => i !== itemToDelete.index),
         );
@@ -147,15 +146,21 @@ export default function GroupSettings() {
 
   function getDeleteConfirmationText() {
     switch (itemToDelete.type) {
-      case "member":
+      case settingsDeletion.Member:
         return `Are you sure you want to remove ${itemToDelete.name}?`;
-      case "groupGoal":
+      case settingsDeletion.GroupGoal:
         return `Are you sure you want to delete the group goal "${itemToDelete.name}"?`;
-      case "individualGoal":
+      case settingsDeletion.IndividualGoal:
         return `Are you sure you want to delete the individual goal "${itemToDelete.name}"?`;
       default:
         return "Are you sure you want to delete this item?";
     }
+  }
+
+  enum settingsDeletion {
+    Member = "member",
+    GroupGoal = "groupGoal",
+    IndividualGoal = "individualGoal",
   }
 
   return (
@@ -168,11 +173,13 @@ export default function GroupSettings() {
       />
       <CustomScrollView style={globalStyles.viewContainer}>
         <CustomModal
-          height={500}
+          height={350}
           title="New Goal"
           isVisible={newGroupGoalModalVisibility}
+          mode={modalMode.Create}
           setIsVisible={setNewGroupGoalModalVisibility}
           createCallback={createGoal}
+          deleteCallback={() => {}}
         >
           <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
             Activity
@@ -251,11 +258,13 @@ export default function GroupSettings() {
         </CustomModal>
 
         <CustomModal
-          height={300}
+          height={350}
           title="Invite Member"
           isVisible={inviteModalVisibility}
+          mode={modalMode.Create}
           setIsVisible={setInviteModalVisibility}
           createCallback={inviteMember}
+          deleteCallback={() => {}}
         >
           <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
             Name
@@ -295,11 +304,13 @@ export default function GroupSettings() {
           </View>
         </Collapsible>
 
-        <DeleteConfirmationModal
-          height={200}
+        <CustomModal
+          height={350}
           title="Confirm Delete"
           isVisible={deleteModalVisibility}
+          mode={modalMode.Delete}
           setIsVisible={setDeleteModalVisibility}
+          createCallback={() => {}}
           deleteCallback={confirmDelete}
         >
           <Text
@@ -310,7 +321,7 @@ export default function GroupSettings() {
           >
             {getDeleteConfirmationText()}
           </Text>
-        </DeleteConfirmationModal>
+        </CustomModal>
 
         <Collapsible title="Group Goals">
           {groupGoals.map((goal, index) => (
