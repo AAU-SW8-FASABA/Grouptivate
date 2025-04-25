@@ -9,7 +9,7 @@ import {
 import { useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 
-import { CustomModal } from "@/components/CustomModal";
+import { CustomModal, modalMode } from "@/components/CustomModal";
 import { Collapsible } from "@/components/Collapsible";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { GoalContainer } from "@/components/GoalContainer";
@@ -72,8 +72,9 @@ export default function Main() {
         height={410}
         title="New Group"
         isVisible={newGroupModalVisibility}
+        mode={modalMode.Create}
         setIsVisible={setNewGroupModalVisibility}
-        createCallback={createGroup}
+        callback={createGroup}
       >
         <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
         <TextInput style={globalStyles.inputField}></TextInput>
