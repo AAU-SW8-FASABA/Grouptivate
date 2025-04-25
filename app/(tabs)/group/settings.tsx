@@ -124,17 +124,13 @@ export default function GroupSettings() {
   const activities = [
     ...Object.values(SportActivity),
     ...Object.values(OtherActivity),
-  ]
-    .filter((value) => value !== OtherActivity.ActiveCaloriesBurned)
-    .map((value) => ({ label: prettyName(value), value }));
+  ].map((value) => ({ label: prettyName(value), value }));
   const [activityValue, setActivityValue] = useState(null);
   const [isActivityFocus, setIsActivityFocus] = useState(false);
-  const metrics = [Metric.Distance, Metric.Calories, Metric.Count].map(
-    (value) => ({
-      label: prettyName(value),
-      value,
-    }),
-  );
+  const metrics = Object.values(Metric).map((value) => ({
+    label: prettyName(value),
+    value,
+  }));
   const [metricValue, setMericValue] = useState(null);
   const [isMetricFocus, setIsMetricFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
@@ -211,7 +207,7 @@ export default function GroupSettings() {
             )}
           />
           <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
-            Target
+            Metric
           </Text>
           <Dropdown
             style={[styles.dropdown, isMetricFocus && { borderColor: "blue" }]}
