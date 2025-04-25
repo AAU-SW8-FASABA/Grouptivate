@@ -410,6 +410,7 @@ export class HealthKitAdapter extends HealthAdapter {
         if (err) {
           reject(err);
         } else {
+          console.log("Inserted data:", data);
           resolve();
         }
       });
