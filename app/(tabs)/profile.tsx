@@ -4,16 +4,9 @@ import { CustomScrollView } from "@/components/CusomScrollView";
 import { DeveloperTools } from "@/components/DeveloperTools";
 import { Invite, InviteAnswer } from "@/components/Invite";
 import { useEffect, useState } from "react";
+import { respond as respondInvite } from "@/lib/server/group/invite/respond";
+import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
 
-function inviteAnswer(answer: InviteAnswer): boolean {
-  if (answer === InviteAnswer.Accept) {
-    return true;
-  } else if (answer === InviteAnswer.Decline) {
-    return false;
-  } else {
-    return false;
-  }
-}
 
 function fetchInvites(): string {
   console.log("Anton er en peepeepoopoo");
@@ -24,13 +17,31 @@ export default function Profile() {
   useEffect(() => {
     // Call the initiate fetch of invites here
     fetchInvites();
+    setInvites([{inviter: "Fryd", groupname: "Heow"}, {inviter: "GOng", groupname: "heow"}]);
   }, []);
+
+  function inviteAnswer(answer: InviteAnswer, index: number): void {
+    if (answer === InviteAnswer.Accept) {
+      // Missing our user uuid from earlier requests.
+      console.log("Yes");
+    } else if (answer === InviteAnswer.Decline) {
+      console.log("No");
+    } else {
+      console.log("Swoop");
+      return;
+    }
+    // respondInvite(useruuid, invite, accepted)
+    deleteInvite(index);
+  }
+
+  function deleteInvite(index: number) {
+    setInvites((prev) => prev.filter((_, i) => i !== index));
+  }
 
   const [invites, setInvites] = useState([
     { inviter: "Bong", groupname: "Bongers" },
     { inviter: "Bing", groupname: "Bingers" },
   ]);
-
 
   return (
     <CustomScrollView style={globalStyles.viewContainer}>
@@ -49,7 +60,7 @@ export default function Profile() {
             key={index}
             {...invite}
             handleInvite={(answer: InviteAnswer) => {
-              inviteAnswer(answer);
+              inviteAnswer(answer, index);
             }}
           />
         ))}
