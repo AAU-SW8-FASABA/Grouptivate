@@ -9,15 +9,15 @@ import {
 } from "@/lib/API/schemas/Goal";
 
 export async function create(
-  user: User["name"],
-  group: Group["uuid"],
+  userId: User["userId"],
+  groupId: Group["groupId"],
   goal: Omit<Goal, "uuid" | "group" | "progress">,
 ) {
   const response = await fetchApi({
     path: "/group/goal",
     method: "POST",
     schema: GoalCreateRequestSchema,
-    searchParams: { user, group },
+    searchParams: { userId, groupId },
     requestBody: goal,
   });
   return {
@@ -28,8 +28,8 @@ export async function create(
 
 export async function patch(
   goals: {
-    uuid: Goal["uuid"];
-    progress: Goal["progress"][keyof Goal["progress"]];
+    goalId: Goal["goalId"];
+    progress: number;
   }[],
 ): Promise<void> {
   await fetchApi({
@@ -41,12 +41,12 @@ export async function patch(
   });
 }
 
-export async function _delete(uuid: Goal["uuid"]): Promise<void> {
+export async function _delete(goalId: Goal["goalId"]): Promise<void> {
   await fetchApi({
     path: "/group/goal",
     method: "DELETE",
     schema: GoalDeleteRequestSchema,
     searchParams: {},
-    requestBody: { uuid },
+    requestBody: { goalId },
   });
 }

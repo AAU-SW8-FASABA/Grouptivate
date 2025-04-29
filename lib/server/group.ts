@@ -6,7 +6,7 @@ import {
 import { fetchApi } from "./fetch";
 
 export async function create(
-  name: Group["name"],
+  groupName: Group["groupName"],
   interval: Group["interval"],
 ): Promise<Group> {
   const response = await fetchApi({
@@ -15,30 +15,30 @@ export async function create(
     schema: GroupCreateRequestSchema,
     searchParams: {},
     requestBody: {
-      name,
+      groupName,
       interval,
     },
   });
   return {
-    name,
+    groupName,
     interval,
-    users: [],
+    users: {},
     goals: [],
     streak: 0,
     ...response,
   };
 }
 
-export async function get(uuid: Group["uuid"]): Promise<Group> {
+export async function get(groupId: Group["groupId"]): Promise<Group> {
   const response = await fetchApi({
     path: "/group",
     method: "GET",
     schema: GroupGetRequestSchema,
-    searchParams: { uuid },
+    searchParams: { groupId },
     requestBody: undefined,
   });
   return {
-    uuid,
+    groupId,
     ...response,
   };
 }

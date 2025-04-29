@@ -5,7 +5,7 @@ import {
 } from "../../../API/schemas/Invite";
 
 export async function respond(
-  invite: Invite["uuid"],
+  invite: Invite["inviteId"],
   accepted: boolean,
 ): Promise<void> {
   await fetchApi({

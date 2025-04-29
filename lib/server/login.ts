@@ -20,11 +20,14 @@ export async function login(
       searchParams: {},
       requestBody: { name, password },
     });
+    if (!response?.token) {
+      return false;
+    }
+    await setToken(response.token);
+    return true;
   } catch {
     return false;
   }
-  await setToken(response.token);
-  return true;
 }
 
 export async function verify(token: Token): Promise<boolean> {

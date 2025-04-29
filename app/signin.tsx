@@ -19,7 +19,7 @@ export default function Signin() {
     // TODO: Input Validation
 
     const success = await loginApi(username, password);
-    if (!success) {
+    if (!success && !__DEV__) {
       // TODO: Handle error
       console.log("Error signing in");
       return;
