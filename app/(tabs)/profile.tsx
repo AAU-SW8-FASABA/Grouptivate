@@ -5,32 +5,50 @@ import { DeveloperTools } from "@/components/DeveloperTools";
 import { Invite, InviteAnswer } from "@/components/Invite";
 import { useEffect, useState } from "react";
 import { respond as respondInvite } from "@/lib/server/group/invite/respond";
+import { get as getInvites } from "@/lib/server/group/invite"
 import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
 
 
-function fetchInvites(): string {
-  console.log("Anton er en peepeepoopoo");
-  return "Anton er en peepeepoopoo";
+
+function fetchInvites(): InviteType[] {
+  // This function is redundant when api is done. 
+  
+  // example to work before api is done.
+  const exampleArray:InviteType[] = []
+  const example:InviteType = {uuid: "", group: "Heow", invited: "Aske", inviter: "Fryd"}
+  const example2:InviteType = {uuid: "", group: "heow", invited: "Aske", inviter: "Gong"}
+  exampleArray.push(example)
+  exampleArray.push(example2)
+  return exampleArray
 }
 
 export default function Profile() {
   useEffect(() => {
     // Call the initiate fetch of invites here
-    fetchInvites();
-    setInvites([{inviter: "Fryd", groupname: "Heow"}, {inviter: "GOng", groupname: "heow"}]);
+    // TODO: Remove function fetchInvites and use getInvites when api is done
+    const fetchedInvites = fetchInvites();
+    // return getInvites(userId)
+
+    const inviteState = []
+    for (const invite of fetchedInvites){
+      inviteState.push({inviteId: invite.uuid, groupname: invite.group, invited: invite.invited, inviter: invite.inviter})
+    }
+    setInvites(inviteState);
   }, []);
 
   function inviteAnswer(answer: InviteAnswer, index: number): void {
+    let accepted
     if (answer === InviteAnswer.Accept) {
-      // Missing our user uuid from earlier requests.
-      console.log("Yes");
+      accepted = true
     } else if (answer === InviteAnswer.Decline) {
-      console.log("No");
+      accepted = false
     } else {
       console.log("Swoop");
       return;
     }
-    // respondInvite(useruuid, invite, accepted)
+    console.log(accepted)
+    // Missing our user uuid and invite uuid from earlier requests.
+    // respondInvite(userId, inviteId, accepted)
     deleteInvite(index);
   }
 
@@ -39,8 +57,8 @@ export default function Profile() {
   }
 
   const [invites, setInvites] = useState([
-    { inviter: "Bong", groupname: "Bongers" },
-    { inviter: "Bing", groupname: "Bingers" },
+    { inviteId: "", groupname: "Bongers", invited: "", inviter: "Bong" },
+    { inviteId: "", groupname: "Bingers", invited: "", inviter: "Bing" },
   ]);
 
   return (
