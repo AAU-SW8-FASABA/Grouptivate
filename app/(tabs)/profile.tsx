@@ -12,8 +12,8 @@ import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
 
 function fetchInvites(): InviteType[] {
   // This function is redundant when api is done. 
-  
-  // example to work before api is done.
+
+  // example to test setInvites before api is done.
   const exampleArray:InviteType[] = []
   const example:InviteType = {uuid: "", group: "Heow", invited: "Aske", inviter: "Fryd"}
   const example2:InviteType = {uuid: "", group: "heow", invited: "Aske", inviter: "Gong"}
@@ -27,7 +27,7 @@ export default function Profile() {
     // Call the initiate fetch of invites here
     // TODO: Remove function fetchInvites and use getInvites when api is done
     const fetchedInvites = fetchInvites();
-    // return getInvites(userId)
+    // const fetchedInvites = getInvites(userId);
 
     const inviteState = []
     for (const invite of fetchedInvites){
@@ -47,8 +47,8 @@ export default function Profile() {
       return;
     }
     console.log(accepted)
-    // Missing our user uuid and invite uuid from earlier requests.
-    // respondInvite(userId, inviteId, accepted)
+    // respondInvite send a post api call, to respond on the inviteId.
+    // respondInvite(invites[index].invited, invites[index].inviteId, accepted)
     deleteInvite(index);
   }
 
