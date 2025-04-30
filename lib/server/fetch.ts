@@ -61,8 +61,8 @@ export async function fetchApi<
     newUrl.searchParams.set(key, JSON.stringify(value));
   }
   const headers: Record<string, string> = {};
-  if (searchParams.responseBody) {
-    headers["Content-Type"] = "application/json";
+  if (schema.requestBody) {
+    headers["Content-Type"] = "application/json;charset=UTF-8";
   }
   const token = await getToken();
   if (token) {
