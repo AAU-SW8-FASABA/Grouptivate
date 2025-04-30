@@ -26,7 +26,7 @@ export default function Authentication() {
         }
       }
     }
-    fetchData();
+    //fetchData();
   }, [router]);
 
   return (
