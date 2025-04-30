@@ -19,15 +19,31 @@ import { CustomScrollView } from "@/components/CusomScrollView";
 import { SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
 import { get as getGroups } from "@/lib/server/group";
-import type { Group as GroupType} from "@/lib/API/schemas/Group"
+
+import type { Group as GroupType } from "@/lib/API/schemas/Group"
+import type { Goal as goalType } from "@/lib/API/schemas/Goal"
 
 export default function Main() {
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
 
+  function fetchGoals(): goalType[] {
+    // Example function undtil api is done
+    const goalArray: goalType[] = []
+    
+
+    return goalArray; 
+  }
+
+  function fetchGroup(): GroupType[] {
+    const groupArray: GroupType[] = []
+
+    return groupArray;
+  }
   useEffect(() => {
     // Missing userId from earlier api calls.
     //const fetchedGroups = getGroups(userId)
+
   })
 
   const [groups, setGroups] = useState([
@@ -50,6 +66,11 @@ export default function Main() {
       individualTarget: 100,
     },
   ]);
+
+  const [goals, setGoals] = useState({
+
+  });
+
   const intervals = [
     { label: "Daily", value: "daily" },
     { label: "Weekly", value: "weekly" },

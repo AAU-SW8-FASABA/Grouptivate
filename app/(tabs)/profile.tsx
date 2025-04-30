@@ -16,11 +16,10 @@ import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
 
 function fetchInvites(): InviteType[] {
   // This function is redundant when api is done. 
-
   // example to test setInvites before api is done.
   const exampleArray:InviteType[] = []
-  const example:InviteType = {uuid: "", group: "Heow", invited: "Aske", inviter: "Fryd"}
-  const example2:InviteType = {uuid: "", group: "heow", invited: "Aske", inviter: "Gong"}
+  const example:InviteType = {inviteId: "", groupId: "Heow", inviteeName: "Aske", inviterId: "Fryd"}
+  const example2:InviteType = {inviteId: "", groupId: "Heow", inviteeName: "Aske", inviterId: "Fryd"}
   exampleArray.push(example)
   exampleArray.push(example2)
   return exampleArray
@@ -31,11 +30,11 @@ export default function Profile() {
     // Call the initiate fetch of invites here
     // TODO: Remove function fetchInvites and use getInvites when api is done
     const fetchedInvites = fetchInvites();
-    // const fetchedInvites = getInvites(userId);
+    //const fetchedInvites2 = getInvites(userId);
 
     const inviteState = []
     for (const invite of fetchedInvites){
-      inviteState.push({inviteId: invite.uuid, groupname: invite.group, invited: invite.invited, inviter: invite.inviter})
+      inviteState.push({inviteId: invite.inviteId, groupname: invite.groupId, inviteeName: invite.inviteeName, inviterId: invite.inviterId})
     }
     setInvites(inviteState);
   }, []);
@@ -52,7 +51,7 @@ export default function Profile() {
     }
     console.log(accepted)
     // respondInvite send a post api call, to respond on the inviteId.
-    // respondInvite(invites[index].invited, invites[index].inviteId, accepted)
+    // respondInvite(userId, invites[index].inviteId, accepted)
     deleteInvite(index);
   }
 
@@ -61,8 +60,8 @@ export default function Profile() {
   }
 
   const [invites, setInvites] = useState([
-    { inviteId: "", groupname: "Bongers", invited: "", inviter: "Bong" },
-    { inviteId: "", groupname: "Bingers", invited: "", inviter: "Bing" },
+    { inviteId: "", groupname: "Bongers", inviteeName: "", inviterId: "Bong" },
+    { inviteId: "", groupname: "Bingers", inviteeName: "", inviterId: "Bing" },
   ]);
 
   return (

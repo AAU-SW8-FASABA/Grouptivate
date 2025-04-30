@@ -25,8 +25,8 @@ export async function create(
 }
 
 export async function get(
-  userId: User["userId"],
-  name: User["name"],
+  userId: User["userId"], //The person who recieves invites
+  name: User["name"], // The person who sends 
 ): Promise<Invite[]> {
   const invites = await fetchApi({
     path: "/group/invite",

@@ -7,18 +7,18 @@ export enum InviteAnswer {
 }
 
 interface InviteProps {
-  inviter: string;
+  inviterId: string;
   groupname: string;
   handleInvite: (answer: InviteAnswer) => void;
 }
 
-export function Invite({ inviter, groupname, handleInvite }: InviteProps) {
+export function Invite({ inviterId, groupname, handleInvite }: InviteProps) {
   return (
     <Container style={{ marginBottom: 8 }}>
       <View style={styles.column}>
         <View>
           <Text style={[styles.text, { fontSize: 12, color: "#4A4A4A" }]}>
-            {inviter} invited you to:
+            {inviterId} invited you to:
           </Text>
           <Text style={[styles.text, { fontSize: 24 }]}>{groupname}</Text>
         </View>
