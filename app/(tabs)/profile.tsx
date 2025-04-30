@@ -9,31 +9,33 @@ import { DeveloperTools } from "@/components/DeveloperTools";
 import { Invite, InviteAnswer } from "@/components/Invite";
 import { useEffect, useState } from "react";
 import { respond as respondInvite } from "@/lib/server/group/invite/respond";
-import { get as getInvites } from "@/lib/server/group/invite"
+import { get as getInvites } from "@/lib/server/group/invite";
 import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
 import { UserContext } from "@/lib/states/userState";
 import { value } from "valibot";
 import { useContext } from "react";
 
 function fetchInvites(): InviteType[] {
-  // This function is redundant when api is done. 
+  // This function is redundant when api is done.
   // example to test setInvites before api is done.
-  const exampleArray:InviteType[] = []
-  const example:InviteType = {
-    inviteId: "", 
-    groupName: "Kinda group", 
-    groupId: "", 
-    inviteeName: "Aske", 
-    inviterName: "Fryd"}
-  const example2:InviteType = {
-    inviteId: "", 
-    groupName: "Heow", 
-    groupId: "", 
-    inviteeName: "Aske", 
-    inviterName: "bank"}
-  exampleArray.push(example)
-  exampleArray.push(example2)
-  return exampleArray
+  const exampleArray: InviteType[] = [];
+  const example: InviteType = {
+    inviteId: "",
+    groupName: "Kinda group",
+    groupId: "",
+    inviteeName: "Aske",
+    inviterName: "Fryd",
+  };
+  const example2: InviteType = {
+    inviteId: "",
+    groupName: "Heow",
+    groupId: "",
+    inviteeName: "Aske",
+    inviterName: "bank",
+  };
+  exampleArray.push(example);
+  exampleArray.push(example2);
+  return exampleArray;
 }
 
 export default function Profile() {
@@ -44,31 +46,32 @@ export default function Profile() {
     const fetchedInvites = fetchInvites();
     const fetchedInvites2 = getInvites();
 
-    const inviteState = []
-    for (const invite of fetchedInvites){
+    const inviteState = [];
+    for (const invite of fetchedInvites) {
       inviteState.push({
-        inviteId: invite.inviteId, 
-        groupname: invite.groupName, 
-        groupId: invite.groupId, 
-        inviteeName: invite.inviteeName, 
-        inviterName: invite.inviterName})
+        inviteId: invite.inviteId,
+        groupname: invite.groupName,
+        groupId: invite.groupId,
+        inviteeName: invite.inviteeName,
+        inviterName: invite.inviterName,
+      });
     }
     setInvites(inviteState);
   }, []);
 
   function inviteAnswer(answer: InviteAnswer, index: number): void {
-    let accepted
+    let accepted;
     if (answer === InviteAnswer.Accept) {
-      accepted = true
+      accepted = true;
     } else if (answer === InviteAnswer.Decline) {
-      accepted = false
+      accepted = false;
     } else {
       console.log("Swoop");
       return;
     }
-    console.log(accepted)
+    console.log(accepted);
     // respondInvite send a post api call, to respond on the inviteId.
-    respondInvite(invites[index].inviteId, accepted)
+    respondInvite(invites[index].inviteId, accepted);
     deleteInvite(index);
   }
 
@@ -77,8 +80,20 @@ export default function Profile() {
   }
 
   const [invites, setInvites] = useState([
-    { inviteId: "", groupname: "Bongers", groupId: "", inviteeName: "", inviterName: "Bong" },
-    { inviteId: "", groupname: "Bingers", groupId: "", inviteeName: "", inviterName: "Bing" },
+    {
+      inviteId: "",
+      groupname: "Bongers",
+      groupId: "",
+      inviteeName: "",
+      inviterName: "Bong",
+    },
+    {
+      inviteId: "",
+      groupname: "Bingers",
+      groupId: "",
+      inviteeName: "",
+      inviterName: "Bing",
+    },
   ]);
 
   return (

@@ -20,12 +20,15 @@ import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
-import { get as getGroups, create as postCreateGroup } from "@/lib/server/group";
+import {
+  get as getGroups,
+  create as postCreateGroup,
+} from "@/lib/server/group";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { Interval } from "@/lib/API/schemas/Interval";
 
-import type { Group } from "@/lib/API/schemas/Group"
-import type { Goal } from "@/lib/API/schemas/Goal"
+import type { Group } from "@/lib/API/schemas/Group";
+import type { Goal } from "@/lib/API/schemas/Goal";
 import { string } from "valibot";
 import { User } from "@/lib/API/schemas/User";
 
@@ -37,65 +40,63 @@ export default function Main() {
 
   function fetchGoals(): Goal[] {
     // Example function undtil api is done
-    const goalArray: Goal[] = []
-    const goalExample: Goal = { 
-      goalId:"4", 
-      type: GoalType.Individual, 
-      title: "Gamer Goal", 
-      activity: SportActivity.Badminton, 
-      metric: Metric.Duration, 
-      target: 90, 
-      progress: {"1":15} 
-    }
-    const goalExample1: Goal = { 
-      goalId:"5",
-      type: GoalType.Group, 
-      title: "Gamer Goals", 
-      activity: SportActivity.Boxing, 
-      metric: Metric.Calories, 
-      target: 10000, 
-      progress: {"1":4000, "2":1000} 
-    }
-    goalArray.push(goalExample)
-    goalArray.push(goalExample1)
-    return goalArray; 
+    const goalArray: Goal[] = [];
+    const goalExample: Goal = {
+      goalId: "4",
+      type: GoalType.Individual,
+      title: "Gamer Goal",
+      activity: SportActivity.Badminton,
+      metric: Metric.Duration,
+      target: 90,
+      progress: { "1": 15 },
+    };
+    const goalExample1: Goal = {
+      goalId: "5",
+      type: GoalType.Group,
+      title: "Gamer Goals",
+      activity: SportActivity.Boxing,
+      metric: Metric.Calories,
+      target: 10000,
+      progress: { "1": 4000, "2": 1000 },
+    };
+    goalArray.push(goalExample);
+    goalArray.push(goalExample1);
+    return goalArray;
   }
 
   function fetchGroup(): Group[] {
-    const groupArray: Group[] = []
-    const goalArray: Goal[] = fetchGoals()
+    const groupArray: Group[] = [];
+    const goalArray: Goal[] = fetchGoals();
     const groupExample: Group = {
       groupId: "",
-      groupName: "Bing", 
-      users: {"1":"bonk","2":"bank"}, 
-      interval: Interval.Weekly, 
-      goals: goalArray, 
-      streak: 5 }
-    groupArray.push(groupExample)
+      groupName: "Bing",
+      users: { "1": "bonk", "2": "bank" },
+      interval: Interval.Weekly,
+      goals: goalArray,
+      streak: 5,
+    };
+    groupArray.push(groupExample);
     return groupArray;
   }
   useEffect(() => {
     // Missing userId from earlier api calls.
     //const fetchedGroups = getGroups(userId)
     //const fetchedGroups: Group[] = fetchGroup();
-  
-    // Split group and individual goals. 
+    // Split group and individual goals.
     //const individualGoals: Goal[] = if(user.goals[0]. === GoalType.Individual) {}
     //const groupGoal: Goal[] = []
     //for(let group of fetchedGroups){
-      
-      
     //}
   }, []);
 
   const [groups, setGroups] = useState([
     {
       groupId: "",
-      groupName: "Bing", 
-      users: { [user.userId]:[user.name] }, 
-      interval: Interval.Weekly, 
-      goals: [], 
-      streak: 5 
+      groupName: "Bing",
+      users: { [user.userId]: [user.name] },
+      interval: Interval.Weekly,
+      goals: [],
+      streak: 5,
     },
   ]);
 
@@ -107,7 +108,7 @@ export default function Main() {
       activity: SportActivity.Gymnastics,
       metric: Metric.Calories,
       target: 5000,
-      progress: {user: "guddi", amount: 3000},
+      progress: { user: "guddi", amount: 3000 },
     },
     {
       goalId: "g",
@@ -116,7 +117,7 @@ export default function Main() {
       activity: SportActivity.Stretching,
       metric: Metric.Duration,
       target: 90,
-      progress: {user: "guddi", amount: 60},
+      progress: { user: "guddi", amount: 60 },
     },
   ]);
 
@@ -125,26 +126,22 @@ export default function Main() {
     { label: "Weekly", value: Interval.Weekly },
     { label: "Monthly", value: Interval.Monthly },
   ];
-  const [newGroupName, setGroupName] = useState('');
-  const [intervalValue, setIntervalValue] = useState(
-    Interval.Weekly
-  );
+  const [newGroupName, setGroupName] = useState("");
+  const [intervalValue, setIntervalValue] = useState(Interval.Weekly);
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
 
   function createGroup() {
-    postCreateGroup(user, newGroupName, intervalValue)
-    
+    postCreateGroup(user, newGroupName, intervalValue);
+
     const newGroup = {
       groupId: "",
       groupName: newGroupName,
-      users: { [user.userId]:[user.name] },
+      users: { [user.userId]: [user.name] },
       interval: intervalValue,
       goals: [],
       streak: 0,
-    }
-    setGroups((prev) => [
-      ...prev, newGroup
-    ])
+    };
+    setGroups((prev) => [...prev, newGroup]);
   }
 
   return (
@@ -158,7 +155,11 @@ export default function Main() {
         callback={createGroup}
       >
         <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
-        <TextInput style={globalStyles.inputField} onChangeText={setGroupName} value={newGroupName}></TextInput>
+        <TextInput
+          style={globalStyles.inputField}
+          onChangeText={setGroupName}
+          value={newGroupName}
+        ></TextInput>
         <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
           Interval
         </Text>
@@ -200,8 +201,7 @@ export default function Main() {
             progress={goal.progress.amount}
             target={goal.target}
             days={2}
-          >
-          </GoalContainer>
+          ></GoalContainer>
         ))}
       </Collapsible>
       <View style={[styles.row]}>

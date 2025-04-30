@@ -23,8 +23,9 @@ export async function create(
   });
 }
 
-export async function get(
-): Promise<Omit<Invite, "groupId" | "inviteeName">[]> {
+export async function get(): Promise<
+  Omit<Invite, "groupId" | "inviteeName">[]
+> {
   const invites = await fetchApi({
     path: "/group/invite",
     method: "GET",
