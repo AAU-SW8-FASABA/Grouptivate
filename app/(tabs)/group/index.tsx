@@ -244,7 +244,7 @@ export default function Group() {
                   </View>
                 </View>
                 <View>
-                  {(userGoals.get(userId) ?? []).map((
+                  {userGoals.get(userId)?.map((
                   activity, index) => (
                     <ProgressBarTextIcon
                       key={index}
