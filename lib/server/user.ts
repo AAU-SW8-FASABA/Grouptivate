@@ -20,24 +20,20 @@ export async function create(
       searchParams: {},
       requestBody: { name, password },
     });
-
-    if (!response?.token) {
-      return false;
-    }
     await setToken(response.token);
-    return await get(name);
+    return { name, groups: [], goals: [], userId: response.userId };
   } catch {
     return false;
   }
 }
 
-export async function get(userId: User["userId"]): Promise<User> {
+export async function get(): Promise<User> {
   const response = await fetchApi({
     path: "/user",
     method: "GET",
     schema: UserGetRequestSchema,
-    searchParams: { userId },
+    searchParams: {},
     requestBody: undefined,
   });
-  return { userId: userId, name: response.name, groups: response.groups };
+  return response;
 }

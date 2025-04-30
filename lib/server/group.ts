@@ -4,8 +4,10 @@ import {
   GroupGetRequestSchema,
 } from "@/lib/API/schemas/Group";
 import { fetchApi } from "./fetch";
+import { User } from "../API/schemas/User";
 
 export async function create(
+  user: Pick<User, "name" | "userId">,
   groupName: Group["groupName"],
   interval: Group["interval"],
 ): Promise<Group> {
@@ -22,7 +24,9 @@ export async function create(
   return {
     groupName,
     interval,
-    users: {},
+    users: {
+      [user.userId]: user.name,
+    },
     goals: [],
     streak: 0,
     ...response,

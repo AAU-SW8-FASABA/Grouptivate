@@ -6,11 +6,12 @@ import {
   LoginRequestSchema,
   VerifyRequestSchema,
 } from "../API/schemas/Login";
+import { User } from "../API/schemas/User";
 
 export async function login(
   name: Login["name"],
   password: Login["password"],
-): Promise<boolean> {
+): Promise<User | false> {
   let response;
   try {
     response = await fetchApi({
@@ -20,11 +21,8 @@ export async function login(
       searchParams: {},
       requestBody: { name, password },
     });
-    if (!response?.token) {
-      return false;
-    }
     await setToken(response.token);
-    return true;
+    return { name, groups: [], goals: [], userId: response.userId };
   } catch {
     return false;
   }
