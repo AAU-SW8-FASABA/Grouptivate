@@ -65,23 +65,33 @@ export default function Main() {
     return goalArray;
   }
 
-  function fetchGroup(): Group[] {
-    const groupArray: Group[] = [];
-    const goalArray: Goal[] = fetchGoals();
-    const groupExample: Group = {
-      groupId: "",
-      groupName: "Bing",
-      users: { "1": "bonk", "2": "bank" },
-      interval: Interval.Weekly,
-      goals: goalArray,
-      streak: 5,
-    };
-    groupArray.push(groupExample);
-    return groupArray;
-  }
+  //function fetchGroup(): Group[] {
+  //  const groupArray: Group[] = [];
+  //  const goalArray: Goal[] = fetchGoals();
+  //  const groupExample: Group = {
+  //    groupId: "",
+  //    groupName: "Bing",
+  //    users: { "1": "bonk", "2": "bank" },
+  //    interval: Interval.Weekly,
+  //    goals: goalArray,
+  //    streak: 5,
+  //  };
+  //  groupArray.push(groupExample);
+  //  return groupArray;
+  //}
+
   useEffect(() => {
+    async function fetchGroup(){
+      const fetchedGroups: Group[] = []
+      for(const groupId of user.groups){
+        const group = await getGroup(groupId)
+        fetchedGroups.push(group)
+      }
+      console.log(fetchedGroups)
+      //setGroups(fetchedGroups)
+    }
     // Missing userId from earlier api calls.
-    const fetchedGroups: Group[] = []
+    
     
     //const fetchedGroups: Group[] = fetchGroup();
     // Split group and individual goals.
@@ -145,6 +155,10 @@ export default function Main() {
     };
     setGroups((prev) => [...prev, newGroup]);
   }
+
+  //function calculateIndividualProgress(): number {
+  //  
+  //}
 
   return (
     <CustomScrollView style={globalStyles.viewContainer}>
