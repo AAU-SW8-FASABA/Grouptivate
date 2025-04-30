@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -18,10 +18,17 @@ import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
+import { get as getGroups } from "@/lib/server/group";
+import type { Group as GroupType} from "@/lib/API/schemas/Group"
 
 export default function Main() {
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
+
+  useEffect(() => {
+    // Missing userId from earlier api calls.
+    //const fetchedGroups = getGroups(userId)
+  })
 
   const [groups, setGroups] = useState([
     {
