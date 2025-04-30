@@ -9,10 +9,9 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { User } from "@/lib/API/schemas/User";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { UserContext } from "@/states/userState";
+import { initialUser, UserContext } from "@/states/userState";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -33,7 +32,6 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-  const initialUser: User = { userId: "", name: "", groups: [], goals: [] };
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
