@@ -10,7 +10,7 @@ import type { Password } from "../API/schemas/Password";
 export async function create(
   name: User["name"],
   password: Password,
-): Promise<User | false> {
+): Promise<Omit<User, "userId"> | false> {
   let response;
   try {
     response = await fetchApi({
@@ -25,19 +25,19 @@ export async function create(
       return false;
     }
     await setToken(response.token);
-    return await get(name);
+    return { name, groups: [] };
   } catch {
     return false;
   }
 }
 
-export async function get(userId: User["userId"]): Promise<User> {
+export async function get(): Promise<Omit<User, "userId">> {
   const response = await fetchApi({
     path: "/user",
     method: "GET",
     schema: UserGetRequestSchema,
-    searchParams: { userId },
+    searchParams: {},
     requestBody: undefined,
   });
-  return { userId: userId, name: response.name, groups: response.groups };
+  return { name: response.name, groups: response.groups };
 }
