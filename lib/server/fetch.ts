@@ -5,15 +5,11 @@ import {
   parse,
   InferInput,
 } from "valibot";
+import { getToken, url } from "./config";
 import {
   RequestSchema,
   SearchParametersSchema,
 } from "../API/containers/Request";
-
-const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
-if (!SERVER_URL) throw new Error("Missing a SERVER_URL in env");
-
-const url = new URL(SERVER_URL);
 
 export async function fetchApi<
   P extends SearchParametersSchema,
@@ -64,9 +60,18 @@ export async function fetchApi<
   for (const [key, value] of Object.entries(searchParams)) {
     newUrl.searchParams.set(key, JSON.stringify(value));
   }
+  const headers: Record<string, string> = {};
+  if (schema.requestBody) {
+    headers["Content-Type"] = "application/json;charset=UTF-8";
+  }
+  const token = await getToken();
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
   const response = await fetch(newUrl, {
     method,
     body: requestBody ? JSON.stringify(requestBody) : undefined,
+    headers,
   });
   if (!response.ok) {
     throw new Error(`Received bad response: ${await response.text()}`);

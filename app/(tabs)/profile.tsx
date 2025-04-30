@@ -1,11 +1,20 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 
+import { deleteToken } from "@/lib/server/config";
 import { Container } from "@/components/Container";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { DeveloperTools } from "@/components/DeveloperTools";
 
 export default function Profile() {
+  const router = useRouter();
+
+  const logout = async () => {
+    await deleteToken();
+    router.dismissAll();
+  };
+
   return (
     <CustomScrollView style={globalStyles.viewContainer}>
       <View style={[styles.center, { marginTop: 8 }]}>
@@ -52,6 +61,17 @@ export default function Profile() {
             </View>
           </View>
         </Container>
+        <TouchableOpacity onPress={logout}>
+          <Text
+            style={[
+              styles.text,
+              styles.button,
+              { backgroundColor: "#D9D9D9", color: "black" },
+            ]}
+          >
+            Log out (dev)
+          </Text>
+        </TouchableOpacity>
         <Text
           style={[
             styles.text,

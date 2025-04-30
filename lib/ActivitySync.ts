@@ -8,8 +8,6 @@ import { Metric } from "./API/schemas/Metric";
 import { HealthAdapter } from "./HealthAdapter/HealthAdapter";
 import { getHealthAdapter } from "./HealthAdapter/Helpers";
 
-const uuid = "TODO"; //TODO
-
 /**
  * Sync new activity information to the server.
  */
@@ -30,7 +28,7 @@ export async function SyncActivity() {
     return;
   }
 
-  const user = await getUser(uuid);
+  const user = await getUser();
 
   const groups = await Promise.all(user.groups.map((group) => getGroup(group)));
 
@@ -50,7 +48,7 @@ export async function SyncActivity() {
       .flat(),
   );
 
-  await patchGoal(uuid, goalUpdates);
+  await patchGoal(goalUpdates);
 }
 
 async function getGoalProgress(

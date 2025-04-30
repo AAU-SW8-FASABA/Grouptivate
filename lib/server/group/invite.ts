@@ -8,32 +8,35 @@ import {
 import { Group } from "../../API/schemas/Group";
 
 export async function create(
-  user: User["uuid"],
-  group: Group["uuid"],
-  invited: User["uuid"],
+  groupId: Group["groupId"],
+  inviteeName: User["name"],
 ): Promise<void> {
   await fetchApi({
     path: "/group/invite",
     method: "POST",
     schema: InviteCreateRequestSchema,
-    searchParams: { user },
+    searchParams: {},
     requestBody: {
-      group,
-      invited,
+      groupId,
+      inviteeName,
     },
   });
 }
 
-export async function get(user: User["uuid"]): Promise<Invite[]> {
+export async function get(
+  name: User["name"],
+  groupId: Group["groupId"],
+): Promise<Invite[]> {
   const invites = await fetchApi({
     path: "/group/invite",
     method: "GET",
     schema: InviteGetRequestSchema,
-    searchParams: { user },
+    searchParams: {},
     requestBody: undefined,
   });
   return invites.map((invite) => ({
-    invited: user,
+    inviteeName: name,
+    groupId,
     ...invite,
   }));
 }

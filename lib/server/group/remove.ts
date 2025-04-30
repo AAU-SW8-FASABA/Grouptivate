@@ -3,16 +3,17 @@ import { User } from "../../API/schemas/User";
 import { fetchApi } from "../fetch";
 
 export async function remove(
-  user: User["uuid"],
-  group: Group["uuid"],
+  userId: User["userId"],
+  groupId: Group["groupId"],
 ): Promise<void> {
   await fetchApi({
     path: "/group/remove",
     method: "POST",
     schema: GroupRemoveRequestSchema,
-    searchParams: { user },
+    searchParams: { userId },
     requestBody: {
-      group,
+      userId,
+      groupId,
     },
   });
 }
