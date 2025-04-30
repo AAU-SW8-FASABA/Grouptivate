@@ -8,20 +8,20 @@ import {
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import globalStyles from "@/constants/styles";
-import { create } from "@/lib/server/user";
+import { login as loginApi } from "@/lib/server/login";
 
-export default function Signup() {
+export default function Signin() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  async function createAccount() {
+  async function login() {
     // TODO: Input Validation
 
-    const success = await create(username, password);
-    if (!success) {
+    const success = await loginApi(username, password);
+    if (!success && !__DEV__) {
       // TODO: Handle error
-      console.log("Error creating account");
+      console.log("Error signing in");
       return;
     }
 
@@ -32,7 +32,7 @@ export default function Signup() {
     <>
       <View style={styles.header}>
         <Text style={[styles.text, { fontSize: 40, color: "black" }]}>
-          Create account
+          Log in
         </Text>
         <Text
           style={[
@@ -40,7 +40,7 @@ export default function Signup() {
             { fontSize: 20, color: "black", textAlign: "center" },
           ]}
         >
-          To create an account you must select a unique username
+          Please enter username and password
         </Text>
       </View>
       <View style={styles.inputView}>
@@ -67,10 +67,10 @@ export default function Signup() {
       <View style={styles.buttons}>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: "#4062BB" }]}
-          onPress={() => createAccount()}
+          onPress={() => login()}
         >
           <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
-            Create account
+            Log in
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
