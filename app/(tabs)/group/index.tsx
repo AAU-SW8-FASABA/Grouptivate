@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 
@@ -12,58 +13,118 @@ import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import { NameProgress } from "@/components/NameProgress";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
+import type { Group } from "@/lib/API/schemas/Group";
+import { Uuid, UuidSchema } from "@/lib/API/schemas/Uuid";
+import { Interval } from "@/lib/API/schemas/Interval";
+import { Goal, GoalType } from "@/lib/API/schemas/Goal";
+import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
+import { Metric } from "@/lib/API/schemas/Metric";
 
 export default function Group() {
   const { name } = useLocalSearchParams();
   const router = useRouter();
+ 
 
-  const members = [
+
+  //TODO: get group
+  //TODO: members skal rykkes ind i group og group skal have en state
+  const members : Record<string,string> =
     {
-      name: "Anders",
-      activities: [
-        {
-          progress: 382,
-          target: 800,
-          icon: "person-swimming",
-          unit: "kcal",
-        },
-        {
-          progress: 200,
-          target: 700,
-          icon: "person-biking",
-          unit: "km",
-        },
-      ],
+      "anders uuid": "Anders",
+
+      "hald uuid": "Albert Hald",
+
+      "hal uuid": "Albert Hal",
+      // name: "Albert Hal",
+    }
+  const testGroup : Group = {
+    groupId: "",
+    groupName: name.toString(),
+    users: members,
+    interval: Interval.Weekly,
+    goals: [{
+      goalId: "", //group goal
+      title: "This is a title",
+      type: GoalType.Group,
+      activity: SportActivity.Badminton,
+      metric: Metric.Distance,
+      target: 200,
+      progress: {
+        "anders uuid": 20,
+        "hald uuid": 100 ,
+        "hal uuid": 100
+      }
+      
     },
     {
-      name: "Albert Hald",
-      activities: [
-        {
-          progress: 70,
-          target: 700,
-          icon: "person-biking",
-          unit: "km",
-        },
-      ],
+      goalId: "",
+      title: "Anders goal",
+      type: GoalType.Individual,
+      activity: SportActivity.Badminton,
+      metric: Metric.Distance,
+      target: 200,
+      progress: {
+        "anders uuid": 200
+      }
     },
     {
-      name: "Albert Hel",
-      activities: [
-        {
-          progress: 630,
-          target: 700,
-          icon: "person-biking",
-          unit: "km",
-        },
-      ],
+      goalId: "",
+      title: "Albert hald goal",
+      type: GoalType.Individual,
+      activity: SportActivity.Badminton,
+      metric: Metric.Distance,
+      target: 200,
+      progress: {
+        "hald uuid": 20,
+      }
     },
-  ];
+    {
+      goalId: "",
+      title: "Albert hal",
+      type: GoalType.Individual,
+      activity: SportActivity.Baseball,
+      metric: Metric.Distance,
+      target: 200,
+      progress: {
+        "hal uuid": 20,
+      }
+    },
+    ],
+    streak: 2,
+  }
+
+  const [group, setGroup] = useState(testGroup)
+
+  const groupGoal = group.goals.filter(goal => {
+    return goal.type == "group"
+  })[0]
+  let userGoals: Map<string, Goal[]> = new Map()
+  Object.keys(group.users).forEach( (user) => {
+    userGoals.set(user, group.goals.filter((goal) => {return goal.type == "individual" && goal.progress[user]}))
+  })
+
+  const groupGoalContributed = Object.entries(groupGoal.progress).reduce((sum, [key, val]) => sum + val, 0)
+  const groupGoalProgress = (groupGoalContributed / groupGoal.target ) * 100
+
+  function daysUntilNextMonday(): number {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysUntilMonday = (8 - dayOfWeek) % 7 || 7;
+    return daysUntilMonday;
+  }
+  function daysUntilNextMonth(): number {
+    const today = new Date();
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const diffDays = Math.ceil((nextMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    return diffDays;
+  }
 
   return (
     <>
       <Stack.Screen
         options={{
-          headerTitle: name && typeof name === "string" ? name : "Group Name",
+          headerTitle: group.groupName && typeof group.groupName === "string" ? group.groupName : "Group Name",
           headerLeft: () => <Back />,
           headerRight: () => (
             <TouchableOpacity
@@ -82,8 +143,10 @@ export default function Group() {
       />
       <CustomScrollView style={globalStyles.viewContainer}>
         <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
-          <ContainerWithBlueBox text1="Days Left" text2="23" />
-          <ContainerWithBlueBox text1="Streak" text2="13🔥" />
+          <ContainerWithBlueBox text1="Days Left" text2= {
+            group.interval == Interval.Daily ? "1" : group.interval == Interval.Weekly ? daysUntilNextMonday().toString() : daysUntilNextMonth().toString()
+          } /> 
+          <ContainerWithBlueBox text1="Streak" text2= {group.streak + "🔥"} />
         </View>
 
         <Container style={{ marginTop: 8 }}>
@@ -96,11 +159,24 @@ export default function Group() {
           >
             <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
             <Text style={[styles.text, { fontSize: 16 }]}>
-              0 / 2 members finished
+              {
+              Object.entries(group.users).reduce(
+                (finished, [userId, userName]) => finished + (userGoals.get(userId)?.reduce(
+                  (allFinished, goal) => allFinished && (goal.progress[userId] >= goal.target), 
+                true) ? 1 : 0), 
+                0)
+              }/ {Object.keys(group.users).length} members finished 
             </Text>
           </View>
           <View style={{ marginTop: 10 }}>
-            <ProgressBarPercentage progress={38} />
+            <ProgressBarPercentage progress={
+              group.goals.reduce(
+                (acc, goal) => acc + ((Object.values(goal.progress)).reduce((sum, current) => sum + current, 0)) / goal.target,
+                0,
+              ) /
+                group.goals!.length *
+              100
+            } />
           </View>
         </Container>
 
@@ -115,54 +191,52 @@ export default function Group() {
                   <Text
                     style={[styles.text, { fontSize: 24, marginRight: "auto" }]}
                   >
-                    Bike
+                    {groupGoal.title}
                   </Text>
                 </View>
                 <View style={styles.box}>
                   <Text
                     style={[styles.text, { fontSize: 16, textAlign: "center" }]}
                   >
-                    3.8 / 10 km
+                    {groupGoalContributed} / {groupGoal.target} {groupGoal.metric}
                   </Text>
                 </View>
                 <View style={styles.box} />
               </View>
               <ProgressBarIcon
-                progress={38}
+                progress={groupGoalProgress}
                 iconSource={IconSource.FontAwesome6}
-                icon="person-biking"
+                icon= {groupGoal.activity} 
               />
             </View>
             <View style={[styles.row, { gap: 10, flexWrap: "wrap" }]}>
-              <NameProgress name="Anders" progress={88} />
-              <NameProgress name="Albert Hald" progress={10} />
-              <NameProgress name="A Very Long Name Here" progress={100} />
-              <NameProgress name="A Very Long Name Here" progress={0} />
-              <NameProgress name="A Very Long Name Here" progress={10} />
+              {Object.entries(groupGoal.progress).map(([userId, progress]) => (
+                <NameProgress name={group.users[userId]} progress={progress} />
+              ))}
             </View>
           </CollapsibleContainer>
         </View>
 
         <View style={globalStyles.section}>
           <Text style={globalStyles.sectionHeader}>Members</Text>
-          {members.map((member) => (
-            <View key={member.name}>
+          {Object.entries(group.users).map(([userId, name]) => (
+            <View key={name}>
               <CollapsibleContainer>
                 <View style={styles.row}>
                   <Text
                     numberOfLines={1}
                     style={[styles.text, { fontSize: 22 }]}
                   >
-                    {member.name}
+                    {name}
                   </Text>
                   <View style={{ width: "40%", marginRight: 30 }}>
                     <ProgressBarPercentage
                       progress={
-                        (member.activities!.reduce(
-                          (acc, a) => acc + a.progress / a.target,
+                        (userGoals.get(userId) ?? []).reduce(
+                          (acc, a) => acc + a.progress[userId] / a.target,
                           0,
                         ) /
-                          member.activities!.length) *
+                        (userGoals.get(userId) ?? []).length *
                         100
                       }
                       target={100}
@@ -170,14 +244,15 @@ export default function Group() {
                   </View>
                 </View>
                 <View>
-                  {member.activities!.map((activity, index) => (
+                  {(userGoals.get(userId) ?? []).map((
+                  activity, index) => (
                     <ProgressBarTextIcon
                       key={index}
-                      progress={activity.progress}
+                      progress={activity.progress[userId]}
                       target={activity.target}
-                      unit={activity.unit}
+                      unit={activity.metric}
                       iconSource={IconSource.FontAwesome6}
-                      icon={activity.icon}
+                      icon={activity.activity}
                     />
                   ))}
                 </View>
