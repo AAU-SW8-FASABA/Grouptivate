@@ -21,7 +21,7 @@ import { CustomScrollView } from "@/components/CusomScrollView";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
 import {
-  get as getGroups,
+  get as getGroup,
   create as postCreateGroup,
 } from "@/lib/server/group";
 import { GoalType } from "@/lib/API/schemas/Goal";
@@ -80,20 +80,22 @@ export default function Main() {
   }
   useEffect(() => {
     // Missing userId from earlier api calls.
-    //const fetchedGroups = getGroups(userId)
+    const fetchedGroups: Group[] = []
+    
     //const fetchedGroups: Group[] = fetchGroup();
     // Split group and individual goals.
     //const individualGoals: Goal[] = if(user.goals[0]. === GoalType.Individual) {}
     //const groupGoal: Goal[] = []
     //for(let group of fetchedGroups){
     //}
+
   }, []);
 
   const [groups, setGroups] = useState([
     {
       groupId: "",
       groupName: "Bing",
-      users: { [user.userId]: [user.name] },
+      users: { },
       interval: Interval.Weekly,
       goals: [],
       streak: 5,
