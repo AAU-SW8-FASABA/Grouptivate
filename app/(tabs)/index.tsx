@@ -31,6 +31,7 @@ import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
 import { string } from "valibot";
 import { User } from "@/lib/API/schemas/User";
+import { prettyName } from "@/lib/PrettyName";
 
 export default function Main() {
   const router = useRouter();
@@ -123,11 +124,10 @@ export default function Main() {
     },
   ]);
 
-  const intervals = [
-    { label: "Daily", value: Interval.Daily },
-    { label: "Weekly", value: Interval.Weekly },
-    { label: "Monthly", value: Interval.Monthly },
-  ];
+  const intervals = Object.values(Interval).map((value) => ({
+    label: prettyName(value),
+    value,
+  }));
   const [newGroupName, setGroupName] = useState("");
   const [intervalValue, setIntervalValue] = useState(Interval.Weekly);
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
