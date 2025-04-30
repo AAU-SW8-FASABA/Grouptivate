@@ -21,7 +21,7 @@ export async function create(
       requestBody: { name, password },
     });
     await setToken(response.token);
-    return { name, groups: [], userId: response.userId };
+    return { name, groups: [], goals: [], userId: response.userId };
   } catch {
     return false;
   }

@@ -23,7 +23,10 @@ export async function create(
   });
 }
 
-export async function get(name: User["name"]): Promise<Invite[]> {
+export async function get(
+  name: User["name"],
+  groupId: Group["groupId"],
+): Promise<Invite[]> {
   const invites = await fetchApi({
     path: "/group/invite",
     method: "GET",
@@ -33,6 +36,7 @@ export async function get(name: User["name"]): Promise<Invite[]> {
   });
   return invites.map((invite) => ({
     inviteeName: name,
+    groupId,
     ...invite,
   }));
 }
