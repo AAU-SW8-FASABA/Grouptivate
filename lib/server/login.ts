@@ -15,7 +15,7 @@ export async function login(
   let response;
   try {
     response = await fetchApi({
-      path: "/login",
+      path: "/user/login",
       method: "POST",
       schema: LoginRequestSchema,
       searchParams: {},
@@ -28,14 +28,14 @@ export async function login(
   }
 }
 
-export async function verify(token: Token): Promise<boolean> {
+export async function verify(): Promise<boolean> {
   try {
     await fetchApi({
-      path: "/login",
+      path: "/user/verify",
       method: "POST",
       schema: VerifyRequestSchema,
       searchParams: {},
-      requestBody: { token },
+      requestBody: undefined,
     });
   } catch {
     return false;
