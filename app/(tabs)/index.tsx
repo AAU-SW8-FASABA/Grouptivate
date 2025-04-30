@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
+import { useContext } from "react";
+import { UserContext } from "@/lib/states/userState";
 
 import { CustomModal, modalMode } from "@/components/CustomModal";
 import { Collapsible } from "@/components/Collapsible";
@@ -18,60 +20,82 @@ import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
-import { get as getGroups } from "@/lib/server/group";
+import { get as getGroups, create as postCreateGroup } from "@/lib/server/group";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { Interval } from "@/lib/API/schemas/Interval";
 
 import type { Group } from "@/lib/API/schemas/Group"
 import type { Goal } from "@/lib/API/schemas/Goal"
 import { string } from "valibot";
+import { User } from "@/lib/API/schemas/User";
 
 export default function Main() {
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
+  //const user = {userId: "1", name: "Fryd", groups: [], goals: []}
+  const user = useContext(UserContext);
 
   function fetchGoals(): Goal[] {
     // Example function undtil api is done
     const goalArray: Goal[] = []
-    const goalExample: Goal = { goalId:"4", type: GoalType.Individual, title: "Gamer Goal", activity: SportActivity.Badminton, metric: Metric.Duration, target: 90, progress: {"1":15} }
-    const goalExample1: Goal = { goalId:"5", type: GoalType.Group, title: "Gamer Goals", activity: SportActivity.Boxing, metric: Metric.Calories, target: 10000, progress: {"1":4000, "2":1000} }
-    
-
+    const goalExample: Goal = { 
+      goalId:"4", 
+      type: GoalType.Individual, 
+      title: "Gamer Goal", 
+      activity: SportActivity.Badminton, 
+      metric: Metric.Duration, 
+      target: 90, 
+      progress: {"1":15} 
+    }
+    const goalExample1: Goal = { 
+      goalId:"5",
+      type: GoalType.Group, 
+      title: "Gamer Goals", 
+      activity: SportActivity.Boxing, 
+      metric: Metric.Calories, 
+      target: 10000, 
+      progress: {"1":4000, "2":1000} 
+    }
+    goalArray.push(goalExample)
+    goalArray.push(goalExample1)
     return goalArray; 
   }
 
   function fetchGroup(): Group[] {
     const groupArray: Group[] = []
     const goalArray: Goal[] = fetchGoals()
-    const groupExample: Group = {groupId: "", groupName: "Bing", users: {"1":"bonk","2":"bank"}, interval: Interval.Weekly, goals: goalArray, streak: 5 }
+    const groupExample: Group = {
+      groupId: "",
+      groupName: "Bing", 
+      users: {"1":"bonk","2":"bank"}, 
+      interval: Interval.Weekly, 
+      goals: goalArray, 
+      streak: 5 }
     groupArray.push(groupExample)
     return groupArray;
   }
   useEffect(() => {
     // Missing userId from earlier api calls.
     //const fetchedGroups = getGroups(userId)
-    const fetchedGroups: Group[] = fetchGroup()
-
-  })
+    //const fetchedGroups: Group[] = fetchGroup();
+  
+    // Split group and individual goals. 
+    //const individualGoals: Goal[] = if(user.goals[0]. === GoalType.Individual) {}
+    //const groupGoal: Goal[] = []
+    //for(let group of fetchedGroups){
+      
+      
+    //}
+  }, []);
 
   const [groups, setGroups] = useState([
     {
-      key: Math.random().toString(),
-      name: "The Bongers",
-      days: 2,
-      groupProgress: 28,
-      groupTarget: 100,
-      individualProgress: 95,
-      individualTarget: 100,
-    },
-    {
-      key: Math.random().toString(),
-      name: "The Gulops",
-      days: 28,
-      groupProgress: 4,
-      groupTarget: 100,
-      individualProgress: 7,
-      individualTarget: 100,
+      groupId: "",
+      groupName: "Bing", 
+      users: { [user.userId]:[user.name] }, 
+      interval: Interval.Weekly, 
+      goals: [], 
+      streak: 5 
     },
   ]);
 
@@ -97,26 +121,30 @@ export default function Main() {
   ]);
 
   const intervals = [
-    { label: "Daily", value: "daily" },
-    { label: "Weekly", value: "weekly" },
-    { label: "Monthly", value: "monthly" },
+    { label: "Daily", value: Interval.Daily },
+    { label: "Weekly", value: Interval.Weekly },
+    { label: "Monthly", value: Interval.Monthly },
   ];
-  const [intervalValue, setIntervalValue] = useState(null);
+  const [newGroupName, setGroupName] = useState('');
+  const [intervalValue, setIntervalValue] = useState(
+    Interval.Weekly
+  );
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
 
   function createGroup() {
+    postCreateGroup(user, newGroupName, intervalValue)
+    
+    const newGroup = {
+      groupId: "",
+      groupName: newGroupName,
+      users: { [user.userId]:[user.name] },
+      interval: intervalValue,
+      goals: [],
+      streak: 0,
+    }
     setGroups((prev) => [
-      ...prev,
-      {
-        key: Math.random().toString(),
-        name: "New Group",
-        days: 2,
-        groupProgress: Math.random() * 100,
-        groupTarget: 100,
-        individualProgress: Math.random() * 100,
-        individualTarget: 100,
-      },
-    ]);
+      ...prev, newGroup
+    ])
   }
 
   return (
@@ -130,7 +158,7 @@ export default function Main() {
         callback={createGroup}
       >
         <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
-        <TextInput style={globalStyles.inputField}></TextInput>
+        <TextInput style={globalStyles.inputField} onChangeText={setGroupName} value={newGroupName}></TextInput>
         <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
           Interval
         </Text>
@@ -188,23 +216,23 @@ export default function Main() {
           />
         </TouchableOpacity>
       </View>
-      {groups.map((group) => (
+      {groups.map((group, index) => (
         <TouchableOpacity
-          key={group.key}
+          key={index}
           onPress={() =>
             router.push({
               pathname: "/group",
-              params: { name: group.name },
+              params: { name: group.groupName },
             })
           }
         >
           <GroupContainer
-            name={group.name}
-            days={group.days}
-            groupProgress={group.groupProgress}
-            groupTarget={group.groupTarget}
-            individualProgress={group.individualProgress}
-            individualTarget={group.individualTarget}
+            name={group.groupName}
+            days={2}
+            groupProgress={10}
+            groupTarget={4}
+            individualProgress={5}
+            individualTarget={4}
             style={{ marginBottom: 8 }}
           />
         </TouchableOpacity>

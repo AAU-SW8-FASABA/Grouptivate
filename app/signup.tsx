@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import globalStyles from "@/constants/styles";
 import { create, get as getUser } from "@/lib/server/user";
-import { initialUser, UserContext } from "@/states/userState";
+import { initialUser, UserContext } from "@/lib/states/userState";
 import { User } from "@/lib/API/schemas/User";
 
 export default function Signup() {
