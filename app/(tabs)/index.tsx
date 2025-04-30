@@ -16,33 +16,41 @@ import { GoalContainer } from "@/components/GoalContainer";
 import { GroupContainer } from "@/components/GroupContainer";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
-import { SportActivity } from "@/lib/API/schemas/Activity";
+import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
 import { get as getGroups } from "@/lib/server/group";
+import { GoalType } from "@/lib/API/schemas/Goal";
+import { Interval } from "@/lib/API/schemas/Interval";
 
-import type { Group as GroupType } from "@/lib/API/schemas/Group"
-import type { Goal as goalType } from "@/lib/API/schemas/Goal"
+import type { Group } from "@/lib/API/schemas/Group"
+import type { Goal } from "@/lib/API/schemas/Goal"
+import { string } from "valibot";
 
 export default function Main() {
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
 
-  function fetchGoals(): goalType[] {
+  function fetchGoals(): Goal[] {
     // Example function undtil api is done
-    const goalArray: goalType[] = []
+    const goalArray: Goal[] = []
+    const goalExample: Goal = { goalId:"4", type: GoalType.Individual, title: "Gamer Goal", activity: SportActivity.Badminton, metric: Metric.Duration, target: 90, progress: {"1":15} }
+    const goalExample1: Goal = { goalId:"5", type: GoalType.Group, title: "Gamer Goals", activity: SportActivity.Boxing, metric: Metric.Calories, target: 10000, progress: {"1":4000, "2":1000} }
     
 
     return goalArray; 
   }
 
-  function fetchGroup(): GroupType[] {
-    const groupArray: GroupType[] = []
-
+  function fetchGroup(): Group[] {
+    const groupArray: Group[] = []
+    const goalArray: Goal[] = fetchGoals()
+    const groupExample: Group = {groupId: "", groupName: "Bing", users: {"1":"bonk","2":"bank"}, interval: Interval.Weekly, goals: goalArray, streak: 5 }
+    groupArray.push(groupExample)
     return groupArray;
   }
   useEffect(() => {
     // Missing userId from earlier api calls.
     //const fetchedGroups = getGroups(userId)
+    const fetchedGroups: Group[] = fetchGroup()
 
   })
 
@@ -67,9 +75,26 @@ export default function Main() {
     },
   ]);
 
-  const [goals, setGoals] = useState({
-
-  });
+  const [goals, setGoals] = useState([
+    {
+      goalId: "g",
+      type: GoalType.Individual,
+      title: "gaming",
+      activity: SportActivity.Gymnastics,
+      metric: Metric.Calories,
+      target: 5000,
+      progress: {user: "guddi", amount: 3000},
+    },
+    {
+      goalId: "g",
+      type: GoalType.Individual,
+      title: "gaming",
+      activity: SportActivity.Stretching,
+      metric: Metric.Duration,
+      target: 90,
+      progress: {user: "guddi", amount: 60},
+    },
+  ]);
 
   const intervals = [
     { label: "Daily", value: "daily" },
@@ -140,20 +165,16 @@ export default function Main() {
         />
       </CustomModal>
       <Collapsible title="Goals" style={{ marginTop: 6 }}>
-        <GoalContainer
-          activity={SportActivity.Swimming}
-          metric={Metric.Calories}
-          progress={960}
-          target={800}
-          days={2}
-        />
-        <GoalContainer
-          activity={SportActivity.Biking}
-          metric={Metric.Distance}
-          progress={3.8}
-          target={10}
-          days={2}
-        />
+        {goals.map((goal) => (
+          <GoalContainer
+            activity={goal.activity}
+            metric={goal.metric}
+            progress={goal.progress.amount}
+            target={goal.target}
+            days={2}
+          >
+          </GoalContainer>
+        ))}
       </Collapsible>
       <View style={[styles.row]}>
         <Text style={globalStyles.sectionHeader}>Groups</Text>
