@@ -227,6 +227,7 @@ export default function GroupSettings() {
   const [metricValue, setMetricValue] = useState<Metric | null>(null);
   const [isMetricFocus, setIsMetricFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
+  const [titleValue, setTitleValue] = useState("");
 
   function openGroupGoalModal() {
     setCurrentGoalType(GoalCreationType.GroupGoal);
@@ -244,6 +245,7 @@ export default function GroupSettings() {
   function resetGoalForm() {
     setActivityValue(null);
     setAmountValue(0);
+    setTitleValue("");
   }
 
   function createGoal() {
@@ -253,7 +255,7 @@ export default function GroupSettings() {
       metric: Metric.Count,   
       goalId: "",
       type: GoalType.Individual,
-      title: "hello",
+      title: titleValue || "hello",
       progress: {} 
     };
 
@@ -289,7 +291,7 @@ export default function GroupSettings() {
     if (currentGoalType === GoalCreationType.GroupGoal) {
       return "New Group Goal";
     } else {
-      return `New Goal for ${members[selectedMemberIndex]}`;
+      return `New Goal for ${members[selectedMemberIndex][1]}`;
     }
   }
 
@@ -392,6 +394,16 @@ export default function GroupSettings() {
             value={amountValue ? String(amountValue) : ""}
             onChangeText={(text) => setAmountValue(Number(text))}
           />
+          {currentGoalType == GoalCreationType.GroupGoal ? 
+            <><Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+              Title
+            </Text><TextInput
+                style={globalStyles.inputField}
+                keyboardType="default"
+                value={titleValue ? String(titleValue) : ""}
+                onChangeText={(text) => setTitleValue(text)} /></>
+            : ""
+          }
         </CustomModal>
 
         <CustomModal
