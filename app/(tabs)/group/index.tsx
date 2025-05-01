@@ -20,6 +20,8 @@ import { Goal, GoalType } from "@/lib/API/schemas/Goal";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
 import { UserContext } from "@/states/userState";
+import { metricMetadata } from "@/lib/MetricMetadata";
+import { sportActivityMetadata, otherActivityMetadata } from "@/lib/ActivityMetadata";
 
 export default function Group() {
   const { name } = useLocalSearchParams();
@@ -163,7 +165,7 @@ export default function Group() {
             <Text style={[styles.text, { fontSize: 16 }]}>
               {
               Object.entries(group.users).reduce(
-                (finished, [userId, userName]) => finished + (userGoals.get(userId)?.reduce(
+                (finished, [userId, userName]) => finished + (userGoals.get(userId)?.reduce( //TODO: check if group goal is finished
                   (allFinished, goal) => allFinished && (goal.progress[userId] >= goal.target), 
                 true) ? 1 : 0), 
                 0)
@@ -207,8 +209,8 @@ export default function Group() {
               </View>
               <ProgressBarIcon
                 progress={groupGoalProgress}
-                iconSource={IconSource.FontAwesome6}
-                icon= {groupGoal.activity} 
+                iconSource={{ ...sportActivityMetadata, ...otherActivityMetadata }[groupGoal.activity].iconSource}
+                      icon={{ ...sportActivityMetadata, ...otherActivityMetadata }[groupGoal.activity].icon}
               />
             </View>
             <View style={[styles.row, { gap: 10, flexWrap: "wrap" }]}>
@@ -252,9 +254,9 @@ export default function Group() {
                       key={index}
                       progress={activity.progress[userId]}
                       target={activity.target}
-                      unit={activity.metric}
-                      iconSource={IconSource.FontAwesome6}
-                      icon={activity.activity}
+                      unit={metricMetadata[activity.metric].unit}
+                      iconSource={{ ...sportActivityMetadata, ...otherActivityMetadata }[activity.activity].iconSource}
+                      icon={{ ...sportActivityMetadata, ...otherActivityMetadata }[activity.activity].icon}
                     />
                   ))}
                 </View>

@@ -101,9 +101,8 @@ export default function GroupSettings() {
     ],
     streak: 2,
   }
-
-
-  const [members, setMembers] = useState(Object.values(testGroup.users));
+  
+  const [members, setMembers] = useState(Object.entries(testGroup.users));
 
   const [inviteModalVisibility, setInviteModalVisibility] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
@@ -115,9 +114,10 @@ export default function GroupSettings() {
     memberIndex: -1,
   });
 
+  let id = 0
   function inviteMember() {
     if (newMemberName.trim() !== "") {
-      setMembers((prev) => [...prev, newMemberName]);
+      setMembers((prev) => [...prev, ...Object.entries({[(++id).toString()]: newMemberName})]);
       setNewMemberName("");
       setInviteModalVisibility(false);
     }
@@ -127,7 +127,7 @@ export default function GroupSettings() {
     setItemToDelete({
       type: settingsDeletion.Member,
       index,
-      name: members[index],
+      name: members[index][1],
       memberIndex: -1,
     });
     setDeleteModalVisibility(true);
@@ -147,7 +147,7 @@ export default function GroupSettings() {
     setItemToDelete({
       type: settingsDeletion.IndividualGoal,
       index: goalIndex,
-      name: testGroup.goals.filter((goal) =>  goal.progress[Object.keys(testGroup.users)[memberIndex]])[goalIndex].activity, 
+      name: memberGoals.filter((goal) =>  goal.progress[Object.keys(members)[memberIndex]])[goalIndex].activity, //TODO: fix this
       //memberGoals[memberIndex][goalIndex].activity,
       memberIndex: memberIndex,
     });
@@ -168,7 +168,7 @@ export default function GroupSettings() {
       } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
         setMemberGoals((prev) => {
           let newMemberGoals = [...prev];
-          newMemberGoals = newMemberGoals.filter((goal) => GoalType.Individual && goal.progress[Object.keys(testGroup.users)[itemToDelete.memberIndex]]) 
+          newMemberGoals = newMemberGoals.filter((goal) => GoalType.Individual && goal.progress[Object.keys(members)[itemToDelete.memberIndex]]) 
           // newMemberGoals[itemToDelete.memberIndex] = newMemberGoals[
           //   itemToDelete.memberIndex
           // ]
@@ -247,43 +247,27 @@ export default function GroupSettings() {
   }
 
   function createGoal() {
-    // const newGoal = {
-    //   activity: activityValue || OtherActivity.Steps,
-    //   target: amountValue || 1,
-    //   unit: metricMetadata[metricValue ?? Metric.Count].unit,
-    // };
-    console.log("make goal")
     const newGoal : Goal = {
       activity: activityValue || OtherActivity.Steps,
       target: amountValue || 1,
-      metric: Metric.Count, //metricMetadata[metricValue ?? Metric.Count].unit,
+      metric: Metric.Count,   
       goalId: "",
       type: GoalType.Individual,
       title: "hello",
-      progress: {} //TODO: user context
+      progress: {} 
     };
 
 
     if (currentGoalType === GoalCreationType.GroupGoal) {
       setGroupGoals((prev) => [...prev, newGoal]);
-      console.log("group??")
     } else if (
       currentGoalType === GoalCreationType.IndividualGoal &&
       selectedMemberIndex >= 0
     ) {
       setMemberGoals((prev) => {
-
-        // const newMemberGoals = [...prev];
-        // newMemberGoals[selectedMemberIndex] = [
-        //   ...newMemberGoals[selectedMemberIndex],
-        //   newGoal,
-        // ];
-        console.log(Object.keys(testGroup.users))
-        newGoal.progress = {[Object.keys(testGroup.users)[selectedMemberIndex]] : 0}
-        console.log(newGoal)
+        newGoal.progress = {[members[selectedMemberIndex][0]] : 0}
         return [...prev, newGoal];
       });
-      console.log(memberGoals)
     }
     setGoalModalVisibility(false);
   }
@@ -433,7 +417,7 @@ export default function GroupSettings() {
           {members.map((member, index) => (
             <SettingsMember
               key={index}
-              name={member}
+              name={member[1]}
               onRemove={() => promptRemoveMember(index)}
             />
           ))}
@@ -496,7 +480,8 @@ export default function GroupSettings() {
         </Collapsible>
 
         <Collapsible title="Individual Goals">
-          {members.map((member, memberIndex) => (
+          {members.map(([memberId, memberName], memberIndex) => (
+           
             <CollapsibleContainer key={memberIndex}>
               <View
                 style={[
@@ -508,7 +493,7 @@ export default function GroupSettings() {
                   numberOfLines={1}
                   style={[styles.text, { fontSize: 20, flex: 1 }]}
                 >
-                  {member}
+                  {memberName}
                 </Text>
                 <TouchableOpacity
                   onPress={() => openIndividualGoalModal(memberIndex)}
@@ -523,7 +508,8 @@ export default function GroupSettings() {
               </View>
               <>
                 {
-                testGroup.goals.filter((goal) => goal.type == GoalType.Individual && goal.progress[Object.keys(testGroup.users)[memberIndex]]).map((goal, goalIndex) => (
+                memberGoals.filter((goal) => goal.type == GoalType.Individual && goal.progress[memberId] >= 0).map((goal, goalIndex) => (
+                  
                 // memberGoals[memberIndex].map((goal, goalIndex) => (
                   <SettingsGoal
                     unit={""} key={goalIndex}
