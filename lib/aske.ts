@@ -46,6 +46,20 @@ const asker = [
   require("@/assets/images/aske/42.jpg"),
   require("@/assets/images/aske/43.jpg"),
   require("@/assets/images/aske/44.jpg"),
+  require("@/assets/images/aske/45.jpg"),
+  require("@/assets/images/aske/46.jpg"),
+  require("@/assets/images/aske/47.jpg"),
+  require("@/assets/images/aske/48.jpg"),
+  require("@/assets/images/aske/49.jpg"),
+  require("@/assets/images/aske/50.jpg"),
+  require("@/assets/images/aske/51.jpg"),
+  require("@/assets/images/aske/52.jpg"),
+  require("@/assets/images/aske/53.jpg"),
+  require("@/assets/images/aske/54.jpg"),
+  require("@/assets/images/aske/55.jpg"),
+  require("@/assets/images/aske/56.jpg"),
+  require("@/assets/images/aske/57.jpg"),
+  require("@/assets/images/aske/58.jpg"),
 ];
 
 export const defaultAske = asker[0];
