@@ -1,6 +1,5 @@
 import { setToken } from "./config";
 import { fetchApi } from "./fetch";
-import { Token } from "../API/schemas/Token";
 import {
   Login,
   LoginRequestSchema,
