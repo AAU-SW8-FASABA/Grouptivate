@@ -42,8 +42,8 @@ export default function Main() {
       const fetchedGroups: Group[] = [];
       for (const groupId of user.groups) {
         const group = await getGroup(groupId);
-        
-        contextGroups.set(groupId, group)
+
+        contextGroups.set(groupId, group);
         fetchedGroups.push(group);
       }
 

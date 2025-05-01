@@ -15,30 +15,27 @@ import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import type { Group } from "@/lib/API/schemas/Group";
 import { Interval } from "@/lib/API/schemas/Interval";
-import { Goal, GoalType } from "@/lib/API/schemas/Goal";
-import { SportActivity } from "@/lib/API/schemas/Activity";
-import { Metric } from "@/lib/API/schemas/Metric";
+import { Goal } from "@/lib/API/schemas/Goal";
 import { metricMetadata } from "@/lib/MetricMetadata";
 import {
   sportActivityMetadata,
   otherActivityMetadata,
 } from "@/lib/ActivityMetadata";
 import { getAske } from "@/lib/aske";
-import { GroupsContext, useGroups } from "@/lib/states/groupsState";
+import { useGroups } from "@/lib/states/groupsState";
 
 export default function Group() {
   const { id } = useLocalSearchParams();
-  const groupId = id.toString()
+  const groupId = id.toString();
   const router = useRouter();
-  const {contextGroups} = useGroups();
+  const { contextGroups } = useGroups();
 
-  const [group, setGroup] = useState<Group>(
-    contextGroups.get(groupId)!
-  );
-    
+  const [group, setGroup] = useState<Group>(contextGroups.get(groupId)!);
+
   let groupGoalsProgress: Map<string, number> = new Map();
   let groupGoalsDone: boolean = false;
   let groupGoals: Goal[] = [];
+
   function loadgroup() {
     groupGoals = group.goals.filter((goal) => {
       return goal.type === "group";
@@ -54,7 +51,6 @@ export default function Group() {
     );
   }
 
-  // user.groups.find((group) => group.groupName = name) //TODO: implement when user user groups :)
   loadgroup();
 
   let userGoals: Map<string, Goal[]> = new Map();
@@ -156,7 +152,11 @@ export default function Group() {
                 (group.goals.reduce(
                   (acc, goal) =>
                     acc +
-                    (Object.values(goal.progress).reduce((sum, add) => sum + add, 0)) / goal.target,
+                    Object.values(goal.progress).reduce(
+                      (sum, add) => sum + add,
+                      0,
+                    ) /
+                      goal.target,
                   0,
                 ) /
                   group.goals!.length) *
