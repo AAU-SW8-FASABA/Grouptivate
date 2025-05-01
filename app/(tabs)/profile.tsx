@@ -70,7 +70,7 @@ export default function Profile() {
         </Text>
         {invites.map((invite, index) => (
           <Invite
-            key={index}
+            key={invite.inviteId}
             {...invite}
             handleInvite={(answer: InviteAnswer) => {
               inviteAnswer(answer, index);

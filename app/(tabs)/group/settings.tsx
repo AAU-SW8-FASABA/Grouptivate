@@ -426,7 +426,7 @@ export default function GroupSettings() {
         <Collapsible title="Members" style={{ marginTop: 6 }}>
           {members.map((member, index) => (
             <SettingsMember
-              key={index}
+              key={member[0]}
               user={{ userId: member[0], name: member[1] }}
               onRemove={() => promptRemoveMember(index)}
             />
@@ -472,7 +472,7 @@ export default function GroupSettings() {
           {groupGoals.map((goal, index) => (
             <SettingsGoal
               unit={""}
-              key={index}
+              key={goal.goalId}
               {...goal}
               onRemove={() => promptRemoveGoal(index)}
             />
@@ -493,7 +493,7 @@ export default function GroupSettings() {
 
         <Collapsible title="Individual Goals">
           {members.map(([memberId, memberName], memberIndex) => (
-            <CollapsibleContainer key={memberIndex}>
+            <CollapsibleContainer key={memberId}>
               <View
                 style={[
                   styles.row,

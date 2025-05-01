@@ -126,6 +126,7 @@ export default function Main() {
         <Collapsible title="Goals" style={{ marginTop: 6 }}>
           {goals.map((goal) => (
             <GoalContainer
+              key={goal.goalId}
               activity={goal.activity}
               metric={goal.metric}
               progress={goal.progress.amount}
@@ -146,9 +147,9 @@ export default function Main() {
             />
           </TouchableOpacity>
         </View>
-        {groups.map((group, index) => (
+        {groups.map((group) => (
           <TouchableOpacity
-            key={index}
+            key={group.groupId}
             onPress={() =>
               router.push({
                 pathname: "/group",
