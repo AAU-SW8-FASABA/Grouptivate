@@ -32,6 +32,11 @@ export default function Main() {
   console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
+  const [newGroupName, setGroupName] = useState("");
+  const [intervalValue, setIntervalValue] = useState(Interval.Weekly);
+  const [isIntervalFocus, setIsIntervalFocus] = useState(false);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
 
   useEffect(() => {
     const fetchGroup = async () => {
@@ -45,36 +50,10 @@ export default function Main() {
     fetchGroup();
   }, [user]);
 
-  const [groups, setGroups] = useState<Group[]>([]);
-
-  const [goals, setGoals] = useState<Goal[]>([
-    {
-      goalId: "g",
-      type: GoalType.Individual,
-      title: "gaming",
-      activity: SportActivity.Gymnastics,
-      metric: Metric.Calories,
-      target: 5000,
-      progress: { guddi: 3000 },
-    },
-    {
-      goalId: "g",
-      type: GoalType.Individual,
-      title: "gaming",
-      activity: SportActivity.Stretching,
-      metric: Metric.Duration,
-      target: 90,
-      progress: { "123": 60 },
-    },
-  ]);
-
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
     value,
   }));
-  const [newGroupName, setGroupName] = useState("");
-  const [intervalValue, setIntervalValue] = useState(Interval.Weekly);
-  const [isIntervalFocus, setIsIntervalFocus] = useState(false);
 
   function createGroup() {
     postCreateGroup(user, newGroupName, intervalValue);
