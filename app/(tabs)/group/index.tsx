@@ -121,11 +121,8 @@ export default function Group() {
         Object.values(goal.progress).reduce((sum, add) => sum + add, 0),
       );
     });
-    groupGoalsDone = groupGoals.reduce(
-      (done, goal) =>
-        done && (groupGoalsProgress.get(goal.goalId) ?? 0) >= goal.target,
-      true,
-    );
+    groupGoalsDone = groupGoals.every(
+      (goal) => (groupGoalsProgress.get(goal.goalId) ?? 0) >= goal.target);
   }
 
   // user.groups.find((group) => group.groupName = name) //TODO: implement when user user groups :)
@@ -211,22 +208,18 @@ export default function Group() {
           >
             <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
             <Text style={[styles.text, { fontSize: 16 }]}>
-              {Object.entries(group.users).reduce(
-                (finished, [userId, userName]) =>
-                  finished +
-                  (groupGoalsDone
-                    ? userGoals
-                        .get(userId)
-                        ?.reduce(
-                          (allFinished, goal) =>
-                            allFinished && goal.progress[userId] >= goal.target,
-                          true,
-                        )
-                      ? 1
-                      : 0
-                    : 0),
-                0,
-              )}
+            {
+            Object.entries(group.users).reduce((count, [userId]) => {
+              if (!groupGoalsDone) return count;
+
+              const goals = userGoals.get(userId);
+              const allGoalsDone = goals?.every(
+                goal => goal.progress[userId] >= goal.target
+              );
+
+              return count + (allGoalsDone ? 1 : 0);
+            }, 0)
+          }
               / {Object.keys(group.users).length} members finished
             </Text>
           </View>
