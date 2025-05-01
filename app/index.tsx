@@ -1,33 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { deleteToken, getToken } from "@/lib/server/config";
-import { verify } from "@/lib/server/login";
-import { User } from "@/lib/API/schemas/User";
-import { get as getUser } from "@/lib/server/user";
-import { useUser } from "@/lib/states/userState";
 
 export default function Authentication() {
   const router = useRouter();
-  const {user, setUser} = useUser();
-
-  //TODO: Splash screen?
-  useEffect(() => {
-    async function fetchData() {
-      const token = await getToken();
-      if (token) {
-        const isValid = await verify();
-        if (isValid) {
-          const theUser: User = await getUser();
-          setUser(theUser);
-          router.push("/(tabs)");
-        } else {
-          await deleteToken();
-        }
-      }
-    }
-    //fetchData();
-  }, [router]);
 
   return (
     <>

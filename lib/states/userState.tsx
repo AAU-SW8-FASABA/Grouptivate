@@ -9,19 +9,16 @@ export const initialUser: User = {
   goals: [],
 };
 
-// Create a context type that includes both the user and a function to update it
 type UserContextType = {
   user: User;
   setUser: (user: User) => void;
 };
 
-// Create the context with default values
 export const UserContext = createContext<UserContextType>({
   user: initialUser,
   setUser: () => {},
 });
 
-// Create a provider component that will wrap your app
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>(initialUser);
 
@@ -32,5 +29,4 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Create a custom hook to easily access the user context
 export const useUser = () => useContext(UserContext);

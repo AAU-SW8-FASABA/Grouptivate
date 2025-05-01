@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
 import { deleteToken } from "@/lib/server/config";
-import { Container } from "@/components/Container";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { DeveloperTools } from "@/components/DeveloperTools";
@@ -12,13 +11,12 @@ import { respond as respondInvite } from "@/lib/server/group/invite/respond";
 import { get as getInvites } from "@/lib/server/group/invite";
 import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
 import { useUser } from "@/lib/states/userState";
-import { value } from "valibot";
 
 export default function Profile() {
   const router = useRouter();
-  const {user, setUser} = useUser();
+  const { user, setUser } = useUser();
   useEffect(() => {
-    async function fetchInvites(){
+    async function fetchInvites() {
       const fetchedInvites = await getInvites();
 
       const inviteState = [];
@@ -33,8 +31,8 @@ export default function Profile() {
       setInvites(inviteState);
     }
 
-    fetchInvites()
-  }, []);
+    fetchInvites();
+  }, [user]);
 
   async function logout() {
     await deleteToken();

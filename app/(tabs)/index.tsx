@@ -19,35 +19,30 @@ import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
-import {
-  get as getGroup,
-  create as postCreateGroup,
-} from "@/lib/server/group";
+import { get as getGroup, create as postCreateGroup } from "@/lib/server/group";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { Interval } from "@/lib/API/schemas/Interval";
 
 import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
-import { string } from "valibot";
-import { User } from "@/lib/API/schemas/User";
 import { prettyName } from "@/lib/PrettyName";
 
 export default function Main() {
-  const {user, setUser} = useUser();
+  const { user, setUser } = useUser();
   console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
-  const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);  
+  const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
 
   useEffect(() => {
     const fetchGroup = async () => {
-      const fetchedGroups: Group[] = []
-      for(const groupId of user.groups){
-        const group = await getGroup(groupId)
-        fetchedGroups.push(group)
+      const fetchedGroups: Group[] = [];
+      for (const groupId of user.groups) {
+        const group = await getGroup(groupId);
+        fetchedGroups.push(group);
       }
       setGroups(fetchedGroups);
-    }
-    fetchGroup()
+    };
+    fetchGroup();
   }, [user]);
 
   const [groups, setGroups] = useState<Group[]>([]);
@@ -60,7 +55,7 @@ export default function Main() {
       activity: SportActivity.Gymnastics,
       metric: Metric.Calories,
       target: 5000,
-      progress: { "guddi": 3000 },
+      progress: { guddi: 3000 },
     },
     {
       goalId: "g",
@@ -96,104 +91,107 @@ export default function Main() {
   }
 
   //function calculateIndividualProgress(): number {
-  //  
+  //
   //}
 
   return (
     <Suspense>
       <CustomScrollView style={globalStyles.viewContainer}>
-      <CustomModal
-        height={410}
-        title="New Group"
-        isVisible={newGroupModalVisibility}
-        mode={modalMode.Create}
-        setIsVisible={setNewGroupModalVisibility}
-        callback={createGroup}
-      >
-        <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
-        <TextInput
-          style={globalStyles.inputField}
-          onChangeText={setGroupName}
-          value={newGroupName}
-        ></TextInput>
-        <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
-          Interval
-        </Text>
-        <Dropdown
-          style={[styles.dropdown, isIntervalFocus && { borderColor: "blue" }]}
-          placeholderStyle={[styles.text, { fontSize: 20 }]}
-          selectedTextStyle={[styles.text, { fontSize: 20 }]}
-          itemTextStyle={[styles.text, { fontSize: 20 }]}
-          data={intervals}
-          labelField="label"
-          valueField="value"
-          placeholder="Select"
-          onFocus={() => setIsIntervalFocus(true)}
-          onBlur={() => setIsIntervalFocus(false)}
-          value={intervalValue}
-          onChange={(item) => {
-            setIntervalValue(item.value);
-            setIsIntervalFocus(false);
-          }}
-          renderRightIcon={() => (
+        <CustomModal
+          height={410}
+          title="New Group"
+          isVisible={newGroupModalVisibility}
+          mode={modalMode.Create}
+          setIsVisible={setNewGroupModalVisibility}
+          callback={createGroup}
+        >
+          <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
+          <TextInput
+            style={globalStyles.inputField}
+            onChangeText={setGroupName}
+            value={newGroupName}
+          ></TextInput>
+          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+            Interval
+          </Text>
+          <Dropdown
+            style={[
+              styles.dropdown,
+              isIntervalFocus && { borderColor: "blue" },
+            ]}
+            placeholderStyle={[styles.text, { fontSize: 20 }]}
+            selectedTextStyle={[styles.text, { fontSize: 20 }]}
+            itemTextStyle={[styles.text, { fontSize: 20 }]}
+            data={intervals}
+            labelField="label"
+            valueField="value"
+            placeholder="Select"
+            onFocus={() => setIsIntervalFocus(true)}
+            onBlur={() => setIsIntervalFocus(false)}
+            value={intervalValue}
+            onChange={(item) => {
+              setIntervalValue(item.value);
+              setIsIntervalFocus(false);
+            }}
+            renderRightIcon={() => (
+              <UniversalIcon
+                source={IconSource.FontAwesome6}
+                name="chevron-down"
+                size={20}
+                color="black"
+                style={{
+                  transform: [{ rotate: isIntervalFocus ? "180deg" : "0deg" }],
+                  marginRight: 5,
+                }}
+              />
+            )}
+          />
+        </CustomModal>
+        <Collapsible title="Goals" style={{ marginTop: 6 }}>
+          {goals.map((goal) => (
+            <GoalContainer
+              activity={goal.activity}
+              metric={goal.metric}
+              progress={goal.progress.amount}
+              target={goal.target}
+              days={2}
+            ></GoalContainer>
+          ))}
+        </Collapsible>
+        <View style={[styles.row]}>
+          <Text style={globalStyles.sectionHeader}>Groups</Text>
+          <TouchableOpacity onPress={() => setNewGroupModalVisibility(true)}>
             <UniversalIcon
               source={IconSource.FontAwesome6}
-              name="chevron-down"
-              size={20}
+              name="plus"
+              size={23}
               color="black"
-              style={{
-                transform: [{ rotate: isIntervalFocus ? "180deg" : "0deg" }],
-                marginRight: 5,
-              }}
+              style={{ marginRight: 5 }}
             />
-          )}
-        />
-      </CustomModal>
-      <Collapsible title="Goals" style={{ marginTop: 6 }}>
-        {goals.map((goal) => (
-          <GoalContainer
-            activity={goal.activity}
-            metric={goal.metric}
-            progress={goal.progress.amount}
-            target={goal.target}
-            days={2}
-          ></GoalContainer>
+          </TouchableOpacity>
+        </View>
+        {groups.map((group, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() =>
+              router.push({
+                pathname: "/group",
+                params: { name: group.groupName },
+              })
+            }
+          >
+            <GroupContainer
+              name={group.groupName}
+              days={2}
+              groupProgress={10}
+              groupTarget={4}
+              individualProgress={5}
+              individualTarget={4}
+              style={{ marginBottom: 8 }}
+            />
+          </TouchableOpacity>
         ))}
-      </Collapsible>
-      <View style={[styles.row]}>
-        <Text style={globalStyles.sectionHeader}>Groups</Text>
-        <TouchableOpacity onPress={() => setNewGroupModalVisibility(true)}>
-          <UniversalIcon
-            source={IconSource.FontAwesome6}
-            name="plus"
-            size={23}
-            color="black"
-            style={{ marginRight: 5 }}
-          />
-        </TouchableOpacity>
-      </View>
-      {groups.map((group, index) => (
-        <TouchableOpacity
-          key={index}
-          onPress={() =>
-            router.push({
-              pathname: "/group",
-              params: { name: group.groupName },
-            })
-          }
-        >
-          <GroupContainer
-            name={group.groupName}
-            days={2}
-            groupProgress={10}
-            groupTarget={4}
-            individualProgress={5}
-            individualTarget={4}
-            style={{ marginBottom: 8 }}
-          />
-        </TouchableOpacity>
-      ))}
-    </CustomScrollView>
+      </CustomScrollView>
     </Suspense>
   );
 }
