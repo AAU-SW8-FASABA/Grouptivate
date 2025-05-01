@@ -19,9 +19,9 @@ import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { get as getGroup, create as postCreateGroup } from "@/lib/server/group";
 import { Interval } from "@/lib/API/schemas/Interval";
-
 import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
+import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
 
 export default function Main() {
@@ -33,6 +33,8 @@ export default function Main() {
   const [intervalValue, setIntervalValue] = useState(Interval.Weekly);
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]);
+  const [individualGoals, setIndividualGoals] = useState<Goal[]>([]);
+  const [groupGoals, setGroupGoals] = useState<Goal[]>([])
   const [goals] = useState<Goal[]>([]);
 
   useEffect(() => {
@@ -45,7 +47,22 @@ export default function Main() {
       setGroups(fetchedGroups);
     };
     fetchGroup();
+    setIndividualGoals(splitGoalTypes(GoalType.Individual));
+    setupGroupGoals();
   }, [user]);
+
+  function setupGroupGoals(){
+    setGroupGoals(splitGoalTypes(GoalType.Individual))
+    const groupGoalsProgress: Map<string, number> = new Map()
+    
+  }
+
+  function splitGoalTypes(goalTypeFilter:string): Goal[]{
+    const filteredGoals: Goal[] = user.goals.filter((goal) => {
+        return goal.type == goalTypeFilter
+      });
+    return filteredGoals
+  }
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
@@ -124,11 +141,11 @@ export default function Main() {
           />
         </CustomModal>
         <Collapsible title="Goals" style={{ marginTop: 6 }}>
-          {goals.map((goal) => (
+          {individualGoals.map((goal) => (
             <GoalContainer
               activity={goal.activity}
               metric={goal.metric}
-              progress={goal.progress.amount}
+              progress={goal.progress[0]}
               target={goal.target}
               days={2}
             ></GoalContainer>
@@ -152,7 +169,7 @@ export default function Main() {
             onPress={() =>
               router.push({
                 pathname: "/group",
-                params: { name: group.groupName },
+                params: { name: group.groupId },
               })
             }
           >
@@ -161,7 +178,7 @@ export default function Main() {
               days={2}
               groupProgress={10}
               groupTarget={4}
-              individualProgress={5}
+              individualProgress={9}
               individualTarget={4}
               style={{ marginBottom: 8 }}
             />

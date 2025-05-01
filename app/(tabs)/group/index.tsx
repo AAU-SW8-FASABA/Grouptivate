@@ -220,12 +220,12 @@ export default function Group() {
             </Text>
           </View>
           <View style={{ marginTop: 10 }}>
-            <ProgressBarPercentage
+          <ProgressBarPercentage
               progress={
                 (group.goals.reduce(
                   (acc, goal) =>
                     acc +
-                    (groupGoalsProgress.get(goal.goalId) ?? 0) / goal.target,
+                    (Object.values(goal.progress).reduce((sum, add) => sum + add, 0)) / goal.target,
                   0,
                 ) /
                   group.goals!.length) *
