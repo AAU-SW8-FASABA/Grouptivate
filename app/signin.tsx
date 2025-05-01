@@ -33,63 +33,60 @@ export default function Signin() {
     router.push("/(tabs)");
   }
   return (
-      <>
-        <View style={styles.header}>
-          <Text style={[styles.text, { fontSize: 40, color: "black" }]}>
+    <>
+      <View style={styles.header}>
+        <Text style={[styles.text, { fontSize: 40, color: "black" }]}>
+          Log in
+        </Text>
+        <Text
+          style={[
+            styles.text,
+            { fontSize: 20, color: "black", textAlign: "center" },
+          ]}
+        >
+          Please enter username and password
+        </Text>
+      </View>
+      <View style={styles.inputView}>
+        <Text style={[styles.text, { fontSize: 20, color: "black" }]}>
+          Username
+        </Text>
+        <TextInput
+          value={username}
+          onChangeText={(text) => setUsername(text)}
+          style={globalStyles.inputField}
+        />
+        <Text
+          style={[styles.text, { fontSize: 20, color: "black", marginTop: 10 }]}
+        >
+          Password
+        </Text>
+        <TextInput
+          secureTextEntry
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          style={globalStyles.inputField}
+        />
+      </View>
+      <View style={styles.buttons}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#4062BB" }]}
+          onPress={() => login()}
+        >
+          <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
             Log in
           </Text>
-          <Text
-            style={[
-              styles.text,
-              { fontSize: 20, color: "black", textAlign: "center" },
-            ]}
-          >
-            Please enter username and password
-          </Text>
-        </View>
-        <View style={styles.inputView}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "#D9D9D9" }]}
+          onPress={() => router.back()}
+        >
           <Text style={[styles.text, { fontSize: 20, color: "black" }]}>
-            Username
+            Back
           </Text>
-          <TextInput
-            value={username}
-            onChangeText={(text) => setUsername(text)}
-            style={globalStyles.inputField}
-          />
-          <Text
-            style={[
-              styles.text,
-              { fontSize: 20, color: "black", marginTop: 10 },
-            ]}
-          >
-            Password
-          </Text>
-          <TextInput
-            secureTextEntry
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            style={globalStyles.inputField}
-          />
-        </View>
-        <View style={styles.buttons}>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: "#4062BB" }]}
-            onPress={() => login()}
-          >
-            <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
-              Log in
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: "#D9D9D9" }]}
-            onPress={() => router.back()}
-          >
-            <Text style={[styles.text, { fontSize: 20, color: "black" }]}>
-              Back
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 }
 
