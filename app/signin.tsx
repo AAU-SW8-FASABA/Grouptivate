@@ -52,6 +52,7 @@ export default function Signin() {
           Username
         </Text>
         <TextInput
+          placeholder="Username"
           value={username}
           onChangeText={(text) => setUsername(text)}
           style={globalStyles.inputField}
@@ -62,6 +63,7 @@ export default function Signin() {
           Password
         </Text>
         <TextInput
+          placeholder="Password"
           secureTextEntry
           value={password}
           onChangeText={(text) => setPassword(text)}
@@ -73,7 +75,7 @@ export default function Signin() {
           style={[styles.button, { backgroundColor: "#4062BB" }]}
           onPress={() => login()}
         >
-          <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
+          <Text testID="login-button" style={[styles.text, { fontSize: 20, color: "white" }]}>
             Log in
           </Text>
         </TouchableOpacity>
@@ -81,7 +83,7 @@ export default function Signin() {
           style={[styles.button, { backgroundColor: "#D9D9D9" }]}
           onPress={() => router.back()}
         >
-          <Text style={[styles.text, { fontSize: 20, color: "black" }]}>
+          <Text testID="back-button" style={[styles.text, { fontSize: 20, color: "black" }]}>
             Back
           </Text>
         </TouchableOpacity>
