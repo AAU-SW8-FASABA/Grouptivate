@@ -17,7 +17,8 @@ import { GoalContainer } from "@/components/GoalContainer";
 import { GroupContainer } from "@/components/GroupContainer";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
-import { get as getGroup, create as postCreateGroup } from "@/lib/server/group";
+import { create as postCreateGroup } from "@/lib/server/group";
+import { get as getGroups } from "@/lib/server/groups";
 import { Interval } from "@/lib/API/schemas/Interval";
 import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
@@ -39,11 +40,7 @@ export default function Main() {
 
   useEffect(() => {
     const fetchGroup = async () => {
-      const fetchedGroups: Group[] = [];
-      for (const groupId of user.groups) {
-        const group = await getGroup(groupId);
-        fetchedGroups.push(group);
-      }
+      const fetchedGroups = await getGroups();
       setGroups(fetchedGroups);
     };
     fetchGroup();
@@ -53,7 +50,7 @@ export default function Main() {
 
   function setupGroupGoals(){
     setGroupGoals(splitGoalTypes(GoalType.Individual))
-    const groupGoalsProgress: Map<string, number> = new Map()
+    const groupGoalsProgress: Map<string, number> = new Map();
     
   }
 
