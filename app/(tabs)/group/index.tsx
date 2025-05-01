@@ -107,7 +107,6 @@ export default function Group() {
     ],
     streak: 2,
   };
-  console.log(user);
   const [group, setGroup] = useState(testGroup);
   let groupGoalsProgress: Map<string, number> = new Map();
   let groupGoalsDone: boolean = false;
