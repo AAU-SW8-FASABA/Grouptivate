@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 
@@ -19,15 +19,13 @@ import { Interval } from "@/lib/API/schemas/Interval";
 import { Goal, GoalType } from "@/lib/API/schemas/Goal";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
+import { UserContext } from "@/states/userState";
 
 export default function Group() {
   const { name } = useLocalSearchParams();
   const router = useRouter();
- 
+  const user = useContext(UserContext)
 
-
-  //TODO: get group
-  //TODO: members skal rykkes ind i group og group skal have en state
   const members : Record<string,string> =
     {
       "anders uuid": "Anders",
@@ -36,7 +34,7 @@ export default function Group() {
 
       "hal uuid": "Albert Hal",
       // name: "Albert Hal",
-    }
+  }
   const testGroup : Group = {
     groupId: "",
     groupName: name.toString(),
@@ -92,12 +90,13 @@ export default function Group() {
     ],
     streak: 2,
   }
-
+  console.log(user)
   const [group, setGroup] = useState(testGroup)
-
+ 
+  // user.groups.find((group) => group.groupName = name) //TODO: implement when user user groups :) 
   const groupGoal = group.goals.filter(goal => {
     return goal.type == "group"
-  })[0]
+  })[0] //TODO: fix that there might be more than one!
   let userGoals: Map<string, Goal[]> = new Map()
   Object.keys(group.users).forEach( (user) => {
     userGoals.set(user, group.goals.filter((goal) => {return goal.type == "individual" && goal.progress[user]}))
@@ -129,7 +128,10 @@ export default function Group() {
           headerRight: () => (
             <TouchableOpacity
               style={{ marginRight: 15 }}
-              onPress={() => router.push("/group/settings")}
+              onPress={() => router.push({
+                pathname: "/group/settings",
+                params: { name: group.groupName },
+              })}
             >
               <UniversalIcon
                 source={IconSource.FontAwesome6}
