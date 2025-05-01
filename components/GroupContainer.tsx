@@ -6,14 +6,17 @@ import {
   Text,
   Image,
 } from "react-native";
+import { useEffect, useState } from "react";
 
 import { HR } from "./HR";
 import { IconSource } from "./ui/UniversalIcon";
 import { Container } from "./Container";
 import { ProgressBarIcon } from "./ProgressBar/ProgressBarIcon";
+import { defaultAske, getAske } from "@/lib/aske";
+import { Group } from "@/lib/API/schemas/Group";
 
 export function GroupContainer({
-  name,
+  group,
   days,
   groupProgress,
   groupTarget,
@@ -21,7 +24,7 @@ export function GroupContainer({
   individualTarget,
   style,
 }: {
-  name: string;
+  group: Pick<Group, "groupId" | "groupName" | "users">;
   days: number;
   groupProgress: number;
   groupTarget: number;
@@ -29,16 +32,21 @@ export function GroupContainer({
   individualTarget: number;
   style?: StyleProp<ViewStyle>;
 }) {
+  const [image, setImage] = useState(defaultAske);
+  useEffect(() => {
+    setImage(getAske(group));
+  }, [group]);
+
   return (
     <Container style={style}>
       <View style={styles.row}>
         <View style={{ flexDirection: "row" }}>
           <Image
-            source={require("@/assets/images/Aske.png")}
+            source={image}
             style={{ width: 32, height: 32, borderRadius: 100 }}
           />
           <Text style={[styles.text, { fontSize: 24, marginLeft: 10 }]}>
-            {name}
+            {group.groupName}
           </Text>
         </View>
         <Text style={[styles.text, { fontSize: 16 }]}>{days} days left</Text>
