@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,23 +6,35 @@ import {
   StyleProp,
   ViewStyle,
   TouchableOpacity,
+  Image,
 } from "react-native";
 
 import { Container } from "./Container";
 import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
+import { User } from "@/lib/API/schemas/User";
+import { defaultAske, getAske } from "@/lib/aske";
 
 interface Props {
-  name: string;
+  user: Pick<User, "userId" | "name">;
   style?: StyleProp<ViewStyle>;
   onRemove?: () => void;
 }
 
-export function SettingsMember({ name, style, onRemove }: Props) {
+export function SettingsMember({ user, style, onRemove }: Props) {
+  const [image, setImage] = useState(defaultAske);
+  useEffect(() => {
+    setImage(getAske(user));
+  }, [user]);
+
   return (
     <View style={[styles.row, style]}>
-      <Container>
-        <Text numberOfLines={1} style={styles.text}>
-          {name}
+      <Container style={{ flexDirection: "row" }}>
+        <Image
+          source={image}
+          style={{ width: 32, height: 32, borderRadius: 100 }}
+        />
+        <Text numberOfLines={1} style={{ ...styles.text, marginLeft: 10 }}>
+          {user.name}
         </Text>
       </Container>
       <TouchableOpacity onPress={onRemove}>
