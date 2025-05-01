@@ -2,18 +2,63 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
 import { deleteToken } from "@/lib/server/config";
-import { Container } from "@/components/Container";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { DeveloperTools } from "@/components/DeveloperTools";
+import { Invite, InviteAnswer } from "@/components/Invite";
+import { useEffect, useState } from "react";
+import { respond as respondInvite } from "@/lib/server/group/invite/respond";
+import { get as getInvites } from "@/lib/server/group/invite";
+import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
+import { useUser } from "@/lib/states/userState";
 
 export default function Profile() {
   const router = useRouter();
+  const { user } = useUser();
+  useEffect(() => {
+    async function fetchInvites() {
+      const fetchedInvites = await getInvites();
 
-  const logout = async () => {
+      const inviteState = [];
+      for (const invite of fetchedInvites) {
+        inviteState.push({
+          inviteId: invite.inviteId,
+          groupName: invite.groupName,
+          inviteeName: user.name,
+          inviterName: invite.inviterName,
+        });
+      }
+      setInvites(inviteState);
+    }
+
+    fetchInvites();
+  }, [user]);
+
+  async function logout() {
     await deleteToken();
     router.dismissAll();
-  };
+  }
+
+  function inviteAnswer(answer: InviteAnswer, index: number): void {
+    let accepted;
+    if (answer === InviteAnswer.Accept) {
+      accepted = true;
+    } else if (answer === InviteAnswer.Decline) {
+      accepted = false;
+    } else {
+      console.log("Swoop");
+      return;
+    }
+    // respondInvite send a post api call, to respond on the inviteId.
+    respondInvite(invites[index].inviteId, accepted);
+    deleteInvite(index);
+  }
+
+  function deleteInvite(index: number) {
+    setInvites((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  const [invites, setInvites] = useState<Omit<InviteType, "groupId">[]>([]);
 
   return (
     <CustomScrollView style={globalStyles.viewContainer}>
@@ -23,44 +68,19 @@ export default function Profile() {
           borderRadius={100}
           style={styles.profilePhoto}
         />
-        <Text style={[styles.text, styles.profileName]}>Aske #82</Text>
+        <Text style={[styles.text, styles.profileName]}>{user.name}</Text>
         <Text style={[styles.text, { fontSize: 32, marginTop: 50 }]}>
           Invitations
         </Text>
-        <Container style={{ marginBottom: 8 }}>
-          <View style={styles.column}>
-            <View>
-              <Text style={[styles.text, { fontSize: 12, color: "#4A4A4A" }]}>
-                Hald #81 invited you to:
-              </Text>
-              <Text style={[styles.text, { fontSize: 24 }]}>The Gulops</Text>
-            </View>
-            <View style={{ width: "50%" }}>
-              <TouchableOpacity style={{ marginBottom: 5 }}>
-                <Text
-                  style={[
-                    styles.text,
-                    styles.button,
-                    { backgroundColor: "#57A773", color: "white" },
-                  ]}
-                >
-                  Accept
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text
-                  style={[
-                    styles.text,
-                    styles.button,
-                    { backgroundColor: "#D0312D", color: "white" },
-                  ]}
-                >
-                  Decline
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Container>
+        {invites.map((invite, index) => (
+          <Invite
+            key={index}
+            {...invite}
+            handleInvite={(answer: InviteAnswer) => {
+              inviteAnswer(answer, index);
+            }}
+          />
+        ))}
         <TouchableOpacity onPress={logout}>
           <Text
             style={[
@@ -69,7 +89,7 @@ export default function Profile() {
               { backgroundColor: "#D9D9D9", color: "black" },
             ]}
           >
-            Log out (dev)
+            Log out
           </Text>
         </TouchableOpacity>
         <Text
