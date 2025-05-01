@@ -8,11 +8,11 @@ export enum InviteAnswer {
 
 interface InviteProps {
   inviterName: string;
-  groupname: string;
+  groupName: string;
   handleInvite: (answer: InviteAnswer) => void;
 }
 
-export function Invite({ inviterName, groupname, handleInvite }: InviteProps) {
+export function Invite({ inviterName, groupName, handleInvite }: InviteProps) {
   return (
     <Container style={{ marginBottom: 8 }}>
       <View style={styles.column}>
@@ -20,7 +20,7 @@ export function Invite({ inviterName, groupname, handleInvite }: InviteProps) {
           <Text style={[styles.text, { fontSize: 12, color: "#4A4A4A" }]}>
             {inviterName} invited you to:
           </Text>
-          <Text style={[styles.text, { fontSize: 24 }]}>{groupname}</Text>
+          <Text style={[styles.text, { fontSize: 24 }]}>{groupName}</Text>
         </View>
         <View style={{ width: "50%" }}>
           <TouchableOpacity

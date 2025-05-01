@@ -32,85 +32,27 @@ import { string } from "valibot";
 import { User } from "@/lib/API/schemas/User";
 import { prettyName } from "@/lib/PrettyName";
 
-type usersRecord = Record<'userId'|'userName', string>
-
 export default function Main() {
   const {user, setUser} = useUser();
   console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
-  const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
-
-  function fetchGoals(): Goal[] {
-    // Example function undtil api is done
-    const goalArray: Goal[] = [];
-    const goalExample: Goal = {
-      goalId: "4",
-      type: GoalType.Individual,
-      title: "Gamer Goal",
-      activity: SportActivity.Badminton,
-      metric: Metric.Duration,
-      target: 90,
-      progress: { "1": 15 },
-    };
-    const goalExample1: Goal = {
-      goalId: "5",
-      type: GoalType.Group,
-      title: "Gamer Goals",
-      activity: SportActivity.Boxing,
-      metric: Metric.Calories,
-      target: 10000,
-      progress: { "1": 4000, "2": 1000 },
-    };
-    goalArray.push(goalExample);
-    goalArray.push(goalExample1);
-    return goalArray;
-  }
-
-  //function fetchGroup(): Group[] {
-  //  const groupArray: Group[] = [];
-  //  const goalArray: Goal[] = fetchGoals();
-  //  const groupExample: Group = {
-  //    groupId: "",
-  //    groupName: "Bing",
-  //    users: { "1": "bonk", "2": "bank" },
-  //    interval: Interval.Weekly,
-  //    goals: goalArray,
-  //    streak: 5,
-  //  };
-  //  groupArray.push(groupExample);
-  //  return groupArray;
-  //}
-  
+  const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);  
 
   useEffect(() => {
     const fetchGroup = async () => {
       const fetchedGroups: Group[] = []
       for(const groupId of user.groups){
-        console.log(groupId)
         const group = await getGroup(groupId)
-        console.log(group)
         fetchedGroups.push(group)
       }
-      //setGroups(fetchedGroups);
+      setGroups(fetchedGroups);
     }
     fetchGroup()
-  }, []);
+  }, [user]);
 
-//const usersExample: usersRecord[] = []
-//usersExample.push({"userId": "1", "userName": "fryd"})
-  //const usersTest = {[keys: "userId"|"s"]}
-  const [groups, setGroups] = useState([
-    {
-      groupId: "",
-      groupName: "Bing",
-      users: {},
-      interval: Interval.Weekly,
-      goals: [],
-      streak: 5,
-    }
-  ]);
+  const [groups, setGroups] = useState<Group[]>([]);
 
-  const [goals, setGoals] = useState([
+  const [goals, setGoals] = useState<Goal[]>([
     {
       goalId: "g",
       type: GoalType.Individual,
@@ -118,7 +60,7 @@ export default function Main() {
       activity: SportActivity.Gymnastics,
       metric: Metric.Calories,
       target: 5000,
-      progress: { user: "guddi", amount: 3000 },
+      progress: { "guddi": 3000 },
     },
     {
       goalId: "g",
@@ -127,7 +69,7 @@ export default function Main() {
       activity: SportActivity.Stretching,
       metric: Metric.Duration,
       target: 90,
-      progress: { user: "guddi", amount: 60 },
+      progress: { "123": 60 },
     },
   ]);
 
@@ -145,7 +87,7 @@ export default function Main() {
     const newGroup = {
       groupId: "",
       groupName: newGroupName,
-      users: { [user.userId]: [user.name] },
+      users: { [user.userId]: user.name },
       interval: intervalValue,
       goals: [],
       streak: 0,

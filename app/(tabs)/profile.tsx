@@ -14,27 +14,6 @@ import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
 import { useUser } from "@/lib/states/userState";
 import { value } from "valibot";
 
-function fetchInvites(): InviteType[] {
-  const exampleArray: InviteType[] = [];
-  const example: InviteType = {
-    inviteId: "",
-    groupName: "Kinda group",
-    groupId: "",
-    inviteeName: "Aske",
-    inviterName: "Fryd",
-  };
-  const example2: InviteType = {
-    inviteId: "",
-    groupName: "Heow",
-    groupId: "",
-    inviteeName: "Aske",
-    inviterName: "bank",
-  };
-  exampleArray.push(example);
-  exampleArray.push(example2);
-  return exampleArray;
-}
-
 export default function Profile() {
   const router = useRouter();
   const {user, setUser} = useUser();
@@ -46,7 +25,8 @@ export default function Profile() {
       for (const invite of fetchedInvites) {
         inviteState.push({
           inviteId: invite.inviteId,
-          groupname: invite.groupName,
+          groupName: invite.groupName,
+          inviteeName: user.name,
           inviterName: invite.inviterName,
         });
       }
@@ -80,18 +60,7 @@ export default function Profile() {
     setInvites((prev) => prev.filter((_, i) => i !== index));
   }
 
-  const [invites, setInvites] = useState([
-    {
-      inviteId: "",
-      groupname: "Bongers",
-      inviterName: "Bong",
-    },
-    {
-      inviteId: "",
-      groupname: "Bingers",
-      inviterName: "Bing",
-    },
-  ]);
+  const [invites, setInvites] = useState<Omit<InviteType, "groupId">[]>([]);
 
   return (
     <CustomScrollView style={globalStyles.viewContainer}>
