@@ -36,7 +36,7 @@ export async function SyncActivity() {
     groups
       .map((group) =>
         group.goals.map(async (goal) => ({
-          uuid: goal.uuid,
+          goalId: goal.goalId,
           progress: await getGoalProgress(
             healthAdapter,
             goal.activity,
