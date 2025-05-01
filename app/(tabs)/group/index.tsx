@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 
@@ -14,22 +14,19 @@ import { NameProgress } from "@/components/NameProgress";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import type { Group } from "@/lib/API/schemas/Group";
-import { Uuid, UuidSchema } from "@/lib/API/schemas/Uuid";
 import { Interval } from "@/lib/API/schemas/Interval";
 import { Goal, GoalType } from "@/lib/API/schemas/Goal";
-import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
+import { SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
 import { metricMetadata } from "@/lib/MetricMetadata";
 import {
   sportActivityMetadata,
   otherActivityMetadata,
 } from "@/lib/ActivityMetadata";
-import { UserContext } from "@/lib/states/userState";
 
 export default function Group() {
   const { name } = useLocalSearchParams();
   const router = useRouter();
-  const user = useContext(UserContext);
 
   const members: Record<string, string> = {
     "anders uuid": "Anders",
@@ -113,7 +110,7 @@ export default function Group() {
   let groupGoals: Goal[] = [];
   function loadgroup() {
     groupGoals = group.goals.filter((goal) => {
-      return goal.type == "group";
+      return goal.type === "group";
     });
     groupGoals.forEach((goal) => {
       groupGoalsProgress.set(
@@ -134,7 +131,7 @@ export default function Group() {
     userGoals.set(
       user,
       group.goals.filter((goal) => {
-        return goal.type == "individual" && goal.progress[user];
+        return goal.type === "individual" && goal.progress[user];
       }),
     );
   });
@@ -189,9 +186,9 @@ export default function Group() {
           <ContainerWithBlueBox
             text1="Days Left"
             text2={
-              group.interval == Interval.Daily
+              group.interval === Interval.Daily
                 ? "1"
-                : group.interval == Interval.Weekly
+                : group.interval === Interval.Weekly
                   ? daysUntilNextMonday().toString()
                   : daysUntilNextMonth().toString()
             }

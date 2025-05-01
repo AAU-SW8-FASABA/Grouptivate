@@ -25,7 +25,6 @@ import { CustomScrollView } from "@/components/CusomScrollView";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { prettyName } from "@/lib/PrettyName";
 import { Metric } from "@/lib/API/schemas/Metric";
-import { metricMetadata } from "@/lib/MetricMetadata";
 import {
   otherActivityMetadata,
   sportActivityMetadata,
@@ -182,12 +181,12 @@ export default function GroupSettings() {
   }
 
   const [groupGoals, setGroupGoals] = useState(
-    testGroup.goals.filter((goal) => goal.type == GoalType.Group),
+    testGroup.goals.filter((goal) => goal.type === GoalType.Group),
   );
 
   // Store individual goals per member
   const [memberGoals, setMemberGoals] = useState(
-    testGroup.goals.filter((goal) => goal.type == GoalType.Individual),
+    testGroup.goals.filter((goal) => goal.type === GoalType.Individual),
   );
 
   const [goalModalVisibility, setGoalModalVisibility] = useState(false);
@@ -386,7 +385,7 @@ export default function GroupSettings() {
             value={amountValue ? String(amountValue) : ""}
             onChangeText={(text) => setAmountValue(Number(text))}
           />
-          {currentGoalType == GoalCreationType.GroupGoal ? (
+          {currentGoalType === GoalCreationType.GroupGoal ? (
             <>
               <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
                 Title
