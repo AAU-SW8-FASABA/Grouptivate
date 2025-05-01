@@ -151,7 +151,7 @@ export default function GroupSettings() {
       index: goalIndex,
       name: memberGoals.filter(
         (goal) => goal.progress[members[memberIndex][0]] >= 0,
-      )[goalIndex].goalId, 
+      )[goalIndex].goalId,
       memberIndex: memberIndex,
     });
     setDeleteModalVisibility(true);
@@ -171,8 +171,9 @@ export default function GroupSettings() {
       } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
         setMemberGoals((prev) => {
           let newMemberGoals = [...prev];
-          newMemberGoals = newMemberGoals
-            .filter((goal) => goal.goalId !== itemToDelete.name);
+          newMemberGoals = newMemberGoals.filter(
+            (goal) => goal.goalId !== itemToDelete.name,
+          );
           return newMemberGoals;
         });
       }
@@ -517,10 +518,7 @@ export default function GroupSettings() {
               </View>
               <>
                 {memberGoals
-                  .filter(
-                    (goal) =>
-                      goal.progress[memberId] >= 0,
-                  )
+                  .filter((goal) => goal.progress[memberId] >= 0)
                   .map((goal, goalIndex) => (
                     <SettingsGoal
                       unit={""}
