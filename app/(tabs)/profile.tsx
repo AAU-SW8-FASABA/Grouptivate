@@ -11,10 +11,12 @@ import { respond as respondInvite } from "@/lib/server/group/invite/respond";
 import { get as getInvites } from "@/lib/server/group/invite";
 import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
 import { useUser } from "@/lib/states/userState";
+import { defaultAske, getAske } from "@/lib/aske";
 
 export default function Profile() {
   const router = useRouter();
   const { user } = useUser();
+  const [userImage, setUserImage] = useState(defaultAske);
   useEffect(() => {
     async function fetchInvites() {
       const fetchedInvites = await getInvites();
@@ -32,6 +34,9 @@ export default function Profile() {
     }
 
     fetchInvites();
+  }, [user]);
+  useEffect(() => {
+    setUserImage(getAske(user));
   }, [user]);
 
   async function logout() {
@@ -55,7 +60,7 @@ export default function Profile() {
     <CustomScrollView style={globalStyles.viewContainer}>
       <View style={[styles.center, { marginTop: 8 }]}>
         <Image
-          source={require("@/assets/images/Aske.png")}
+          source={userImage}
           borderRadius={100}
           style={styles.profilePhoto}
         />

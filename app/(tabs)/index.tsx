@@ -157,7 +157,7 @@ export default function Main() {
             }
           >
             <GroupContainer
-              name={group.groupName}
+              group={group}
               days={2}
               groupProgress={10}
               groupTarget={4}
