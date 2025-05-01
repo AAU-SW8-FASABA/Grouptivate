@@ -38,6 +38,7 @@ export default function Main() {
   useEffect(() => {
     const fetchGroup = async () => {
       const fetchedGroups: Group[] = [];
+      const groups = await getGroups()
       for (const groupId of user.groups) {
         const group = await getGroup(groupId);
         fetchedGroups.push(group);
