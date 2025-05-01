@@ -37,71 +37,70 @@ import { Interval } from "@/lib/API/schemas/Interval";
 export default function GroupSettings() {
   const { name } = useLocalSearchParams();
   //TODO: get group from name
-  const testMembers : Record<string,string> =
-    {
-      "anders uuid": "Anders",
+  const testMembers: Record<string, string> = {
+    "anders uuid": "Anders",
 
-      "hald uuid": "Albert Hald",
+    "hald uuid": "Albert Hald",
 
-      "hal uuid": "Albert Hal",
-      // name: "Albert Hal",
-  }
-  const testGroup : Group = {
+    "hal uuid": "Albert Hal",
+    // name: "Albert Hal",
+  };
+  const testGroup: Group = {
     groupId: "",
     groupName: name.toString(),
     users: testMembers,
     interval: Interval.Weekly,
-    goals: [{
-      goalId: "", //group goal
-      title: "This is a title",
-      type: GoalType.Group,
-      activity: SportActivity.Badminton,
-      metric: Metric.Distance,
-      target: 200,
-      progress: {
-        "anders uuid": 20,
-        "hald uuid": 100 ,
-        "hal uuid": 100
-      }
-      
-    },
-    {
-      goalId: "",
-      title: "Anders goal",
-      type: GoalType.Individual,
-      activity: SportActivity.Badminton,
-      metric: Metric.Distance,
-      target: 200,
-      progress: {
-        "anders uuid": 200
-      }
-    },
-    {
-      goalId: "",
-      title: "Albert hald goal",
-      type: GoalType.Individual,
-      activity: SportActivity.Badminton,
-      metric: Metric.Distance,
-      target: 200,
-      progress: {
-        "hald uuid": 20,
-      }
-    },
-    {
-      goalId: "",
-      title: "Albert hal",
-      type: GoalType.Individual,
-      activity: SportActivity.Baseball,
-      metric: Metric.Distance,
-      target: 200,
-      progress: {
-        "hal uuid": 20,
-      }
-    },
+    goals: [
+      {
+        goalId: "", //group goal
+        title: "This is a title",
+        type: GoalType.Group,
+        activity: SportActivity.Badminton,
+        metric: Metric.Distance,
+        target: 200,
+        progress: {
+          "anders uuid": 20,
+          "hald uuid": 100,
+          "hal uuid": 100,
+        },
+      },
+      {
+        goalId: "",
+        title: "Anders goal",
+        type: GoalType.Individual,
+        activity: SportActivity.Badminton,
+        metric: Metric.Distance,
+        target: 200,
+        progress: {
+          "anders uuid": 200,
+        },
+      },
+      {
+        goalId: "",
+        title: "Albert hald goal",
+        type: GoalType.Individual,
+        activity: SportActivity.Badminton,
+        metric: Metric.Distance,
+        target: 200,
+        progress: {
+          "hald uuid": 20,
+        },
+      },
+      {
+        goalId: "",
+        title: "Albert hal",
+        type: GoalType.Individual,
+        activity: SportActivity.Baseball,
+        metric: Metric.Distance,
+        target: 200,
+        progress: {
+          "hal uuid": 20,
+        },
+      },
     ],
     streak: 2,
-  }
-  
+  };
+
   const [members, setMembers] = useState(Object.entries(testGroup.users));
 
   const [inviteModalVisibility, setInviteModalVisibility] = useState(false);
@@ -114,10 +113,13 @@ export default function GroupSettings() {
     memberIndex: -1,
   });
 
-  let id = 0
+  let id = 0;
   function inviteMember() {
     if (newMemberName.trim() !== "") {
-      setMembers((prev) => [...prev, ...Object.entries({[(++id).toString()]: newMemberName})]);
+      setMembers((prev) => [
+        ...prev,
+        ...Object.entries({ [(++id).toString()]: newMemberName }),
+      ]);
       setNewMemberName("");
       setInviteModalVisibility(false);
     }
@@ -147,7 +149,9 @@ export default function GroupSettings() {
     setItemToDelete({
       type: settingsDeletion.IndividualGoal,
       index: goalIndex,
-      name: memberGoals.filter((goal) =>  goal.progress[Object.keys(members)[memberIndex]])[goalIndex].activity, //TODO: fix this
+      name: memberGoals.filter(
+        (goal) => goal.progress[Object.keys(members)[memberIndex]],
+      )[goalIndex].activity, //TODO: fix this
       //memberGoals[memberIndex][goalIndex].activity,
       memberIndex: memberIndex,
     });
@@ -168,19 +172,26 @@ export default function GroupSettings() {
       } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
         setMemberGoals((prev) => {
           let newMemberGoals = [...prev];
-          newMemberGoals = newMemberGoals.filter((goal) => GoalType.Individual && goal.progress[Object.keys(members)[itemToDelete.memberIndex]]) 
-          // newMemberGoals[itemToDelete.memberIndex] = newMemberGoals[
-          //   itemToDelete.memberIndex
-          // ]
-          .filter((_, i) => i !== itemToDelete.index);
+          newMemberGoals = newMemberGoals
+            .filter(
+              (goal) =>
+                GoalType.Individual &&
+                goal.progress[Object.keys(members)[itemToDelete.memberIndex]],
+            )
+            // newMemberGoals[itemToDelete.memberIndex] = newMemberGoals[
+            //   itemToDelete.memberIndex
+            // ]
+            .filter((_, i) => i !== itemToDelete.index);
           return newMemberGoals;
         });
       }
     }
     setDeleteModalVisibility(false);
   }
-  
-  const [groupGoals, setGroupGoals] = useState( testGroup.goals.filter((goal)=> goal.type == GoalType.Group))
+
+  const [groupGoals, setGroupGoals] = useState(
+    testGroup.goals.filter((goal) => goal.type == GoalType.Group),
+  );
   //   [
   //   { activity: "Walk", target: 100000, unit: "steps" },
   //   { activity: "Run", target: 100, unit: "km" },
@@ -188,7 +199,7 @@ export default function GroupSettings() {
 
   // Store individual goals per member
   const [memberGoals, setMemberGoals] = useState(
-    testGroup.goals.filter((goal) => goal.type == GoalType.Individual)
+    testGroup.goals.filter((goal) => goal.type == GoalType.Individual),
     // Array(members.length)
     //   .fill([])
     //   .map(() => [
@@ -249,16 +260,15 @@ export default function GroupSettings() {
   }
 
   function createGoal() {
-    const newGoal : Goal = {
+    const newGoal: Goal = {
       activity: activityValue || OtherActivity.Steps,
       target: amountValue || 1,
-      metric: Metric.Count,   
+      metric: Metric.Count,
       goalId: "",
       type: GoalType.Individual,
       title: titleValue || "hello",
-      progress: {} 
+      progress: {},
     };
-
 
     if (currentGoalType === GoalCreationType.GroupGoal) {
       setGroupGoals((prev) => [...prev, newGoal]);
@@ -267,7 +277,7 @@ export default function GroupSettings() {
       selectedMemberIndex >= 0
     ) {
       setMemberGoals((prev) => {
-        newGoal.progress = {[members[selectedMemberIndex][0]] : 0}
+        newGoal.progress = { [members[selectedMemberIndex][0]]: 0 };
         return [...prev, newGoal];
       });
     }
@@ -394,16 +404,21 @@ export default function GroupSettings() {
             value={amountValue ? String(amountValue) : ""}
             onChangeText={(text) => setAmountValue(Number(text))}
           />
-          {currentGoalType == GoalCreationType.GroupGoal ? 
-            <><Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
-              Title
-            </Text><TextInput
+          {currentGoalType == GoalCreationType.GroupGoal ? (
+            <>
+              <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+                Title
+              </Text>
+              <TextInput
                 style={globalStyles.inputField}
                 keyboardType="default"
                 value={titleValue ? String(titleValue) : ""}
-                onChangeText={(text) => setTitleValue(text)} /></>
-            : ""
-          }
+                onChangeText={(text) => setTitleValue(text)}
+              />
+            </>
+          ) : (
+            ""
+          )}
         </CustomModal>
 
         <CustomModal
@@ -473,9 +488,11 @@ export default function GroupSettings() {
         <Collapsible title="Group Goals">
           {groupGoals.map((goal, index) => (
             <SettingsGoal
-              unit={""} key={index}
+              unit={""}
+              key={index}
               {...goal}
-              onRemove={() => promptRemoveGoal(index)}            />
+              onRemove={() => promptRemoveGoal(index)}
+            />
           ))}
           <View
             style={[styles.row, { justifyContent: "center", marginBottom: 8 }]}
@@ -493,7 +510,6 @@ export default function GroupSettings() {
 
         <Collapsible title="Individual Goals">
           {members.map(([memberId, memberName], memberIndex) => (
-           
             <CollapsibleContainer key={memberIndex}>
               <View
                 style={[
@@ -519,16 +535,24 @@ export default function GroupSettings() {
                 </TouchableOpacity>
               </View>
               <>
-                {
-                memberGoals.filter((goal) => goal.type == GoalType.Individual && goal.progress[memberId] >= 0).map((goal, goalIndex) => (
-                  
-                // memberGoals[memberIndex].map((goal, goalIndex) => (
-                  <SettingsGoal
-                    unit={""} key={goalIndex}
-                    {...goal}
-                    padding={0}
-                    onRemove={() => promptRemoveIndividualGoal(goalIndex, memberIndex)}                  />
-                ))}
+                {memberGoals
+                  .filter(
+                    (goal) =>
+                      goal.type == GoalType.Individual &&
+                      goal.progress[memberId] >= 0,
+                  )
+                  .map((goal, goalIndex) => (
+                    // memberGoals[memberIndex].map((goal, goalIndex) => (
+                    <SettingsGoal
+                      unit={""}
+                      key={goalIndex}
+                      {...goal}
+                      padding={0}
+                      onRemove={() =>
+                        promptRemoveIndividualGoal(goalIndex, memberIndex)
+                      }
+                    />
+                  ))}
               </>
             </CollapsibleContainer>
           ))}

@@ -21,113 +21,126 @@ import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
 import { UserContext } from "@/states/userState";
 import { metricMetadata } from "@/lib/MetricMetadata";
-import { sportActivityMetadata, otherActivityMetadata } from "@/lib/ActivityMetadata";
+import {
+  sportActivityMetadata,
+  otherActivityMetadata,
+} from "@/lib/ActivityMetadata";
 
 export default function Group() {
   const { name } = useLocalSearchParams();
   const router = useRouter();
-  const user = useContext(UserContext)
+  const user = useContext(UserContext);
 
-  const members : Record<string,string> =
-    {
-      "anders uuid": "Anders",
+  const members: Record<string, string> = {
+    "anders uuid": "Anders",
 
-      "hald uuid": "Albert Hald",
+    "hald uuid": "Albert Hald",
 
-      "hal uuid": "Albert Hal",
-      // name: "Albert Hal",
-  }
-  const testGroup : Group = {
+    "hal uuid": "Albert Hal",
+    // name: "Albert Hal",
+  };
+  const testGroup: Group = {
     groupId: "",
     groupName: name.toString(),
     users: members,
     interval: Interval.Weekly,
-    goals: [{
-      goalId: "", //group goal
-      title: "This is a title",
-      type: GoalType.Group,
-      activity: SportActivity.Badminton,
-      metric: Metric.Distance,
-      target: 200,
-      progress: {
-        "anders uuid": 20,
-        "hald uuid": 100 ,
-        "hal uuid": 100
-      }
-      
-    },
-    {
-      goalId: "2", //group goal
-      title: "This is a title2.0",
-      type: GoalType.Group,
-      activity: SportActivity.Badminton,
-      metric: Metric.Distance,
-      target: 200,
-      progress: {
-        "anders uuid": 30,
-        "hald uuid": 50 ,
-        "hal uuid": 700
-      }
-      
-    },
-    {
-      goalId: "",
-      title: "Anders goal",
-      type: GoalType.Individual,
-      activity: SportActivity.Badminton,
-      metric: Metric.Distance,
-      target: 200,
-      progress: {
-        "anders uuid": 200
-      }
-    },
-    {
-      goalId: "",
-      title: "Albert hald goal",
-      type: GoalType.Individual,
-      activity: SportActivity.Badminton,
-      metric: Metric.Distance,
-      target: 200,
-      progress: {
-        "hald uuid": 20,
-      }
-    },
-    {
-      goalId: "",
-      title: "Albert hal",
-      type: GoalType.Individual,
-      activity: SportActivity.Baseball,
-      metric: Metric.Distance,
-      target: 200,
-      progress: {
-        "hal uuid": 20,
-      }
-    },
+    goals: [
+      {
+        goalId: "", //group goal
+        title: "This is a title",
+        type: GoalType.Group,
+        activity: SportActivity.Badminton,
+        metric: Metric.Distance,
+        target: 200,
+        progress: {
+          "anders uuid": 20,
+          "hald uuid": 100,
+          "hal uuid": 100,
+        },
+      },
+      {
+        goalId: "2", //group goal
+        title: "This is a title2.0",
+        type: GoalType.Group,
+        activity: SportActivity.Badminton,
+        metric: Metric.Distance,
+        target: 200,
+        progress: {
+          "anders uuid": 30,
+          "hald uuid": 50,
+          "hal uuid": 700,
+        },
+      },
+      {
+        goalId: "",
+        title: "Anders goal",
+        type: GoalType.Individual,
+        activity: SportActivity.Badminton,
+        metric: Metric.Distance,
+        target: 200,
+        progress: {
+          "anders uuid": 200,
+        },
+      },
+      {
+        goalId: "",
+        title: "Albert hald goal",
+        type: GoalType.Individual,
+        activity: SportActivity.Badminton,
+        metric: Metric.Distance,
+        target: 200,
+        progress: {
+          "hald uuid": 20,
+        },
+      },
+      {
+        goalId: "",
+        title: "Albert hal",
+        type: GoalType.Individual,
+        activity: SportActivity.Baseball,
+        metric: Metric.Distance,
+        target: 200,
+        progress: {
+          "hal uuid": 20,
+        },
+      },
     ],
     streak: 2,
+  };
+  console.log(user);
+  const [group, setGroup] = useState(testGroup);
+  let groupGoalsProgress: Map<string, number> = new Map();
+  let groupGoalsDone: boolean = false;
+  let groupGoals: Goal[] = [];
+  function loadgroup() {
+    groupGoals = group.goals.filter((goal) => {
+      return goal.type == "group";
+    });
+    groupGoals.forEach((goal) => {
+      groupGoalsProgress.set(
+        goal.goalId,
+        Object.values(goal.progress).reduce((sum, add) => sum + add, 0),
+      );
+    });
+    groupGoalsDone = groupGoals.reduce(
+      (done, goal) =>
+        done && (groupGoalsProgress.get(goal.goalId) ?? 0) >= goal.target,
+      true,
+    );
   }
-  console.log(user)
-  const [group, setGroup] = useState(testGroup)
-  let groupGoalsProgress: Map<string,number> = new Map()
-  let groupGoalsDone:boolean = false
-  let groupGoals: Goal[] = []
- function loadgroup (){
-  groupGoals = group.goals.filter(goal => {
-    return goal.type == "group"
+
+  // user.groups.find((group) => group.groupName = name) //TODO: implement when user user groups :)
+  loadgroup();
+
+  let userGoals: Map<string, Goal[]> = new Map();
+  Object.keys(group.users).forEach((user) => {
+    userGoals.set(
+      user,
+      group.goals.filter((goal) => {
+        return goal.type == "individual" && goal.progress[user];
+      }),
+    );
   });
-  groupGoals.forEach((goal) => {
-    groupGoalsProgress.set(goal.goalId, Object.values(goal.progress).reduce((sum, add) => sum + add, 0))
-  })
-  groupGoalsDone = groupGoals.reduce((done, goal) => done && ((groupGoalsProgress.get(goal.goalId) ?? 0) >= goal.target), true)
- }
- 
- // user.groups.find((group) => group.groupName = name) //TODO: implement when user user groups :) 
- loadgroup()
- 
-  let userGoals: Map<string, Goal[]> = new Map()
-  Object.keys(group.users).forEach( (user) => {
-    userGoals.set(user, group.goals.filter((goal) => {return goal.type == "individual" && goal.progress[user]}))
-  })
 
   function daysUntilNextMonday(): number {
     const today = new Date();
@@ -138,7 +151,9 @@ export default function Group() {
   function daysUntilNextMonth(): number {
     const today = new Date();
     const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-    const diffDays = Math.ceil((nextMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.ceil(
+      (nextMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    );
 
     return diffDays;
   }
@@ -147,15 +162,20 @@ export default function Group() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: group.groupName && typeof group.groupName === "string" ? group.groupName : "Group Name",
+          headerTitle:
+            group.groupName && typeof group.groupName === "string"
+              ? group.groupName
+              : "Group Name",
           headerLeft: () => <Back />,
           headerRight: () => (
             <TouchableOpacity
               style={{ marginRight: 15 }}
-              onPress={() => router.push({
-                pathname: "/group/settings",
-                params: { name: group.groupName },
-              })}
+              onPress={() =>
+                router.push({
+                  pathname: "/group/settings",
+                  params: { name: group.groupName },
+                })
+              }
             >
               <UniversalIcon
                 source={IconSource.FontAwesome6}
@@ -169,10 +189,17 @@ export default function Group() {
       />
       <CustomScrollView style={globalStyles.viewContainer}>
         <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
-          <ContainerWithBlueBox text1="Days Left" text2= {
-            group.interval == Interval.Daily ? "1" : group.interval == Interval.Weekly ? daysUntilNextMonday().toString() : daysUntilNextMonth().toString()
-          } /> 
-          <ContainerWithBlueBox text1="Streak" text2= {group.streak + "🔥"} />
+          <ContainerWithBlueBox
+            text1="Days Left"
+            text2={
+              group.interval == Interval.Daily
+                ? "1"
+                : group.interval == Interval.Weekly
+                  ? daysUntilNextMonday().toString()
+                  : daysUntilNextMonth().toString()
+            }
+          />
+          <ContainerWithBlueBox text1="Streak" text2={group.streak + "🔥"} />
         </View>
 
         <Container style={{ marginTop: 8 }}>
@@ -185,26 +212,38 @@ export default function Group() {
           >
             <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
             <Text style={[styles.text, { fontSize: 16 }]}>
-              {
-              Object.entries(group.users).reduce(
-                (finished, [userId, userName]) => finished + (groupGoalsDone ? 
-                  (userGoals.get(userId)?.reduce( 
-                    (allFinished, goal) => allFinished && (goal.progress[userId] >= goal.target), true) ?
-                     1 : 0)
-                : 0), 
-                0)
-              }/ {Object.keys(group.users).length} members finished 
+              {Object.entries(group.users).reduce(
+                (finished, [userId, userName]) =>
+                  finished +
+                  (groupGoalsDone
+                    ? userGoals
+                        .get(userId)
+                        ?.reduce(
+                          (allFinished, goal) =>
+                            allFinished && goal.progress[userId] >= goal.target,
+                          true,
+                        )
+                      ? 1
+                      : 0
+                    : 0),
+                0,
+              )}
+              / {Object.keys(group.users).length} members finished
             </Text>
           </View>
           <View style={{ marginTop: 10 }}>
-            <ProgressBarPercentage progress={
-              group.goals.reduce(
-                (acc, goal) => acc + (groupGoalsProgress.get(goal.goalId) ?? 0) / goal.target,
-                0,
-              ) /
-                group.goals!.length *
-              100
-            } />
+            <ProgressBarPercentage
+              progress={
+                (group.goals.reduce(
+                  (acc, goal) =>
+                    acc +
+                    (groupGoalsProgress.get(goal.goalId) ?? 0) / goal.target,
+                  0,
+                ) /
+                  group.goals!.length) *
+                100
+              }
+            />
           </View>
         </Container>
 
@@ -212,40 +251,68 @@ export default function Group() {
           <Text style={[globalStyles.sectionHeader, { marginTop: 6 }]}>
             Group Goals
           </Text>
-          {groupGoals.map((goal => (
-
+          {groupGoals.map((goal) => (
             <CollapsibleContainer>
               <View>
                 <View style={styles.row}>
                   <View style={styles.box}>
                     <Text
-                      style={[styles.text, { fontSize: 24, marginRight: "auto" }]}
+                      style={[
+                        styles.text,
+                        { fontSize: 24, marginRight: "auto" },
+                      ]}
                     >
                       {goal.title}
                     </Text>
                   </View>
                   <View style={styles.box}>
                     <Text
-                      style={[styles.text, { fontSize: 16, textAlign: "center" }]}
+                      style={[
+                        styles.text,
+                        { fontSize: 16, textAlign: "center" },
+                      ]}
                     >
-                      {Object.entries(goal.progress).reduce((sum, [key, val]) => sum + val, 0)} / {goal.target} {goal.metric}
+                      {Object.entries(goal.progress).reduce(
+                        (sum, [key, val]) => sum + val,
+                        0,
+                      )}{" "}
+                      / {goal.target} {goal.metric}
                     </Text>
                   </View>
                   <View style={styles.box} />
                 </View>
                 <ProgressBarIcon
-                  progress={(Object.entries(goal.progress).reduce((sum, [key, val]) => sum + val, 0)/ goal.target ) * 100 }
-                  iconSource={{ ...sportActivityMetadata, ...otherActivityMetadata }[goal.activity].iconSource}
-                        icon={{ ...sportActivityMetadata, ...otherActivityMetadata }[goal.activity].icon}
+                  progress={
+                    (Object.entries(goal.progress).reduce(
+                      (sum, [key, val]) => sum + val,
+                      0,
+                    ) /
+                      goal.target) *
+                    100
+                  }
+                  iconSource={
+                    { ...sportActivityMetadata, ...otherActivityMetadata }[
+                      goal.activity
+                    ].iconSource
+                  }
+                  icon={
+                    { ...sportActivityMetadata, ...otherActivityMetadata }[
+                      goal.activity
+                    ].icon
+                  }
                 />
               </View>
               <View style={[styles.row, { gap: 10, flexWrap: "wrap" }]}>
                 {Object.entries(goal.progress).map(([userId, progress]) => (
-                  <NameProgress name={group.users[userId]} progress={progress} target={goal.target}/>
+                  <NameProgress
+                    name={group.users[userId]}
+                    progress={progress}
+                    target={goal.target}
+                  />
                 ))}
               </View>
             </CollapsibleContainer>
-          )))}
+          ))}
         </View>
 
         <View style={globalStyles.section}>
@@ -263,11 +330,11 @@ export default function Group() {
                   <View style={{ width: "40%", marginRight: 30 }}>
                     <ProgressBarPercentage
                       progress={
-                        (userGoals.get(userId) ?? []).reduce(
+                        ((userGoals.get(userId) ?? []).reduce(
                           (acc, a) => acc + a.progress[userId] / a.target,
                           0,
                         ) /
-                        (userGoals.get(userId) ?? []).length *
+                          (userGoals.get(userId) ?? []).length) *
                         100
                       }
                       target={100}
@@ -275,17 +342,28 @@ export default function Group() {
                   </View>
                 </View>
                 <View>
-                  {userGoals.get(userId)?.map((
-                  activity, index) => (
-                    <ProgressBarTextIcon
-                      key={index}
-                      progress={activity.progress[userId]}
-                      target={activity.target}
-                      unit={metricMetadata[activity.metric].unit}
-                      iconSource={{ ...sportActivityMetadata, ...otherActivityMetadata }[activity.activity].iconSource}
-                      icon={{ ...sportActivityMetadata, ...otherActivityMetadata }[activity.activity].icon}
-                    />
-                  ))}
+                  {userGoals
+                    .get(userId)
+                    ?.map((activity, index) => (
+                      <ProgressBarTextIcon
+                        key={index}
+                        progress={activity.progress[userId]}
+                        target={activity.target}
+                        unit={metricMetadata[activity.metric].unit}
+                        iconSource={
+                          {
+                            ...sportActivityMetadata,
+                            ...otherActivityMetadata,
+                          }[activity.activity].iconSource
+                        }
+                        icon={
+                          {
+                            ...sportActivityMetadata,
+                            ...otherActivityMetadata,
+                          }[activity.activity].icon
+                        }
+                      />
+                    ))}
                 </View>
               </CollapsibleContainer>
             </View>
