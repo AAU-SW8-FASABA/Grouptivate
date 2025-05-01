@@ -9,21 +9,21 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import globalStyles from "@/constants/styles";
 import { login as loginApi } from "@/lib/server/login";
-import { UserContext, initialUser } from "@/lib/states/userState";
+import { useUser } from "@/lib/states/userState";
 import { get as getUser } from "@/lib/server/user";
 import { User } from "@/lib/API/schemas/User";
 
 export default function Signin() {
   const router = useRouter();
+  const { user, setUser } = useUser();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(initialUser);
 
   async function login() {
     // TODO: Input Validation
 
     const success = await loginApi(username, password);
-    if (!success && !__DEV__) {
+    if (!success) {
       // TODO: Handle error
       console.log("Error signing in");
       return;
@@ -32,9 +32,7 @@ export default function Signin() {
     setUser(theUser);
     router.push("/(tabs)");
   }
-
   return (
-    <UserContext.Provider value={user}>
       <>
         <View style={styles.header}>
           <Text style={[styles.text, { fontSize: 40, color: "black" }]}>
@@ -92,7 +90,6 @@ export default function Signin() {
           </TouchableOpacity>
         </View>
       </>
-    </UserContext.Provider>
   );
 }
 

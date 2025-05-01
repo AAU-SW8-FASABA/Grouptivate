@@ -9,14 +9,14 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import globalStyles from "@/constants/styles";
 import { create, get as getUser } from "@/lib/server/user";
-import { initialUser, UserContext } from "@/lib/states/userState";
+import { useUser } from "@/lib/states/userState";
 import { User } from "@/lib/API/schemas/User";
 
 export default function Signup() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(initialUser);
+  const { user, setUser } = useUser();
 
   async function createAccount() {
     // TODO: Input Validation
@@ -34,7 +34,6 @@ export default function Signup() {
   }
 
   return (
-    <UserContext.Provider value={user}>
       <>
         <View style={styles.header}>
           <Text style={[styles.text, { fontSize: 40, color: "black" }]}>
@@ -92,7 +91,6 @@ export default function Signup() {
           </TouchableOpacity>
         </View>
       </>
-    </UserContext.Provider>
   );
 }
 

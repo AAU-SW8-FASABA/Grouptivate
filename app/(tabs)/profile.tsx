@@ -11,13 +11,10 @@ import { useEffect, useState } from "react";
 import { respond as respondInvite } from "@/lib/server/group/invite/respond";
 import { get as getInvites } from "@/lib/server/group/invite";
 import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
-import { UserContext } from "@/lib/states/userState";
+import { useUser } from "@/lib/states/userState";
 import { value } from "valibot";
-import { useContext } from "react";
 
 function fetchInvites(): InviteType[] {
-  // This function is redundant when api is done.
-  // example to test setInvites before api is done.
   const exampleArray: InviteType[] = [];
   const example: InviteType = {
     inviteId: "",
@@ -39,24 +36,23 @@ function fetchInvites(): InviteType[] {
 }
 
 export default function Profile() {
-  const user = useContext(UserContext);
+  const {user, setUser} = useUser();
   useEffect(() => {
-    // Call the initiate fetch of invites here
-    // TODO: Remove function fetchInvites and use getInvites when api is done
-    const fetchedInvites = fetchInvites();
-    const fetchedInvites2 = getInvites();
+    async function fetchInvites(){
+      const fetchedInvites = await getInvites();
 
-    const inviteState = [];
-    for (const invite of fetchedInvites) {
-      inviteState.push({
-        inviteId: invite.inviteId,
-        groupname: invite.groupName,
-        groupId: invite.groupId,
-        inviteeName: invite.inviteeName,
-        inviterName: invite.inviterName,
-      });
+      const inviteState = [];
+      for (const invite of fetchedInvites) {
+        inviteState.push({
+          inviteId: invite.inviteId,
+          groupname: invite.groupName,
+          inviterName: invite.inviterName,
+        });
+      }
+      setInvites(inviteState);
     }
-    setInvites(inviteState);
+
+    fetchInvites()
   }, []);
 
   function inviteAnswer(answer: InviteAnswer, index: number): void {
@@ -69,7 +65,6 @@ export default function Profile() {
       console.log("Swoop");
       return;
     }
-    console.log(accepted);
     // respondInvite send a post api call, to respond on the inviteId.
     respondInvite(invites[index].inviteId, accepted);
     deleteInvite(index);
@@ -83,15 +78,11 @@ export default function Profile() {
     {
       inviteId: "",
       groupname: "Bongers",
-      groupId: "",
-      inviteeName: "",
       inviterName: "Bong",
     },
     {
       inviteId: "",
       groupname: "Bingers",
-      groupId: "",
-      inviteeName: "",
       inviterName: "Bing",
     },
   ]);

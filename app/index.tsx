@@ -5,11 +5,11 @@ import { deleteToken, getToken } from "@/lib/server/config";
 import { verify } from "@/lib/server/login";
 import { User } from "@/lib/API/schemas/User";
 import { get as getUser } from "@/lib/server/user";
-import { initialUser } from "@/lib/states/userState";
+import { useUser } from "@/lib/states/userState";
 
 export default function Authentication() {
   const router = useRouter();
-  const [, setUser] = useState(initialUser);
+  const {user, setUser} = useUser();
 
   //TODO: Splash screen?
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import {
   StyleSheet,
   View,
@@ -8,8 +8,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
-import { useContext } from "react";
-import { UserContext } from "@/lib/states/userState";
+import { useUser } from "@/lib/states/userState";
 
 import { CustomModal, modalMode } from "@/components/CustomModal";
 import { Collapsible } from "@/components/Collapsible";
@@ -33,11 +32,13 @@ import { string } from "valibot";
 import { User } from "@/lib/API/schemas/User";
 import { prettyName } from "@/lib/PrettyName";
 
+type usersRecord = Record<'userId'|'userName', string>
+
 export default function Main() {
+  const {user, setUser} = useUser();
+  console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
-  //const user = {userId: "1", name: "Fryd", groups: [], goals: []}
-  const user = useContext(UserContext);
 
   function fetchGoals(): Goal[] {
     // Example function undtil api is done
@@ -79,38 +80,34 @@ export default function Main() {
   //  groupArray.push(groupExample);
   //  return groupArray;
   //}
+  
 
   useEffect(() => {
-    async function fetchGroup(){
+    const fetchGroup = async () => {
       const fetchedGroups: Group[] = []
       for(const groupId of user.groups){
+        console.log(groupId)
         const group = await getGroup(groupId)
+        console.log(group)
         fetchedGroups.push(group)
       }
-      console.log(fetchedGroups)
-      //setGroups(fetchedGroups)
+      //setGroups(fetchedGroups);
     }
-    // Missing userId from earlier api calls.
-    
-    
-    //const fetchedGroups: Group[] = fetchGroup();
-    // Split group and individual goals.
-    //const individualGoals: Goal[] = if(user.goals[0]. === GoalType.Individual) {}
-    //const groupGoal: Goal[] = []
-    //for(let group of fetchedGroups){
-    //}
-
+    fetchGroup()
   }, []);
 
+//const usersExample: usersRecord[] = []
+//usersExample.push({"userId": "1", "userName": "fryd"})
+  //const usersTest = {[keys: "userId"|"s"]}
   const [groups, setGroups] = useState([
     {
       groupId: "",
       groupName: "Bing",
-      users: { },
+      users: {},
       interval: Interval.Weekly,
       goals: [],
       streak: 5,
-    },
+    }
   ]);
 
   const [goals, setGoals] = useState([
@@ -161,7 +158,8 @@ export default function Main() {
   //}
 
   return (
-    <CustomScrollView style={globalStyles.viewContainer}>
+    <Suspense>
+      <CustomScrollView style={globalStyles.viewContainer}>
       <CustomModal
         height={410}
         title="New Group"
@@ -254,6 +252,7 @@ export default function Main() {
         </TouchableOpacity>
       ))}
     </CustomScrollView>
+    </Suspense>
   );
 }
 
