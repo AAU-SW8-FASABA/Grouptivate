@@ -108,20 +108,26 @@ export default function Group() {
   }
   console.log(user)
   const [group, setGroup] = useState(testGroup)
- 
-  // user.groups.find((group) => group.groupName = name) //TODO: implement when user user groups :) 
-  const groupGoals = group.goals.filter(goal => {
+  let groupGoalsProgress: Map<string,number> = new Map()
+  let groupGoalsDone:boolean = false
+  let groupGoals: Goal[] = []
+ function loadgroup (){
+  groupGoals = group.goals.filter(goal => {
     return goal.type == "group"
+  });
+  groupGoals.forEach((goal) => {
+    groupGoalsProgress.set(goal.goalId, Object.values(goal.progress).reduce((sum, add) => sum + add, 0))
   })
-  console.log(group.goals)
-  console.log(groupGoals)
+  groupGoalsDone = groupGoals.reduce((done, goal) => done && ((groupGoalsProgress.get(goal.goalId) ?? 0) >= goal.target), true)
+ }
+ 
+ // user.groups.find((group) => group.groupName = name) //TODO: implement when user user groups :) 
+ loadgroup()
+ 
   let userGoals: Map<string, Goal[]> = new Map()
   Object.keys(group.users).forEach( (user) => {
     userGoals.set(user, group.goals.filter((goal) => {return goal.type == "individual" && goal.progress[user]}))
   })
-
-  // const groupGoalContributed = Object.entries(groupGoals.progress).reduce((sum, [key, val]) => sum + val, 0)
-  // const groupGoalProgress = (groupGoalContributed / groupGoal.target ) * 100
 
   function daysUntilNextMonday(): number {
     const today = new Date();
@@ -181,11 +187,11 @@ export default function Group() {
             <Text style={[styles.text, { fontSize: 16 }]}>
               {
               Object.entries(group.users).reduce(
-                (finished, [userId, userName]) => finished + (groupGoals.reduce(
-                  (allFinished, goal) => allFinished && (Object.values(goal.progress).reduce((sum, add) => sum + add, 0) >= goal.target), true
-                ) ? (userGoals.get(userId)?.reduce( 
-                  (allFinished, goal) => allFinished && (goal.progress[userId] >= goal.target), 
-                true) ? 1 : 0) : 0), 
+                (finished, [userId, userName]) => finished + (groupGoalsDone ? 
+                  (userGoals.get(userId)?.reduce( 
+                    (allFinished, goal) => allFinished && (goal.progress[userId] >= goal.target), true) ?
+                     1 : 0)
+                : 0), 
                 0)
               }/ {Object.keys(group.users).length} members finished 
             </Text>
@@ -193,7 +199,7 @@ export default function Group() {
           <View style={{ marginTop: 10 }}>
             <ProgressBarPercentage progress={
               group.goals.reduce(
-                (acc, goal) => acc + ((Object.values(goal.progress)).reduce((sum, current) => sum + current, 0)) / goal.target,
+                (acc, goal) => acc + (groupGoalsProgress.get(goal.goalId) ?? 0) / goal.target,
                 0,
               ) /
                 group.goals!.length *
