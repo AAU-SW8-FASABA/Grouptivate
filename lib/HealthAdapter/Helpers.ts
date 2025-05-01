@@ -33,6 +33,11 @@ export async function getHealthAdapter(): Promise<HealthAdapter | undefined> {
       if (await HealthKitAdapter.isAvailable()) {
         _healthAdapter = new HealthKitAdapter();
       }
+    } else if (Platform.OS === "web") {
+      const { HealthDummyAdapter } = require("./HealthDummy");
+      if (await HealthDummyAdapter.isAvailable()) {
+        _healthAdapter = new HealthDummyAdapter();
+      }
     }
     await _healthAdapter?.init(__DEV__);
     healthAdapterInitialised = true;

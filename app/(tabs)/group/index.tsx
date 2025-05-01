@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
@@ -23,6 +23,7 @@ import {
   sportActivityMetadata,
   otherActivityMetadata,
 } from "@/lib/ActivityMetadata";
+import { getAske } from "@/lib/aske";
 
 export default function Group() {
   const { name } = useLocalSearchParams();
@@ -309,12 +310,18 @@ export default function Group() {
             <View key={name}>
               <CollapsibleContainer>
                 <View style={styles.row}>
-                  <Text
-                    numberOfLines={1}
-                    style={[styles.text, { fontSize: 22 }]}
-                  >
-                    {name}
-                  </Text>
+                  <View style={styles.row}>
+                    <Image
+                      source={getAske({ userId, name })}
+                      style={{ width: 32, height: 32, borderRadius: 100 }}
+                    />
+                    <Text
+                      numberOfLines={1}
+                      style={[styles.text, { fontSize: 22, marginLeft: 10 }]}
+                    >
+                      {name}
+                    </Text>
+                  </View>
                   <View style={{ width: "40%", marginRight: 30 }}>
                     <ProgressBarPercentage
                       progress={

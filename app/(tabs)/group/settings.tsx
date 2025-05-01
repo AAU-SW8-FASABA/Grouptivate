@@ -4,6 +4,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { useMemo, useState } from "react";
 import { Stack, useLocalSearchParams } from "expo-router";
@@ -32,6 +33,7 @@ import {
 import { Group } from "@/lib/API/schemas/Group";
 import { Goal, GoalType } from "@/lib/API/schemas/Goal";
 import { Interval } from "@/lib/API/schemas/Interval";
+import { getAske } from "@/lib/aske";
 
 export default function GroupSettings() {
   const { name } = useLocalSearchParams();
@@ -425,7 +427,7 @@ export default function GroupSettings() {
           {members.map((member, index) => (
             <SettingsMember
               key={index}
-              name={member[1]}
+              user={{ userId: member[0], name: member[1] }}
               onRemove={() => promptRemoveMember(index)}
             />
           ))}
@@ -498,9 +500,16 @@ export default function GroupSettings() {
                   { justifyContent: "space-between", marginRight: 50 },
                 ]}
               >
+                <Image
+                  source={getAske({ userId: memberId, name: memberName })}
+                  style={{ width: 32, height: 32, borderRadius: 100 }}
+                />
                 <Text
                   numberOfLines={1}
-                  style={[styles.text, { fontSize: 20, flex: 1 }]}
+                  style={[
+                    styles.text,
+                    { fontSize: 20, flex: 1, marginLeft: 10 },
+                  ]}
                 >
                   {memberName}
                 </Text>
