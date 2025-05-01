@@ -15,7 +15,7 @@ import { User } from "@/lib/API/schemas/User";
 
 export default function Signin() {
   const router = useRouter();
-  const { user, setUser } = useUser();
+  const { setUser } = useUser();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 

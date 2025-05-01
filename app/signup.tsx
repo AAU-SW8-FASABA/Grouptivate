@@ -16,7 +16,7 @@ export default function Signup() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { user, setUser } = useUser();
+  const { setUser } = useUser();
 
   async function createAccount() {
     // TODO: Input Validation

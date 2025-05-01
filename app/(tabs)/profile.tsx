@@ -14,7 +14,7 @@ import { useUser } from "@/lib/states/userState";
 
 export default function Profile() {
   const router = useRouter();
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   useEffect(() => {
     async function fetchInvites() {
       const fetchedInvites = await getInvites();

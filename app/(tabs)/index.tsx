@@ -17,10 +17,7 @@ import { GoalContainer } from "@/components/GoalContainer";
 import { GroupContainer } from "@/components/GroupContainer";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
-import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
-import { Metric } from "@/lib/API/schemas/Metric";
 import { get as getGroup, create as postCreateGroup } from "@/lib/server/group";
-import { GoalType } from "@/lib/API/schemas/Goal";
 import { Interval } from "@/lib/API/schemas/Interval";
 
 import type { Group } from "@/lib/API/schemas/Group";
@@ -28,7 +25,7 @@ import type { Goal } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
 
 export default function Main() {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
@@ -36,7 +33,7 @@ export default function Main() {
   const [intervalValue, setIntervalValue] = useState(Interval.Weekly);
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]);
-  const [goals, setGoals] = useState<Goal[]>([]);
+  const [goals] = useState<Goal[]>([]);
 
   useEffect(() => {
     const fetchGroup = async () => {

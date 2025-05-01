@@ -33,7 +33,7 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
-  const { user, setUser } = useUser();
+  const { setUser } = useUser();
 
   //TODO: Splash screen?
   useEffect(() => {
