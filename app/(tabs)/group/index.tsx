@@ -19,12 +19,12 @@ import { Interval } from "@/lib/API/schemas/Interval";
 import { Goal, GoalType } from "@/lib/API/schemas/Goal";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { Metric } from "@/lib/API/schemas/Metric";
-import { UserContext } from "@/states/userState";
 import { metricMetadata } from "@/lib/MetricMetadata";
 import {
   sportActivityMetadata,
   otherActivityMetadata,
 } from "@/lib/ActivityMetadata";
+import { UserContext } from "@/lib/states/userState";
 
 export default function Group() {
   const { name } = useLocalSearchParams();
@@ -341,28 +341,26 @@ export default function Group() {
                   </View>
                 </View>
                 <View>
-                  {userGoals
-                    .get(userId)
-                    ?.map((activity, index) => (
-                      <ProgressBarTextIcon
-                        key={index}
-                        progress={activity.progress[userId]}
-                        target={activity.target}
-                        unit={metricMetadata[activity.metric].unit}
-                        iconSource={
-                          {
-                            ...sportActivityMetadata,
-                            ...otherActivityMetadata,
-                          }[activity.activity].iconSource
-                        }
-                        icon={
-                          {
-                            ...sportActivityMetadata,
-                            ...otherActivityMetadata,
-                          }[activity.activity].icon
-                        }
-                      />
-                    ))}
+                  {userGoals.get(userId)?.map((activity, index) => (
+                    <ProgressBarTextIcon
+                      key={index}
+                      progress={activity.progress[userId]}
+                      target={activity.target}
+                      unit={metricMetadata[activity.metric].unit}
+                      iconSource={
+                        {
+                          ...sportActivityMetadata,
+                          ...otherActivityMetadata,
+                        }[activity.activity].iconSource
+                      }
+                      icon={
+                        {
+                          ...sportActivityMetadata,
+                          ...otherActivityMetadata,
+                        }[activity.activity].icon
+                      }
+                    />
+                  ))}
                 </View>
               </CollapsibleContainer>
             </View>
