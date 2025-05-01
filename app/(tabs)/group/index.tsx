@@ -57,6 +57,20 @@ export default function Group() {
       
     },
     {
+      goalId: "2", //group goal
+      title: "This is a title2.0",
+      type: GoalType.Group,
+      activity: SportActivity.Badminton,
+      metric: Metric.Distance,
+      target: 200,
+      progress: {
+        "anders uuid": 30,
+        "hald uuid": 50 ,
+        "hal uuid": 700
+      }
+      
+    },
+    {
       goalId: "",
       title: "Anders goal",
       type: GoalType.Individual,
@@ -96,16 +110,18 @@ export default function Group() {
   const [group, setGroup] = useState(testGroup)
  
   // user.groups.find((group) => group.groupName = name) //TODO: implement when user user groups :) 
-  const groupGoal = group.goals.filter(goal => {
+  const groupGoals = group.goals.filter(goal => {
     return goal.type == "group"
-  })[0] //TODO: fix that there might be more than one!
+  })
+  console.log(group.goals)
+  console.log(groupGoals)
   let userGoals: Map<string, Goal[]> = new Map()
   Object.keys(group.users).forEach( (user) => {
     userGoals.set(user, group.goals.filter((goal) => {return goal.type == "individual" && goal.progress[user]}))
   })
 
-  const groupGoalContributed = Object.entries(groupGoal.progress).reduce((sum, [key, val]) => sum + val, 0)
-  const groupGoalProgress = (groupGoalContributed / groupGoal.target ) * 100
+  // const groupGoalContributed = Object.entries(groupGoals.progress).reduce((sum, [key, val]) => sum + val, 0)
+  // const groupGoalProgress = (groupGoalContributed / groupGoal.target ) * 100
 
   function daysUntilNextMonday(): number {
     const today = new Date();
@@ -165,9 +181,11 @@ export default function Group() {
             <Text style={[styles.text, { fontSize: 16 }]}>
               {
               Object.entries(group.users).reduce(
-                (finished, [userId, userName]) => finished + (userGoals.get(userId)?.reduce( //TODO: check if group goal is finished
+                (finished, [userId, userName]) => finished + (groupGoals.reduce(
+                  (allFinished, goal) => allFinished && (Object.values(goal.progress).reduce((sum, add) => sum + add, 0) >= goal.target), true
+                ) ? (userGoals.get(userId)?.reduce( 
                   (allFinished, goal) => allFinished && (goal.progress[userId] >= goal.target), 
-                true) ? 1 : 0), 
+                true) ? 1 : 0) : 0), 
                 0)
               }/ {Object.keys(group.users).length} members finished 
             </Text>
@@ -188,37 +206,40 @@ export default function Group() {
           <Text style={[globalStyles.sectionHeader, { marginTop: 6 }]}>
             Group Goals
           </Text>
-          <CollapsibleContainer>
-            <View>
-              <View style={styles.row}>
-                <View style={styles.box}>
-                  <Text
-                    style={[styles.text, { fontSize: 24, marginRight: "auto" }]}
-                  >
-                    {groupGoal.title}
-                  </Text>
+          {groupGoals.map((goal => (
+
+            <CollapsibleContainer>
+              <View>
+                <View style={styles.row}>
+                  <View style={styles.box}>
+                    <Text
+                      style={[styles.text, { fontSize: 24, marginRight: "auto" }]}
+                    >
+                      {goal.title}
+                    </Text>
+                  </View>
+                  <View style={styles.box}>
+                    <Text
+                      style={[styles.text, { fontSize: 16, textAlign: "center" }]}
+                    >
+                      {Object.entries(goal.progress).reduce((sum, [key, val]) => sum + val, 0)} / {goal.target} {goal.metric}
+                    </Text>
+                  </View>
+                  <View style={styles.box} />
                 </View>
-                <View style={styles.box}>
-                  <Text
-                    style={[styles.text, { fontSize: 16, textAlign: "center" }]}
-                  >
-                    {groupGoalContributed} / {groupGoal.target} {groupGoal.metric}
-                  </Text>
-                </View>
-                <View style={styles.box} />
+                <ProgressBarIcon
+                  progress={(Object.entries(goal.progress).reduce((sum, [key, val]) => sum + val, 0)/ goal.target ) * 100 }
+                  iconSource={{ ...sportActivityMetadata, ...otherActivityMetadata }[goal.activity].iconSource}
+                        icon={{ ...sportActivityMetadata, ...otherActivityMetadata }[goal.activity].icon}
+                />
               </View>
-              <ProgressBarIcon
-                progress={groupGoalProgress}
-                iconSource={{ ...sportActivityMetadata, ...otherActivityMetadata }[groupGoal.activity].iconSource}
-                      icon={{ ...sportActivityMetadata, ...otherActivityMetadata }[groupGoal.activity].icon}
-              />
-            </View>
-            <View style={[styles.row, { gap: 10, flexWrap: "wrap" }]}>
-              {Object.entries(groupGoal.progress).map(([userId, progress]) => (
-                <NameProgress name={group.users[userId]} progress={progress} />
-              ))}
-            </View>
-          </CollapsibleContainer>
+              <View style={[styles.row, { gap: 10, flexWrap: "wrap" }]}>
+                {Object.entries(goal.progress).map(([userId, progress]) => (
+                  <NameProgress name={group.users[userId]} progress={progress} target={goal.target}/>
+                ))}
+              </View>
+            </CollapsibleContainer>
+          )))}
         </View>
 
         <View style={globalStyles.section}>
