@@ -241,7 +241,7 @@ export default function Group() {
             Group Goals
           </Text>
           {groupGoals.map((goal) => (
-            <CollapsibleContainer>
+            <CollapsibleContainer key={goal.goalId}>
               <View>
                 <View style={styles.row}>
                   <View style={styles.box}>
@@ -294,6 +294,7 @@ export default function Group() {
               <View style={[styles.row, { gap: 10, flexWrap: "wrap" }]}>
                 {Object.entries(goal.progress).map(([userId, progress]) => (
                   <NameProgress
+                    key={userId}
                     name={group.users[userId]}
                     progress={progress}
                     target={goal.target}
@@ -307,7 +308,7 @@ export default function Group() {
         <View style={globalStyles.section}>
           <Text style={globalStyles.sectionHeader}>Members</Text>
           {Object.entries(group.users).map(([userId, name]) => (
-            <View key={name}>
+            <View key={userId}>
               <CollapsibleContainer>
                 <View style={styles.row}>
                   <View style={styles.row}>
@@ -337,9 +338,9 @@ export default function Group() {
                   </View>
                 </View>
                 <View>
-                  {userGoals.get(userId)?.map((activity, index) => (
+                  {userGoals.get(userId)?.map((activity) => (
                     <ProgressBarTextIcon
-                      key={index}
+                      key={activity.goalId}
                       progress={activity.progress[userId]}
                       target={activity.target}
                       unit={metricMetadata[activity.metric].unit}
