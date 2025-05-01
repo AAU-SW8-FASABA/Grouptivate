@@ -90,20 +90,23 @@ const members: Record<string, string> = {
 initialGroup.set(testGroup.groupId, testGroup)
 
 type groupsContextType = {
-  groups: Map<string, Group>;
+    contextGroups: Map<string, Group>;
   setGroups: (groups: Map<string,Group>) => void;
 };
 
 export const GroupsContext = createContext<groupsContextType>({
-  groups: initialGroup,
+    contextGroups: initialGroup,
   setGroups: () => {},
 });
 
 export const GroupsProvide = ({children}: { children: ReactNode}) => {
-    const [groups, setGroups] = useState<Map<string, Group>>(initialGroup)
+    const [contextGroups, setGroups] = useState<Map<string, Group>>(initialGroup)
     return (
-        <GroupsContext.Provider value={{ groups, setGroups }}>
+        <GroupsContext.Provider value={{ contextGroups, setGroups }}>
         {children}
         </GroupsContext.Provider>
     )
 }   
+
+
+export const useGroups = () => useContext(GroupsContext);
