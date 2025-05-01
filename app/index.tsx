@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 export default function Authentication() {
   const router = useRouter();
 
+  //TODO: Splash screen?
   return (
     <>
       <View style={styles.header}>
