@@ -36,6 +36,7 @@ function fetchInvites(): InviteType[] {
 }
 
 export default function Profile() {
+  const router = useRouter();
   const {user, setUser} = useUser();
   useEffect(() => {
     async function fetchInvites(){
@@ -54,6 +55,11 @@ export default function Profile() {
 
     fetchInvites()
   }, []);
+
+  async function logout() {
+    await deleteToken();
+    router.dismissAll();
+  }
 
   function inviteAnswer(answer: InviteAnswer, index: number): void {
     let accepted;
@@ -108,6 +114,17 @@ export default function Profile() {
             }}
           />
         ))}
+        <TouchableOpacity onPress={logout}>
+          <Text
+            style={[
+              styles.text,
+              styles.button,
+              { backgroundColor: "#D9D9D9", color: "black" },
+            ]}
+          >
+            Log out
+          </Text>
+        </TouchableOpacity>
         <Text
           style={[
             styles.text,
