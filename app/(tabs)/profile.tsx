@@ -40,17 +40,8 @@ export default function Profile() {
   }
 
   function inviteAnswer(answer: InviteAnswer, index: number): void {
-    let accepted;
-    if (answer === InviteAnswer.Accept) {
-      accepted = true;
-    } else if (answer === InviteAnswer.Decline) {
-      accepted = false;
-    } else {
-      console.log("Swoop");
-      return;
-    }
     // respondInvite send a post api call, to respond on the inviteId.
-    respondInvite(invites[index].inviteId, accepted);
+    respondInvite(invites[index].inviteId, answer === InviteAnswer.Accept);
     deleteInvite(index);
   }
 
