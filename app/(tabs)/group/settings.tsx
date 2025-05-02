@@ -52,13 +52,10 @@ export default function GroupSettings() {
     name: "",
     memberIndex: -1,
   });
-  let localGroupId = 0;
+  let localId = 0; //TODO: remove when hooked to server
   function inviteMember() {
     if (newMemberName.trim() !== "") {
-      setMembers((prev) => [
-        ...prev,
-        ...Object.entries({ [(++localGroupId).toString()]: newMemberName }),
-      ]);
+      setMembers((prev) => [...prev, [(++localId).toString(), newMemberName]]); //TODO: change when hooked to server
       setNewMemberName("");
       setInviteModalVisibility(false);
     }
@@ -185,7 +182,7 @@ export default function GroupSettings() {
       activity: activityValue || OtherActivity.Steps,
       target: amountValue || 1,
       metric: Metric.Count,
-      goalId: "",
+      goalId: (++localId).toString(), //TODO: update when hooked to server
       type: GoalType.Individual,
       title: titleValue || "hello",
       progress: {},
