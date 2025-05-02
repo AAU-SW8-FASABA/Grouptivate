@@ -21,7 +21,6 @@ export default function Signin() {
 
   async function login() {
     // TODO: Input Validation
-
     const success = await loginApi(username, password);
     if (!success) {
       // TODO: Handle error

@@ -38,3 +38,7 @@ yarn-error.*
 
 ios/
 android/
+
+# Do not commit the server instance
+Grouptivate-Server/
+server_output.log
