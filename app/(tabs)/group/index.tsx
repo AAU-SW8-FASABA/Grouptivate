@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import { Stack, useRouter, useLocalSearchParams } from "expo-router";
+import { Stack, useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { Back } from "@/components/Back";
@@ -32,10 +32,9 @@ export default function Group() {
   const theGroup = contextGroups.get(groupId)!;
   const [group, setGroup] = useState<Group>(theGroup);
 
-  useEffect(() => {
-    setGroup(theGroup);
-    console.log(groupId)
-  }, [theGroup]);
+  useFocusEffect(() => {
+    setGroup(contextGroups.get(groupId)!);
+  });
 
   let groupGoalsProgress: Map<string, number> = new Map();
   let groupGoalsDone: boolean = false;
