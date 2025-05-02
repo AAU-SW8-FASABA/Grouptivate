@@ -50,7 +50,10 @@ export default function GroupSettings() {
   );
 
   useEffect(() => {
-    setGroup(theGroup);
+    // console.log(theGroup)
+    // loadGroup()
+    // console.log(groupId)
+    // console.log(group)
   }, [theGroup]);
 
   const [inviteModalVisibility, setInviteModalVisibility] = useState(false);
@@ -71,13 +74,13 @@ export default function GroupSettings() {
     contextGroups.set(groupId, updatedGroup);
   }
 
-  // function loadGroup() {
-  //   setGroup(contextGroups.get(groupId)!)
-  //   setMembers(Object.entries(group?.users))
-  //   setGroupGoals(
-  //     group.goals.filter((goal) => goal.type === GoalType.Group),)
-  //   setMemberGoals(group.goals.filter((goal) => goal.type === GoalType.Individual),)
-  // }
+  function loadGroup() {
+    // setGroup(contextGroups.get(groupId)!)
+    setMembers(Object.entries(group?.users))
+    setGroupGoals(
+      group.goals.filter((goal) => goal.type === GoalType.Group),)
+    setMemberGoals(group.goals.filter((goal) => goal.type === GoalType.Individual),)
+  }
 
   async function inviteMember() {
     if (newMemberName.trim() !== "") {

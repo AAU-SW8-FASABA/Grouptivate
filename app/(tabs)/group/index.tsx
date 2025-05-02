@@ -34,6 +34,7 @@ export default function Group() {
 
   useEffect(() => {
     setGroup(theGroup);
+    console.log(groupId)
   }, [theGroup]);
 
   let groupGoalsProgress: Map<string, number> = new Map();
