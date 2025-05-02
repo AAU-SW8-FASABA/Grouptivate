@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 
@@ -29,8 +29,12 @@ export default function Group() {
   const groupId = id.toString();
   const router = useRouter();
   const { contextGroups } = useGroups();
+  const theGroup = contextGroups.get(groupId)!;
+  const [group, setGroup] = useState<Group>(theGroup);
 
-  const [group, setGroup] = useState<Group>(contextGroups.get(groupId)!);
+  useEffect(() => {
+    setGroup(theGroup);
+  }, [theGroup]);
 
   let groupGoalsProgress: Map<string, number> = new Map();
   let groupGoalsDone: boolean = false;
@@ -50,7 +54,6 @@ export default function Group() {
       (goal) => (groupGoalsProgress.get(goal.goalId) ?? 0) >= goal.target,
     );
   }
-
   loadgroup();
   console.log(group.goals)
   console.log(group.users)
