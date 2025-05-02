@@ -32,6 +32,10 @@ export function GroupContainer({
   useEffect(() => {
     setImage(getAske(group));
   }, [group]);
+  let daysLeft = days + " days left"
+  if (days === 1){
+    daysLeft = "Today"
+  }
 
   return (
     <Container style={style}>
@@ -45,7 +49,7 @@ export function GroupContainer({
             {group.groupName}
           </Text>
         </View>
-        <Text style={[styles.text, { fontSize: 16 }]}>{days} days left</Text>
+        <Text style={[styles.text, { fontSize: 16 }]}>{daysLeft}</Text>
       </View>
       <HR />
       <ProgressBarIcon
