@@ -1,5 +1,7 @@
 import { AppState } from "react-native";
+import { User } from "./API/schemas/User";
 import { Group } from "./API/schemas/Group";
+import { get as getUser } from "./server/user";
 import { get as getGroups } from "./server/groups";
 import { patch as patchGoal } from "./server/group/goal";
 import { Interval } from "./API/schemas/Interval";
@@ -28,17 +30,29 @@ export async function SyncActivity() {
     return;
   }
 
-  let groups: Group[] = [];
+  let user: User;
+  try {
+    user = await getUser();
+  } catch {
+    console.warn("Unable sync activity progress, could not fetch user");
+    return;
+  }
+  let groups: Group[];
   try {
     groups = await getGroups();
   } catch {
-    console.warn(`Unable to sync activity progress`);
+    console.warn("Unable sync activity progress, could not fetch groups");
     return;
   }
-  if (groups.length === 0) return;
+
+  if (groups.length === 0) {
+    console.info("Did not sync activity progress because there are no groups.");
+    return;
+  }
 
   const goalUpdates = await Promise.all(
     groups
+      .filter((group) => user.userId in group.users)
       .map((group) =>
         group.goals.map(async (goal) => ({
           goalId: goal.goalId,
@@ -53,12 +67,18 @@ export async function SyncActivity() {
       .flat(),
   );
 
+  if (goalUpdates.length === 0) {
+    console.info("Did not sync activity progress because there are no goals.");
+    return;
+  }
+
   try {
     await patchGoal(goalUpdates);
   } catch {
     console.warn(`Unable to sync activity progress`);
     return;
   }
+  console.info("Succesfully synced activity progress");
 }
 
 async function getGoalProgress(

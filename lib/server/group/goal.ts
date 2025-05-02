@@ -22,7 +22,7 @@ export async function create(
   });
   return {
     ...goal,
-    progress: {[userId]: 0},
+    progress: { [userId]: 0 },
     ...response,
   };
 }
