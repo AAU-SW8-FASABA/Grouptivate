@@ -57,18 +57,10 @@ export default function Main() {
     value,
   }));
 
-  function createGroup() {
-    postCreateGroup(user, newGroupName, intervalValue);
-
-    const newGroup = {
-      groupId: "",
-      groupName: newGroupName,
-      users: { [user.userId]: user.name },
-      interval: intervalValue,
-      goals: [],
-      streak: 0,
-    };
-    setGroups((prev) => [...prev, newGroup]);
+  async function createGroup() {
+    const responseGroup = await postCreateGroup(user, newGroupName, intervalValue);
+    contextGroups.set(responseGroup.groupId, responseGroup)
+    setGroups((prev) => [...prev, responseGroup]);
   }
 
   //function calculateIndividualProgress(): number {
