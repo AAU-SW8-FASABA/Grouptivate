@@ -24,7 +24,7 @@ import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
-import { getStartDateFromInterval } from "@/lib/IntervalStartDate";
+import { getEndDateFromInterval } from "@/lib/IntervalEndDate";
 
 export default function Main() {
   const { user } = useUser();
@@ -39,7 +39,7 @@ export default function Main() {
 
   useEffect(() => {
     const fetchGroup = async () => {
-      const fetchedGroups = await getGroups();
+      const fetchedGroups = await getGroups();  
       setGroups(fetchedGroups);
     };
     fetchGroup();
@@ -92,12 +92,6 @@ export default function Main() {
       return progress
     }
     return 0  
-  }
-
-  function timeLeftOfInterval(group: Group){
-    const startDate = getStartDateFromInterval(group.interval)
-
-
   }
 
   return (
@@ -182,13 +176,13 @@ export default function Main() {
             onPress={() =>
               router.push({
                 pathname: "/group",
-                params: { name: group.groupName },
+                params: { name: group.groupId },
               })
             }
           >
             <GroupContainer
               group={group}
-              days={2}
+              days={getEndDateFromInterval(group.interval)}
               groupProgress={groupProgress(group)}
               individualProgress={individualProgress()}
               style={{ marginBottom: 8 }}

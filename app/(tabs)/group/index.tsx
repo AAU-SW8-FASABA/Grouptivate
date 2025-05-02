@@ -24,6 +24,7 @@ import {
   otherActivityMetadata,
 } from "@/lib/ActivityMetadata";
 import { getAske } from "@/lib/aske";
+import { getEndDateFromInterval } from "@/lib/IntervalEndDate";
 
 export default function Group() {
   const { name } = useLocalSearchParams();
@@ -188,10 +189,8 @@ export default function Group() {
             text1="Days Left"
             text2={
               group.interval === Interval.Daily
-                ? "1"
-                : group.interval === Interval.Weekly
-                  ? daysUntilNextMonday().toString()
-                  : daysUntilNextMonth().toString()
+                ? "Today"
+                : getEndDateFromInterval(group.interval).toString()
             }
           />
           <ContainerWithBlueBox text1="Streak" text2={group.streak + "🔥"} />
