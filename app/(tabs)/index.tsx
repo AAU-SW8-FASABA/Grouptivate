@@ -31,7 +31,6 @@ import { minBytes } from "valibot";
 export default function Main() {
   const { user } = useUser();
   const { contextGroups } = useGroups();
-  console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
   const [newGroupName, setGroupName] = useState("");
