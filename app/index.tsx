@@ -42,14 +42,16 @@ export default function Authentication() {
       </View>
       <View style={styles.buttons}>
         <TouchableOpacity
+          testID="signin.button"
           style={[styles.button, { backgroundColor: "#4062BB" }]}
           onPress={() => router.push("/signin")}
         >
-          <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
+          <Text testID="signin.text" style={[styles.text, { fontSize: 20, color: "white" }]}>
             Sign in
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          testID="signup"
           style={[styles.button, { backgroundColor: "#D9D9D9" }]}
           onPress={() => router.push("/signup")}
         >
