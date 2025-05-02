@@ -22,7 +22,7 @@ import {
   otherActivityMetadata,
 } from "@/lib/ActivityMetadata";
 import { getAske } from "@/lib/aske";
-import { getEndDateFromInterval } from "@/lib/IntervalEndDate";
+import { getDaysLeftInterval } from "@/lib/IntervalEndDate";
 import { useGroups } from "@/lib/states/groupsState";
 
 export default function Group() {
@@ -64,22 +64,6 @@ export default function Group() {
     );
   });
 
-  function daysUntilNextMonday(): number {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const daysUntilMonday = (8 - dayOfWeek) % 7 || 7;
-    return daysUntilMonday;
-  }
-  function daysUntilNextMonth(): number {
-    const today = new Date();
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-    const diffDays = Math.ceil(
-      (nextMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    return diffDays;
-  }
-
   return (
     <>
       <Stack.Screen
@@ -116,7 +100,7 @@ export default function Group() {
             text2={
               group.interval === Interval.Daily
                 ? "Today"
-                : getEndDateFromInterval(group.interval).toString()
+                : getDaysLeftInterval(group.interval).toString()
             }
           />
           <ContainerWithBlueBox text1="Streak" text2={group.streak + "🔥"} />
@@ -148,18 +132,21 @@ export default function Group() {
           <View style={{ marginTop: 10 }}>
           <ProgressBarPercentage
               progress={
-                (group.goals.reduce(
-                  (acc, goal) =>
-                    acc +
-                    Object.values(goal.progress).reduce(
-                      (sum, add) => sum + add,
-                      0,
-                    ) /
-                      goal.target,
-                  0,
-                ) /
-                  group.goals!.length) *
-                100
+                group.goals.length
+                  ? 
+                  (group.goals.reduce(
+                    (acc, goal) =>
+                      acc +
+                      Object.values(goal.progress).reduce(
+                        (sum, add) => sum + add,
+                        0,
+                      ) /
+                        goal.target,
+                    0,
+                  ) /
+                    group.goals!.length) *
+                  100
+                  : 0
               }
             />
           </View>
@@ -255,14 +242,16 @@ export default function Group() {
                   <View style={{ width: "40%", marginRight: 30 }}>
                     <ProgressBarPercentage
                       progress={
+                        userGoals.get(userId)?.length
+                        ?
                         ((userGoals.get(userId) ?? []).reduce(
                           (acc, a) => acc + a.progress[userId] / a.target,
                           0,
                         ) /
                           (userGoals.get(userId) ?? []).length) *
                         100
+                        : 0
                       }
-                      target={100}
                     />
                   </View>
                 </View>

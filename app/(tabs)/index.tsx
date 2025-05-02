@@ -24,7 +24,7 @@ import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
-import { getEndDateFromInterval } from "@/lib/IntervalEndDate";
+import { getDaysLeftInterval } from "@/lib/IntervalEndDate";
 import { GroupsContext, useGroups } from "@/lib/states/groupsState";
 
 export default function Main() {
@@ -42,6 +42,7 @@ export default function Main() {
   useEffect(() => {
     const fetchGroup = async () => {
       const fetchedGroups = await getGroups();  
+      fetchedGroups.forEach((group) => contextGroups.set(group.groupId,group))
       setGroups(fetchedGroups);
     };
     fetchGroup();
@@ -96,7 +97,16 @@ export default function Main() {
     return 0  
   }
 
-
+  function findGoalEndDate(goal:Goal): number{
+    let daysUntilEndDate:number 
+    groups.forEach((group) => {
+      if(group.goals.includes(goal)){
+        daysUntilEndDate = getDaysLeftInterval(group.interval);
+        return daysUntilEndDate
+      }
+    })
+    return 0
+  }
 
   return (
     <Suspense>
@@ -159,7 +169,7 @@ export default function Main() {
               metric={goal.metric}
               progress={goal.progress[user.userId]}
               target={goal.target}
-              days={2}
+              days={findGoalEndDate(goal)}
             ></GoalContainer>
           ))}
         </Collapsible>
@@ -187,7 +197,7 @@ export default function Main() {
           >
             <GroupContainer
               group={group}
-              days={getEndDateFromInterval(group.interval)}
+              days={getDaysLeftInterval(group.interval)}
               groupProgress={groupProgress(group)}
               individualProgress={individualProgress()}
               style={{ marginBottom: 8 }}

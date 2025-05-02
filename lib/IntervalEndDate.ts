@@ -1,6 +1,6 @@
 import { Interval } from "./API/schemas/Interval";
 
-export function getEndDateFromInterval(interval: Interval): number{
+export function getDaysLeftInterval(interval: Interval): number{
   const today = new Date();
   let daysUntilInterval:number = 1
   switch(interval){
@@ -15,5 +15,5 @@ export function getEndDateFromInterval(interval: Interval): number{
       daysUntilInterval = (8 - today.getDay()) % 7 || 7;
     }
   }
-  return daysUntilInterval;
+  return daysUntilInterval
 }
