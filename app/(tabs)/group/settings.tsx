@@ -13,7 +13,6 @@ import { Dropdown } from "react-native-element-dropdown";
 import {
   CustomModal,
   modalMode,
-  GoalCreationType,
 } from "@/components/CustomModal";
 import { Back } from "@/components/Back";
 import { Collapsible } from "@/components/Collapsible";
@@ -35,13 +34,16 @@ import { Goal, GoalType } from "@/lib/API/schemas/Goal";
 import { Interval } from "@/lib/API/schemas/Interval";
 import { getAske } from "@/lib/aske";
 import { useGroups } from "@/lib/states/groupsState";
+import { create as createInvite } from "@/lib/server/group/invite";
+import { remove } from "@/lib/server/group/remove";
+import { _delete, create } from "@/lib/server/group/goal";
 
 export default function GroupSettings() {
   const { id } = useLocalSearchParams();
   const groupId = id.toString();
   const { contextGroups } = useGroups();
   const [group, setGroup] = useState<Group>(contextGroups.get(groupId)!);
-  const [members, setMembers] = useState(Object.entries(group.users));
+  const [members, setMembers] = useState(Object.entries(group?.users));
 
   const [inviteModalVisibility, setInviteModalVisibility] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
@@ -49,69 +51,89 @@ export default function GroupSettings() {
   const [itemToDelete, setItemToDelete] = useState({
     type: "", // "member", "groupGoal", or "individualGoal"
     index: -1,
-    name: "",
+    name: "", //name
+    id: "",
     memberIndex: -1,
   });
   let localId = 0; //TODO: remove when hooked to server
-  function inviteMember() {
+  async function inviteMember() {
     if (newMemberName.trim() !== "") {
-      setMembers((prev) => [...prev, [(++localId).toString(), newMemberName]]); //TODO: change when hooked to server
+      try{
+        const response = await createInvite(groupId, newMemberName)
+        console.log("Response: ")
+        console.log(response)
+
+      }
+      catch(e){
+        console.log(e)
+      }
+      // setMembers((prev) => [...prev, [(++localId).toString(), newMemberName]]); //TODO: change when hooked to server
       setNewMemberName("");
       setInviteModalVisibility(false);
     }
   }
 
   function promptRemoveMember(index: number) {
+    const [id, name] = members[index] 
     setItemToDelete({
       type: settingsDeletion.Member,
       index,
-      name: members[index][1],
+      id: id,
+      name: name,
       memberIndex: -1,
     });
     setDeleteModalVisibility(true);
   }
 
   function promptRemoveGoal(index: number) {
+    const groupGoal = groupGoals[index]
     setItemToDelete({
       type: settingsDeletion.GroupGoal,
       index,
-      name: groupGoals[index].goalId,
+      id: groupGoal.goalId,
+      name: groupGoal.title,
       memberIndex: -1,
     });
     setDeleteModalVisibility(true);
   }
 
-  function promptRemoveIndividualGoal(goalIndex: number, memberIndex: number) {
+  function promptRemoveIndividualGoal(goalId: string, memberIndex: number) {
     setItemToDelete({
       type: settingsDeletion.IndividualGoal,
-      index: goalIndex,
-      name: memberGoals.filter(
-        (goal) => goal.progress[members[memberIndex][0]] >= 0,
-      )[goalIndex].goalId,
+      index: -1,
+      id: goalId,
+      name: "",
       memberIndex: memberIndex,
     });
     setDeleteModalVisibility(true);
   }
 
-  function confirmDelete() {
+  async function confirmDelete() {
     if (itemToDelete.index >= 0) {
       if (itemToDelete.type === settingsDeletion.Member) {
+        const response = await remove(itemToDelete.id, groupId)
+        console.log("remove member:")
+        console.log(response)
         setMembers((prev) => prev.filter((_, i) => i !== itemToDelete.index));
         setMemberGoals((prev) =>
           prev.filter((_, i) => i !== itemToDelete.index),
         );
       } else if (itemToDelete.type === settingsDeletion.GroupGoal) {
+        const response = await _delete(itemToDelete.id)
+        console.log("remove goal:")
+        console.log(response)
         setGroupGoals((prev) =>
           prev.filter((_, i) => i !== itemToDelete.index),
         );
       } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
-        setMemberGoals((prev) => {
-          let newMemberGoals = [...prev];
-          newMemberGoals = newMemberGoals.filter(
-            (goal) => goal.goalId !== itemToDelete.name,
-          );
-          return newMemberGoals;
-        });
+        const response = await _delete(itemToDelete.id)
+        console.log("remove goal:")
+        setMemberGoals((prev) => 
+          prev.filter(
+            (goal) => goal.goalId !== itemToDelete.id,
+          )
+          // return newMemberGoals;
+        );
       }
     }
     setDeleteModalVisibility(false);
@@ -127,8 +149,8 @@ export default function GroupSettings() {
   );
 
   const [goalModalVisibility, setGoalModalVisibility] = useState(false);
-  const [currentGoalType, setCurrentGoalType] = useState(
-    GoalCreationType.GroupGoal,
+  const [currentGoalType, setCurrentGoalType] = useState<GoalType>(
+    GoalType.Group,
   );
   const [selectedMemberIndex, setSelectedMemberIndex] = useState(-1);
 
@@ -153,19 +175,19 @@ export default function GroupSettings() {
       value,
     }));
   }, [activityValue]);
-  const [metricValue, setMetricValue] = useState<Metric | null>(null);
+  const [metricValue, setMetricValue] = useState<Metric>(Metric["Count"]);
   const [isMetricFocus, setIsMetricFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
   const [titleValue, setTitleValue] = useState("");
 
   function openGroupGoalModal() {
-    setCurrentGoalType(GoalCreationType.GroupGoal);
+    setCurrentGoalType(GoalType.Group);
     resetGoalForm();
     setGoalModalVisibility(true);
   }
 
   function openIndividualGoalModal(memberIndex: number) {
-    setCurrentGoalType(GoalCreationType.IndividualGoal);
+    setCurrentGoalType(GoalType.Individual);
     setSelectedMemberIndex(memberIndex);
     resetGoalForm();
     setGoalModalVisibility(true);
@@ -177,23 +199,29 @@ export default function GroupSettings() {
     setTitleValue("");
   }
 
-  function createGoal() {
-    const newGoal: Goal = {
+  async function createGoal() {
+    const newGoal: Goal = { // Omit<Goal, "uuid" | "group" | "progress"> for when it works
       activity: activityValue || OtherActivity.Steps,
       target: amountValue || 1,
-      metric: Metric.Count,
+      metric: metricValue,
       goalId: (++localId).toString(), //TODO: update when hooked to server
-      type: GoalType.Individual,
+      type: currentGoalType,
       title: titleValue || "hello",
       progress: {},
     };
-
-    if (currentGoalType === GoalCreationType.GroupGoal) {
+    
+    if (currentGoalType === GoalType.Group) {
+      const response = await create(members[0][0], groupId, newGoal)
+      console.log("new Goal:")
+      console.log(response)
       setGroupGoals((prev) => [...prev, newGoal]);
     } else if (
-      currentGoalType === GoalCreationType.IndividualGoal &&
+      currentGoalType === GoalType.Individual &&
       selectedMemberIndex >= 0
     ) {
+      const response = await create(members[selectedMemberIndex][0], groupId, newGoal)
+      console.log("new Goal:")
+      console.log(response)
       setMemberGoals((prev) => {
         newGoal.progress = { [members[selectedMemberIndex][0]]: 0 };
         return [...prev, newGoal];
@@ -216,7 +244,7 @@ export default function GroupSettings() {
   }
 
   function getGoalModalTitle() {
-    if (currentGoalType === GoalCreationType.GroupGoal) {
+    if (currentGoalType === GoalType.Group) {
       return "New Group Goal";
     } else {
       return `New Goal for ${members[selectedMemberIndex][1]}`;
@@ -322,7 +350,7 @@ export default function GroupSettings() {
             value={amountValue ? String(amountValue) : ""}
             onChangeText={(text) => setAmountValue(Number(text))}
           />
-          {currentGoalType === GoalCreationType.GroupGoal ? (
+          {currentGoalType === GoalType.Group ? (
             <>
               <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
                 Title
@@ -469,7 +497,7 @@ export default function GroupSettings() {
                       {...goal}
                       padding={0}
                       onRemove={() =>
-                        promptRemoveIndividualGoal(goalIndex, memberIndex)
+                        promptRemoveIndividualGoal(goal.goalId, memberIndex)
                       }
                     />
                   ))}
