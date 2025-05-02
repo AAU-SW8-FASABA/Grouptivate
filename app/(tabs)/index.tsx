@@ -26,6 +26,7 @@ import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
 import { getDaysLeftInterval } from "@/lib/IntervalEndDate";
 import { GroupsContext, useGroups } from "@/lib/states/groupsState";
+import { minBytes } from "valibot";
 
 export default function Main() {
   const { user } = useUser();
@@ -61,24 +62,16 @@ export default function Main() {
     value,
   }));
 
-  function createGroup() {
-    postCreateGroup(user, newGroupName, intervalValue);
-
-    const newGroup = {
-      groupId: "",
-      groupName: newGroupName,
-      users: { [user.userId]: user.name },
-      interval: intervalValue,
-      goals: [],
-      streak: 0,
-    };
-    setGroups((prev) => [...prev, newGroup]);
+  async function createGroup() {
+    const responseGroup = await postCreateGroup(user, newGroupName, intervalValue);
+    contextGroups.set(responseGroup.groupId, responseGroup)
+    setGroups((prev) => [...prev, responseGroup]);
   }
 
   function individualProgress(){
     if (user.goals.length){
       const progress = (user.goals.reduce((acc, goal) =>
-        acc + (goal.progress[user.userId]) / (goal.target / goal.progress.length),
+        acc + Math.min((goal.progress[user.userId]) / (goal.target / goal.progress.length), 1),
         0,
       ) / individualGoals.length) * 100
       return progress
