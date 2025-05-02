@@ -45,31 +45,25 @@ export default function Main() {
         contextGroups.set(groupId, group);
         fetchedGroups.push(group);
       }
-
       setGroups(fetchedGroups);
     };
     fetchGroup();
-  }, [user, contextGroups, groups]);
+  }, [user, contextGroups]);
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
     value,
   }));
 
-  function createGroup() {
-    postCreateGroup(user, newGroupName, intervalValue);
-
-    const newGroup = {
-      groupId: "",
-      groupName: newGroupName,
-      users: { [user.userId]: user.name },
-      interval: intervalValue,
-      goals: [],
-      streak: 0,
-    };
-    setGroups((prev) => [...prev, newGroup]);
+  async function createGroup() {
+    const responseGroup = await postCreateGroup(
+      user,
+      newGroupName,
+      intervalValue,
+    );
+    contextGroups.set(responseGroup.groupId, responseGroup);
+    setGroups((prev) => [...prev, responseGroup]);
   }
-
   //function calculateIndividualProgress(): number {
   //
   //}
