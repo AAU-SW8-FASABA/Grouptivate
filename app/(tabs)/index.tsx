@@ -28,7 +28,6 @@ import { GroupsContext, useGroups } from "@/lib/states/groupsState";
 export default function Main() {
   const { user } = useUser();
   const { contextGroups } = useGroups();
-  console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
   const [newGroupName, setGroupName] = useState("");
@@ -50,17 +49,25 @@ export default function Main() {
       setGroups(fetchedGroups);
     };
     fetchGroup();
-  }, [user]);
+  }, [user, contextGroups, groups]);
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
     value,
   }));
 
-  async function createGroup() {
-    const responseGroup = await postCreateGroup(user, newGroupName, intervalValue);
-    contextGroups.set(responseGroup.groupId, responseGroup)
-    setGroups((prev) => [...prev, responseGroup]);
+  function createGroup() {
+    postCreateGroup(user, newGroupName, intervalValue);
+
+    const newGroup = {
+      groupId: "",
+      groupName: newGroupName,
+      users: { [user.userId]: user.name },
+      interval: intervalValue,
+      goals: [],
+      streak: 0,
+    };
+    setGroups((prev) => [...prev, newGroup]);
   }
 
   //function calculateIndividualProgress(): number {
