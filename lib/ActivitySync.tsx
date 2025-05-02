@@ -52,17 +52,18 @@ export async function SyncActivity() {
 
   const goalUpdates = await Promise.all(
     groups
-      .filter((group) => user.userId in group.users)
       .map((group) =>
-        group.goals.map(async (goal) => ({
-          goalId: goal.goalId,
-          progress: await getGoalProgress(
-            healthAdapter,
-            goal.activity,
-            goal.metric,
-            group.interval,
-          ),
-        })),
+        group.goals
+          .filter((goal) => user.userId in goal.progress)
+          .map(async (goal) => ({
+            goalId: goal.goalId,
+            progress: await getGoalProgress(
+              healthAdapter,
+              goal.activity,
+              goal.metric,
+              group.interval,
+            ),
+          })),
       )
       .flat(),
   );
