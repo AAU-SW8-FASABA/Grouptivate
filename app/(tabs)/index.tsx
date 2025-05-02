@@ -35,8 +35,6 @@ export default function Main() {
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]);
   const [individualGoals, setIndividualGoals] = useState<Goal[]>([]);
-  const [groupGoals, setGroupGoals] = useState<Goal[]>([])
-  const [goals] = useState<Goal[]>([]);
 
   useEffect(() => {
     const fetchGroup = async () => {
@@ -45,14 +43,7 @@ export default function Main() {
     };
     fetchGroup();
     setIndividualGoals(splitGoalTypes(GoalType.Individual));
-    setupGroupGoals();
   }, [user]);
-
-  function setupGroupGoals(){
-    setGroupGoals(splitGoalTypes(GoalType.Individual))
-    const groupGoalsProgress: Map<string, number> = new Map();
-    
-  }
 
   function splitGoalTypes(goalTypeFilter:string): Goal[]{
     const filteredGoals: Goal[] = user.goals.filter((goal) => {
@@ -79,10 +70,6 @@ export default function Main() {
     };
     setGroups((prev) => [...prev, newGroup]);
   }
-
-  //function calculateIndividualProgress(): number {
-  //
-  //}
 
   return (
     <Suspense>
@@ -166,17 +153,33 @@ export default function Main() {
             onPress={() =>
               router.push({
                 pathname: "/group",
-                params: { name: group.groupId },
+                params: { name: group.groupName },
               })
             }
           >
             <GroupContainer
               group={group}
               days={2}
-              groupProgress={10}
-              groupTarget={4}
-              individualProgress={9}
-              individualTarget={4}
+              groupProgress={
+                (group.goals.reduce(
+                  (acc, goal) =>
+                    acc +
+                    (Object.values(goal.progress).reduce((sum, add) => sum + add, 0)) / goal.target,
+                  0,
+                ) /
+                  group.goals!.length) *
+                100
+              }
+              individualProgress={
+                (user.goals.reduce(
+                  (acc, goal) =>
+                    acc +
+                    (goal.progress[user.userId]) / (goal.target / goal.progress.length),
+                  0,
+                ) /
+                  individualGoals.length) *
+                100
+              }
               style={{ marginBottom: 8 }}
             />
           </TouchableOpacity>

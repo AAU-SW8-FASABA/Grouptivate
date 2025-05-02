@@ -19,17 +19,13 @@ export function GroupContainer({
   group,
   days,
   groupProgress,
-  groupTarget,
   individualProgress,
-  individualTarget,
   style,
 }: {
   group: Pick<Group, "groupId" | "groupName" | "users">;
   days: number;
   groupProgress: number;
-  groupTarget: number;
   individualProgress: number;
-  individualTarget: number;
   style?: StyleProp<ViewStyle>;
 }) {
   const [image, setImage] = useState(defaultAske);
@@ -54,14 +50,12 @@ export function GroupContainer({
       <HR />
       <ProgressBarIcon
         progress={groupProgress}
-        target={groupTarget}
         iconSource={IconSource.FontAwesome6}
         icon="users"
         iconSize={20}
       />
       <ProgressBarIcon
         progress={individualProgress}
-        target={individualTarget}
         iconSource={IconSource.FontAwesome6}
         icon="user-large"
         iconSize={20}
