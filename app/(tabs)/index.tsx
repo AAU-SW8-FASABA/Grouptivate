@@ -25,9 +25,11 @@ import type { Goal } from "@/lib/API/schemas/Goal";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
 import { getEndDateFromInterval } from "@/lib/IntervalEndDate";
+import { GroupsContext, useGroups } from "@/lib/states/groupsState";
 
 export default function Main() {
   const { user } = useUser();
+  const { contextGroups } = useGroups();
   console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
@@ -94,6 +96,8 @@ export default function Main() {
     return 0  
   }
 
+
+
   return (
     <Suspense>
       <CustomScrollView style={globalStyles.viewContainer}>
@@ -150,6 +154,7 @@ export default function Main() {
         <Collapsible title="Goals" style={{ marginTop: 6 }}>
           {individualGoals.map((goal) => (
             <GoalContainer
+              key={goal.goalId}
               activity={goal.activity}
               metric={goal.metric}
               progress={goal.progress[user.userId]}
@@ -170,13 +175,13 @@ export default function Main() {
             />
           </TouchableOpacity>
         </View>
-        {groups.map((group, index) => (
+        {groups.map((group) => (
           <TouchableOpacity
-            key={index}
+            key={group.groupId}
             onPress={() =>
               router.push({
                 pathname: "/group",
-                params: { name: group.groupId },
+                params: { id: group.groupId },
               })
             }
           >
