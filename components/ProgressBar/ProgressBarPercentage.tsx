@@ -9,9 +9,9 @@ export function ProgressBarPercentage({
   progress: number;
   target?: number;
 }) {
-  console.log(progress)
-  if(progress === null){
-    progress = 0
+  console.log(progress);
+  if (progress === null) {
+    progress = 0;
   }
   const progressPercentage = Math.min((progress / target) * 100, 100);
   const isRightAligned = progressPercentage < 90;

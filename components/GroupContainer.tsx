@@ -32,9 +32,9 @@ export function GroupContainer({
   useEffect(() => {
     setImage(getAske(group));
   }, [group]);
-  let daysLeft = days + " days left"
-  if (days === 1){
-    daysLeft = "Today"
+  let daysLeft = days + " days left";
+  if (days === 1) {
+    daysLeft = "Today";
   }
 
   return (

@@ -130,22 +130,21 @@ export default function Group() {
             </Text>
           </View>
           <View style={{ marginTop: 10 }}>
-          <ProgressBarPercentage
+            <ProgressBarPercentage
               progress={
                 group.goals.length
-                  ? 
-                  (group.goals.reduce(
-                    (acc, goal) =>
-                      acc +
-                      Object.values(goal.progress).reduce(
-                        (sum, add) => sum + add,
-                        0,
-                      ) /
-                        goal.target,
-                    0,
-                  ) /
-                    group.goals!.length) *
-                  100
+                  ? (group.goals.reduce(
+                      (acc, goal) =>
+                        acc +
+                        Object.values(goal.progress).reduce(
+                          (sum, add) => sum + add,
+                          0,
+                        ) /
+                          goal.target,
+                      0,
+                    ) /
+                      group.goals!.length) *
+                    100
                   : 0
               }
             />
@@ -243,14 +242,13 @@ export default function Group() {
                     <ProgressBarPercentage
                       progress={
                         userGoals.get(userId)?.length
-                        ?
-                        ((userGoals.get(userId) ?? []).reduce(
-                          (acc, a) => acc + a.progress[userId] / a.target,
-                          0,
-                        ) /
-                          (userGoals.get(userId) ?? []).length) *
-                        100
-                        : 0
+                          ? ((userGoals.get(userId) ?? []).reduce(
+                              (acc, a) => acc + a.progress[userId] / a.target,
+                              0,
+                            ) /
+                              (userGoals.get(userId) ?? []).length) *
+                            100
+                          : 0
                       }
                     />
                   </View>

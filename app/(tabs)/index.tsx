@@ -42,19 +42,19 @@ export default function Main() {
 
   useEffect(() => {
     const fetchGroup = async () => {
-      const fetchedGroups = await getGroups();  
-      fetchedGroups.forEach((group) => contextGroups.set(group.groupId,group))
+      const fetchedGroups = await getGroups();
+      fetchedGroups.forEach((group) => contextGroups.set(group.groupId, group));
       setGroups(fetchedGroups);
     };
     fetchGroup();
     setIndividualGoals(splitGoalTypes(GoalType.Individual));
   }, [user]);
 
-  function splitGoalTypes(goalTypeFilter:string): Goal[]{
+  function splitGoalTypes(goalTypeFilter: string): Goal[] {
     const filteredGoals: Goal[] = user.goals.filter((goal) => {
-        return goal.type == goalTypeFilter
-      });
-    return filteredGoals
+      return goal.type == goalTypeFilter;
+    });
+    return filteredGoals;
   }
 
   const intervals = Object.values(Interval).map((value) => ({
@@ -63,42 +63,60 @@ export default function Main() {
   }));
 
   async function createGroup() {
-    const responseGroup = await postCreateGroup(user, newGroupName, intervalValue);
-    contextGroups.set(responseGroup.groupId, responseGroup)
+    const responseGroup = await postCreateGroup(
+      user,
+      newGroupName,
+      intervalValue,
+    );
+    contextGroups.set(responseGroup.groupId, responseGroup);
     setGroups((prev) => [...prev, responseGroup]);
   }
 
-  function individualProgress(){
-    if (user.goals.length){
-      const progress = (user.goals.reduce((acc, goal) =>
-        acc + Math.min((goal.progress[user.userId]) / (goal.target / goal.progress.length), 1),
-        0,
-      ) / individualGoals.length) * 100
-      return progress
-    } 
-    return 0
-  }
-
-  function groupProgress(group: Group){
-    if(group.goals.length){
-      const progress = (group.goals.reduce((acc, goal) =>
-        acc + (Object.values(goal.progress).reduce((sum, add) => sum + add, 0)) / goal.target,
-        0,
-      ) / group.goals!.length) * 100
-      return progress
+  function individualProgress() {
+    if (user.goals.length) {
+      const progress =
+        (user.goals.reduce(
+          (acc, goal) =>
+            acc +
+            Math.min(
+              goal.progress[user.userId] / (goal.target / goal.progress.length),
+              1,
+            ),
+          0,
+        ) /
+          individualGoals.length) *
+        100;
+      return progress;
     }
-    return 0  
+    return 0;
   }
 
-  function findGoalEndDate(goal:Goal): number{
-    let daysUntilEndDate:number 
+  function groupProgress(group: Group) {
+    if (group.goals.length) {
+      const progress =
+        (group.goals.reduce(
+          (acc, goal) =>
+            acc +
+            Object.values(goal.progress).reduce((sum, add) => sum + add, 0) /
+              goal.target,
+          0,
+        ) /
+          group.goals!.length) *
+        100;
+      return progress;
+    }
+    return 0;
+  }
+
+  function findGoalEndDate(goal: Goal): number {
+    let daysUntilEndDate: number;
     groups.forEach((group) => {
-      if(group.goals.includes(goal)){
+      if (group.goals.includes(goal)) {
         daysUntilEndDate = getDaysLeftInterval(group.interval);
-        return daysUntilEndDate
+        return daysUntilEndDate;
       }
-    })
-    return 0
+    });
+    return 0;
   }
 
   return (
