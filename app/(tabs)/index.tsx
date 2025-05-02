@@ -48,7 +48,7 @@ export default function Main() {
       setGroups(fetchedGroups);
     };
     fetchGroup();
-  }, [user, contextGroups, groups]);
+  }, [user, contextGroups]);
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
