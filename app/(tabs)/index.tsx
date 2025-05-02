@@ -129,7 +129,7 @@ export default function Main() {
             <GoalContainer
               activity={goal.activity}
               metric={goal.metric}
-              progress={goal.progress[0]}
+              progress={goal.progress[user.userId]}
               target={goal.target}
               days={2}
             ></GoalContainer>
