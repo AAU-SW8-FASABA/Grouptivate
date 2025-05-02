@@ -34,75 +34,14 @@ import { Group } from "@/lib/API/schemas/Group";
 import { Goal, GoalType } from "@/lib/API/schemas/Goal";
 import { Interval } from "@/lib/API/schemas/Interval";
 import { getAske } from "@/lib/aske";
+import { useGroups } from "@/lib/states/groupsState";
 
 export default function GroupSettings() {
-  const { name } = useLocalSearchParams();
-  //TODO: get group from name
-  const testMembers: Record<string, string> = {
-    "anders uuid": "Anders",
-
-    "hald uuid": "Albert Hald",
-
-    "hal uuid": "Albert Hal",
-    // name: "Albert Hal",
-  };
-  const testGroup: Group = {
-    groupId: "",
-    groupName: name.toString(),
-    users: testMembers,
-    interval: Interval.Weekly,
-    goals: [
-      {
-        goalId: "0", //group goal
-        title: "This is a title",
-        type: GoalType.Group,
-        activity: SportActivity.Badminton,
-        metric: Metric.Distance,
-        target: 200,
-        progress: {
-          "anders uuid": 20,
-          "hald uuid": 100,
-          "hal uuid": 100,
-        },
-      },
-      {
-        goalId: "1",
-        title: "Anders goal",
-        type: GoalType.Individual,
-        activity: SportActivity.Badminton,
-        metric: Metric.Distance,
-        target: 200,
-        progress: {
-          "anders uuid": 200,
-        },
-      },
-      {
-        goalId: "2",
-        title: "Albert hald goal",
-        type: GoalType.Individual,
-        activity: SportActivity.Badminton,
-        metric: Metric.Distance,
-        target: 200,
-        progress: {
-          "hald uuid": 20,
-        },
-      },
-      {
-        goalId: "3",
-        title: "Albert hal",
-        type: GoalType.Individual,
-        activity: SportActivity.Baseball,
-        metric: Metric.Distance,
-        target: 200,
-        progress: {
-          "hal uuid": 20,
-        },
-      },
-    ],
-    streak: 2,
-  };
-
-  const [members, setMembers] = useState(Object.entries(testGroup.users));
+  const { id } = useLocalSearchParams();
+  const groupId = id.toString();
+  const { contextGroups } = useGroups();
+  const [group, setGroup] = useState<Group>(contextGroups.get(groupId)!);
+  const [members, setMembers] = useState(Object.entries(group.users));
 
   const [inviteModalVisibility, setInviteModalVisibility] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
@@ -113,14 +52,10 @@ export default function GroupSettings() {
     name: "",
     memberIndex: -1,
   });
-
-  let id = 0;
+  let localId = 0; //TODO: remove when hooked to server
   function inviteMember() {
     if (newMemberName.trim() !== "") {
-      setMembers((prev) => [
-        ...prev,
-        ...Object.entries({ [(++id).toString()]: newMemberName }),
-      ]);
+      setMembers((prev) => [...prev, [(++localId).toString(), newMemberName]]); //TODO: change when hooked to server
       setNewMemberName("");
       setInviteModalVisibility(false);
     }
@@ -183,12 +118,12 @@ export default function GroupSettings() {
   }
 
   const [groupGoals, setGroupGoals] = useState(
-    testGroup.goals.filter((goal) => goal.type === GoalType.Group),
+    group.goals.filter((goal) => goal.type === GoalType.Group),
   );
 
   // Store individual goals per member
   const [memberGoals, setMemberGoals] = useState(
-    testGroup.goals.filter((goal) => goal.type === GoalType.Individual),
+    group.goals.filter((goal) => goal.type === GoalType.Individual),
   );
 
   const [goalModalVisibility, setGoalModalVisibility] = useState(false);
@@ -247,7 +182,7 @@ export default function GroupSettings() {
       activity: activityValue || OtherActivity.Steps,
       target: amountValue || 1,
       metric: Metric.Count,
-      goalId: "",
+      goalId: (++localId).toString(), //TODO: update when hooked to server
       type: GoalType.Individual,
       title: titleValue || "hello",
       progress: {},

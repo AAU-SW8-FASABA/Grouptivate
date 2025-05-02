@@ -23,9 +23,11 @@ import { Interval } from "@/lib/API/schemas/Interval";
 import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
+import { GroupsContext, useGroups } from "@/lib/states/groupsState";
 
 export default function Main() {
   const { user } = useUser();
+  const { contextGroups } = useGroups();
   console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
@@ -40,8 +42,11 @@ export default function Main() {
       const fetchedGroups: Group[] = [];
       for (const groupId of user.groups) {
         const group = await getGroup(groupId);
+
+        contextGroups.set(groupId, group);
         fetchedGroups.push(group);
       }
+
       setGroups(fetchedGroups);
     };
     fetchGroup();
@@ -153,7 +158,7 @@ export default function Main() {
             onPress={() =>
               router.push({
                 pathname: "/group",
-                params: { name: group.groupName },
+                params: { id: group.groupId },
               })
             }
           >
