@@ -58,8 +58,12 @@ export default function Main() {
   }));
 
   async function createGroup() {
-    const responseGroup = await postCreateGroup(user, newGroupName, intervalValue);
-    contextGroups.set(responseGroup.groupId, responseGroup)
+    const responseGroup = await postCreateGroup(
+      user,
+      newGroupName,
+      intervalValue,
+    );
+    contextGroups.set(responseGroup.groupId, responseGroup);
     setGroups((prev) => [...prev, responseGroup]);
   }
 
