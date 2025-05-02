@@ -24,6 +24,7 @@ import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
+import { getStartDateFromInterval } from "@/lib/IntervalStartDate";
 
 export default function Main() {
   const { user } = useUser();
@@ -69,6 +70,34 @@ export default function Main() {
       streak: 0,
     };
     setGroups((prev) => [...prev, newGroup]);
+  }
+
+  function individualProgress(){
+    if (user.goals.length){
+      const progress = (user.goals.reduce((acc, goal) =>
+        acc + (goal.progress[user.userId]) / (goal.target / goal.progress.length),
+        0,
+      ) / individualGoals.length) * 100
+      return progress
+    } 
+    return 0
+  }
+
+  function groupProgress(group: Group){
+    if(group.goals.length){
+      const progress = (group.goals.reduce((acc, goal) =>
+        acc + (Object.values(goal.progress).reduce((sum, add) => sum + add, 0)) / goal.target,
+        0,
+      ) / group.goals!.length) * 100
+      return progress
+    }
+    return 0  
+  }
+
+  function timeLeftOfInterval(group: Group){
+    const startDate = getStartDateFromInterval(group.interval)
+
+
   }
 
   return (
@@ -160,26 +189,8 @@ export default function Main() {
             <GroupContainer
               group={group}
               days={2}
-              groupProgress={
-                (group.goals.reduce(
-                  (acc, goal) =>
-                    acc +
-                    (Object.values(goal.progress).reduce((sum, add) => sum + add, 0)) / goal.target,
-                  0,
-                ) /
-                  group.goals!.length) *
-                100
-              }
-              individualProgress={
-                (user.goals.reduce(
-                  (acc, goal) =>
-                    acc +
-                    (goal.progress[user.userId]) / (goal.target / goal.progress.length),
-                  0,
-                ) /
-                  individualGoals.length) *
-                100
-              }
+              groupProgress={groupProgress(group)}
+              individualProgress={individualProgress()}
               style={{ marginBottom: 8 }}
             />
           </TouchableOpacity>
