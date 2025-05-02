@@ -28,7 +28,6 @@ import { useGroups } from "@/lib/states/groupsState";
 export default function Main() {
   const { user } = useUser();
   const { contextGroups } = useGroups();
-  console.log("WHAT USER IS HERE?????", user);
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
   const [newGroupName, setGroupName] = useState("");
@@ -50,7 +49,7 @@ export default function Main() {
       setGroups(fetchedGroups);
     };
     fetchGroup();
-  }, [user]);
+  }, [user, contextGroups, groups]);
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
