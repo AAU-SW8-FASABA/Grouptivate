@@ -1,6 +1,6 @@
 import { AppState } from "react-native";
-import { get as getUser } from "./server/user";
-import { get as getGroup } from "./server/group";
+import { Group } from "./API/schemas/Group";
+import { get as getGroups } from "./server/groups";
 import { patch as patchGoal } from "./server/group/goal";
 import { Interval } from "./API/schemas/Interval";
 import { OtherActivity, SportActivity } from "./API/schemas/Activity";
@@ -28,9 +28,14 @@ export async function SyncActivity() {
     return;
   }
 
-  const user = await getUser();
-
-  const groups = await Promise.all(user.groups.map((group) => getGroup(group)));
+  let groups: Group[] = [];
+  try {
+    groups = await getGroups();
+  } catch {
+    console.warn(`Unable to sync activity progress`);
+    return;
+  }
+  if (groups.length === 0) return;
 
   const goalUpdates = await Promise.all(
     groups
@@ -48,7 +53,12 @@ export async function SyncActivity() {
       .flat(),
   );
 
-  await patchGoal(goalUpdates);
+  try {
+    await patchGoal(goalUpdates);
+  } catch {
+    console.warn(`Unable to sync activity progress`);
+    return;
+  }
 }
 
 async function getGoalProgress(
