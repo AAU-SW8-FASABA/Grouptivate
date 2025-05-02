@@ -142,7 +142,10 @@ export default function Main() {
         </Collapsible>
         <View style={[styles.row]}>
           <Text style={globalStyles.sectionHeader}>Groups</Text>
-          <TouchableOpacity onPress={() => setNewGroupModalVisibility(true)}>
+          <TouchableOpacity
+            testID="add-group-button"
+            onPress={() => setNewGroupModalVisibility(true)}
+          >
             <UniversalIcon
               source={IconSource.FontAwesome6}
               name="plus"
