@@ -45,7 +45,6 @@ export default function Main() {
         contextGroups.set(groupId, group);
         fetchedGroups.push(group);
       }
-
       setGroups(fetchedGroups);
     };
     fetchGroup();
@@ -65,7 +64,6 @@ export default function Main() {
     contextGroups.set(responseGroup.groupId, responseGroup);
     setGroups((prev) => [...prev, responseGroup]);
   }
-
   //function calculateIndividualProgress(): number {
   //
   //}
