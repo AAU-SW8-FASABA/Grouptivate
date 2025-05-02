@@ -45,11 +45,10 @@ export default function Main() {
         contextGroups.set(groupId, group);
         fetchedGroups.push(group);
       }
-
       setGroups(fetchedGroups);
     };
     fetchGroup();
-  }, [user, contextGroups, groups]);
+  }, [user, contextGroups]);
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
@@ -65,7 +64,6 @@ export default function Main() {
     contextGroups.set(responseGroup.groupId, responseGroup);
     setGroups((prev) => [...prev, responseGroup]);
   }
-
   //function calculateIndividualProgress(): number {
   //
   //}
