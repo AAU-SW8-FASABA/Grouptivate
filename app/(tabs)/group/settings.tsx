@@ -55,19 +55,17 @@ export default function GroupSettings() {
     id: "",
     memberIndex: -1,
   });
-  let localId = 0; //TODO: remove when hooked to server
   async function inviteMember() {
-    if (newMemberName.trim() !== "") {
+    if (newMemberName.trim() !== "") { //TODO: give feedback
       try{
         const response = await createInvite(groupId, newMemberName)
-        console.log("Response: ")
-        console.log(response)
+        // console.log("Response: ")
+        // console.log(response)
 
       }
       catch(e){
         console.log(e)
       }
-      // setMembers((prev) => [...prev, [(++localId).toString(), newMemberName]]); //TODO: change when hooked to server
       setNewMemberName("");
       setInviteModalVisibility(false);
     }
@@ -204,27 +202,26 @@ export default function GroupSettings() {
       activity: activityValue || OtherActivity.Steps,
       target: amountValue || 1,
       metric: metricValue,
-      goalId: (++localId).toString(), //TODO: update when hooked to server
+      goalId: "-1",
       type: currentGoalType,
       title: titleValue || "Goal",
-      progress: {},
+      progress: {}
     };
     if (currentGoalType === GoalType.Group) {
       const response = await create(members[0][0], groupId, newGoal)
-      console.log("new Goal:")
-      console.log(response)
-      setGroupGoals((prev) => [...prev, newGoal]);
+      // console.log("new Goal:")
+      // console.log(response)
+      setGroupGoals((prev) => [...prev, response]);
     } else if (
       currentGoalType === GoalType.Individual &&
       selectedMemberIndex >= 0
     ) {
       const response = await create(members[selectedMemberIndex][0], groupId, newGoal)
-      console.log("new Goal:")
-      console.log(response)
-      setMemberGoals((prev) => {
-        newGoal.progress = { [members[selectedMemberIndex][0]]: 0 };
-        return [...prev, newGoal];
-      });
+      // console.log("new Goal:")
+      // console.log(response)
+      setMemberGoals((prev) => 
+        [...prev, response]
+      );
     }
     setGoalModalVisibility(false);
   }
@@ -236,7 +233,7 @@ export default function GroupSettings() {
       case settingsDeletion.GroupGoal:
         return `Are you sure you want to delete the group goal "${itemToDelete.name}"?`;
       case settingsDeletion.IndividualGoal:
-        return `Are you sure you want to delete the individual goal "${itemToDelete.name}" for ${members[itemToDelete.memberIndex]}?`;
+        return `Are you sure you want to delete the individual goal for ${members[itemToDelete.memberIndex][1]}?`;
       default:
         return "Are you sure you want to delete this item?";
     }
