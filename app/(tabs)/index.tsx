@@ -23,7 +23,7 @@ import { Interval } from "@/lib/API/schemas/Interval";
 import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
-import { GroupsContext, useGroups } from "@/lib/states/groupsState";
+import { useGroups } from "@/lib/states/groupsState";
 
 export default function Main() {
   const { user } = useUser();

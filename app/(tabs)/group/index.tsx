@@ -52,16 +52,19 @@ export default function Group() {
   }
 
   loadgroup();
-
+  console.log(group.goals)
+  console.log(group.users)
   let userGoals: Map<string, Goal[]> = new Map();
-  Object.keys(group.users).forEach((user) => {
+  Object.keys(group.users).forEach((userId) => {
+    console.log(userId)
     userGoals.set(
-      user,
+      userId,
       group.goals.filter((goal) => {
-        return goal.type === "individual" && goal.progress[user];
+        return goal.type === "individual" && (goal.progress[userId] >= 0);
       }),
     );
   });
+  console.log(userGoals)
 
   function daysUntilNextMonday(): number {
     const today = new Date();
@@ -256,11 +259,11 @@ export default function Group() {
                   <View style={{ width: "40%", marginRight: 30 }}>
                     <ProgressBarPercentage
                       progress={
-                        ((userGoals.get(userId) ?? []).reduce(
+                        ((userGoals.get(userId)!).reduce(
                           (acc, a) => acc + a.progress[userId] / a.target,
                           0,
                         ) /
-                          (userGoals.get(userId) ?? []).length) *
+                          (userGoals.get(userId)!).length) *
                         100
                       }
                       target={100}

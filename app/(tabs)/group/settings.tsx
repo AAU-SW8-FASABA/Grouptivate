@@ -206,10 +206,9 @@ export default function GroupSettings() {
       metric: metricValue,
       goalId: (++localId).toString(), //TODO: update when hooked to server
       type: currentGoalType,
-      title: titleValue || "hello",
+      title: titleValue || "Goal",
       progress: {},
     };
-    
     if (currentGoalType === GoalType.Group) {
       const response = await create(members[0][0], groupId, newGoal)
       console.log("new Goal:")
