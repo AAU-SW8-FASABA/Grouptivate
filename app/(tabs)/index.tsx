@@ -28,7 +28,6 @@ import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
 import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
-import { minBytes } from "valibot";
 
 export default function Main() {
   let { user } = useUser();
@@ -51,7 +50,7 @@ export default function Main() {
       fetchedGroups.forEach((group) => contextGroups.set(group.groupId, group));
       setGroups(fetchedGroups);
       setIndividualGoals(
-        user.goals.filter((goal) => goal.type == GoalType.Individual),
+        user.goals.filter((goal) => goal.type === GoalType.Individual),
       );
     };
     fetchData();
@@ -75,7 +74,7 @@ export default function Main() {
   function individualProgress(group: Group) {
     const userGoals = group.goals.filter(
       (goal) =>
-        goal.type == GoalType.Individual && goal.progress[user.userId] != null,
+        goal.type === GoalType.Individual && goal.progress[user.userId] != null,
     );
     if (userGoals.length) {
       const progress =
