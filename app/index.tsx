@@ -5,10 +5,13 @@ import { verify } from "@/lib/server/login";
 import { useEffect } from "react";
 import { useUser } from "@/lib/states/userState";
 import { get as getUser } from "@/lib/server/user";
+import { SetupActivitySync } from "@/lib/ActivitySync";
 
 export default function Authentication() {
   const router = useRouter();
   const { setUser } = useUser();
+
+  SetupActivitySync();
 
   useEffect(() => {
     async function fetchData() {

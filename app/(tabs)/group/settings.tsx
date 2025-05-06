@@ -6,15 +6,11 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 
-import {
-  CustomModal,
-  modalMode,
-  GoalCreationType,
-} from "@/components/CustomModal";
+import { CustomModal, modalMode } from "@/components/CustomModal";
 import { Back } from "@/components/Back";
 import { Collapsible } from "@/components/Collapsible";
 import { SettingsMember } from "@/components/SettingsMember";
@@ -32,16 +28,46 @@ import {
 } from "@/lib/ActivityMetadata";
 import { Group } from "@/lib/API/schemas/Group";
 import { Goal, GoalType } from "@/lib/API/schemas/Goal";
-import { Interval } from "@/lib/API/schemas/Interval";
 import { getAske } from "@/lib/aske";
 import { useGroups } from "@/lib/states/groupsState";
+import { create as createInvite } from "@/lib/server/group/invite";
+import { remove } from "@/lib/server/group/remove";
+import { _delete, create } from "@/lib/server/group/goal";
 
 export default function GroupSettings() {
   const { id } = useLocalSearchParams();
-  const groupId = id.toString();
+  const groupId = id?.toString() || "";
   const { contextGroups } = useGroups();
-  const [group, setGroup] = useState<Group>(contextGroups.get(groupId)!);
-  const [members, setMembers] = useState(Object.entries(group.users));
+  const theGroup = contextGroups.get(groupId);
+
+  const [group, setGroup] = useState<Group | null>(null);
+  const [members, setMembers] = useState<[string, string][]>([]);
+  const [groupGoals, setGroupGoals] = useState<Goal[]>([]);
+  const [memberGoals, setMemberGoals] = useState<Goal[]>([]);
+
+  useEffect(() => {
+    if (groupId && theGroup != null) {
+      const currentGroup = theGroup;
+      console.log("Loading group from contextGroups:", groupId, currentGroup);
+      setGroup(currentGroup);
+      setMembers(Object.entries(currentGroup.users));
+      setGroupGoals(
+        currentGroup.goals.filter((goal) => goal.type === GoalType.Group),
+      );
+      setMemberGoals(
+        currentGroup.goals.filter((goal) => goal.type === GoalType.Individual),
+      );
+    } else {
+      console.log("Group not found in contextGroups:", groupId);
+    }
+  }, [groupId, contextGroups]);
+
+  // Debug output
+  useEffect(() => {
+    if (group) {
+      console.log("Current group state:", group.goals.length, "goals");
+    }
+  }, [group]);
 
   const [inviteModalVisibility, setInviteModalVisibility] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
@@ -49,86 +75,173 @@ export default function GroupSettings() {
   const [itemToDelete, setItemToDelete] = useState({
     type: "", // "member", "groupGoal", or "individualGoal"
     index: -1,
-    name: "",
+    name: "", //name
+    id: "",
     memberIndex: -1,
   });
-  let localId = 0; //TODO: remove when hooked to server
-  function inviteMember() {
+
+  function updateGroup() {
+    if (!group) return;
+
+    const updatedGroup: Group = {
+      ...group,
+      goals: [...memberGoals, ...groupGoals],
+    };
+    contextGroups.set(groupId, updatedGroup);
+    setGroup(updatedGroup);
+  }
+
+  async function inviteMember() {
     if (newMemberName.trim() !== "") {
-      setMembers((prev) => [...prev, [(++localId).toString(), newMemberName]]); //TODO: change when hooked to server
+      try {
+        await createInvite(groupId, newMemberName);
+        // After inviting, we don't need to update local state as the group
+        // should be refreshed from the server later
+      } catch (e) {
+        console.log(e);
+      }
       setNewMemberName("");
       setInviteModalVisibility(false);
     }
   }
 
   function promptRemoveMember(index: number) {
+    const [id, name] = members[index];
     setItemToDelete({
       type: settingsDeletion.Member,
       index,
-      name: members[index][1],
+      id: id,
+      name: name,
       memberIndex: -1,
     });
     setDeleteModalVisibility(true);
   }
 
   function promptRemoveGoal(index: number) {
+    const groupGoal = groupGoals[index];
     setItemToDelete({
       type: settingsDeletion.GroupGoal,
       index,
-      name: groupGoals[index].goalId,
+      id: groupGoal.goalId,
+      name: groupGoal.title,
       memberIndex: -1,
     });
     setDeleteModalVisibility(true);
   }
 
-  function promptRemoveIndividualGoal(goalIndex: number, memberIndex: number) {
+  function promptRemoveIndividualGoal(goalId: string, memberIndex: number) {
+    const goal = memberGoals.find((g) => g.goalId === goalId);
     setItemToDelete({
       type: settingsDeletion.IndividualGoal,
-      index: goalIndex,
-      name: memberGoals.filter(
-        (goal) => goal.progress[members[memberIndex][0]] >= 0,
-      )[goalIndex].goalId,
+      index: 0,
+      id: goalId,
+      name: goal?.title || "",
       memberIndex: memberIndex,
     });
     setDeleteModalVisibility(true);
   }
 
-  function confirmDelete() {
-    if (itemToDelete.index >= 0) {
-      if (itemToDelete.type === settingsDeletion.Member) {
+  async function confirmDelete() {
+    if (!group) return;
+
+    if (
+      itemToDelete.type === settingsDeletion.Member &&
+      itemToDelete.index >= 0
+    ) {
+      try {
+        await remove(itemToDelete.id, groupId);
+        // Update the local state immediately
+        const newGroup = { ...group };
+        delete newGroup.users[itemToDelete.id];
+
+        // Update goals by removing progress for this member
+        const updatedGoals = group.goals.map((goal) => {
+          const newGoal = { ...goal };
+          delete newGoal.progress[itemToDelete.id];
+          return newGoal;
+        });
+
+        newGroup.goals = updatedGoals;
+
+        // Update context groups
+        contextGroups.set(groupId, newGroup);
+
+        // Update local state
+        setGroup(newGroup);
         setMembers((prev) => prev.filter((_, i) => i !== itemToDelete.index));
         setMemberGoals((prev) =>
-          prev.filter((_, i) => i !== itemToDelete.index),
+          prev.filter(
+            (goal) =>
+              !goal.progress[itemToDelete.id] &&
+              goal.progress[itemToDelete.id] !== 0,
+          ),
         );
-      } else if (itemToDelete.type === settingsDeletion.GroupGoal) {
-        setGroupGoals((prev) =>
-          prev.filter((_, i) => i !== itemToDelete.index),
+      } catch (e) {
+        console.log("Error removing member:", e);
+      }
+    } else if (
+      itemToDelete.type === settingsDeletion.GroupGoal &&
+      itemToDelete.index >= 0
+    ) {
+      try {
+        await _delete(itemToDelete.id);
+
+        // Update group goals in local state
+        const updatedGroupGoals = groupGoals.filter(
+          (_, i) => i !== itemToDelete.index,
         );
-      } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
-        setMemberGoals((prev) => {
-          let newMemberGoals = [...prev];
-          newMemberGoals = newMemberGoals.filter(
-            (goal) => goal.goalId !== itemToDelete.name,
-          );
-          return newMemberGoals;
-        });
+        setGroupGoals(updatedGroupGoals);
+
+        // Update group in context
+        if (group) {
+          const updatedGroup = {
+            ...group,
+            goals: [
+              ...group.goals.filter(
+                (goal) =>
+                  goal.type !== GoalType.Group ||
+                  goal.goalId !== groupGoals[itemToDelete.index].goalId,
+              ),
+            ],
+          };
+          contextGroups.set(groupId, updatedGroup);
+          setGroup(updatedGroup);
+        }
+      } catch (e) {
+        console.log("Error deleting group goal:", e);
+      }
+    } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
+      try {
+        await _delete(itemToDelete.id);
+
+        // Update member goals in local state
+        const updatedMemberGoals = memberGoals.filter(
+          (goal) => goal.goalId !== itemToDelete.id,
+        );
+        setMemberGoals(updatedMemberGoals);
+
+        // Update group in context
+        if (group) {
+          const updatedGroup = {
+            ...group,
+            goals: [
+              ...group.goals.filter((goal) => goal.goalId !== itemToDelete.id),
+            ],
+          };
+          contextGroups.set(groupId, updatedGroup);
+          setGroup(updatedGroup);
+        }
+      } catch (e) {
+        console.log("Error deleting individual goal:", e);
       }
     }
+
     setDeleteModalVisibility(false);
   }
 
-  const [groupGoals, setGroupGoals] = useState(
-    group.goals.filter((goal) => goal.type === GoalType.Group),
-  );
-
-  // Store individual goals per member
-  const [memberGoals, setMemberGoals] = useState(
-    group.goals.filter((goal) => goal.type === GoalType.Individual),
-  );
-
   const [goalModalVisibility, setGoalModalVisibility] = useState(false);
-  const [currentGoalType, setCurrentGoalType] = useState(
-    GoalCreationType.GroupGoal,
+  const [currentGoalType, setCurrentGoalType] = useState<GoalType>(
+    GoalType.Group,
   );
   const [selectedMemberIndex, setSelectedMemberIndex] = useState(-1);
 
@@ -153,19 +266,20 @@ export default function GroupSettings() {
       value,
     }));
   }, [activityValue]);
-  const [metricValue, setMetricValue] = useState<Metric | null>(null);
+
+  const [metricValue, setMetricValue] = useState<Metric>(Metric["Count"]);
   const [isMetricFocus, setIsMetricFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
   const [titleValue, setTitleValue] = useState("");
 
   function openGroupGoalModal() {
-    setCurrentGoalType(GoalCreationType.GroupGoal);
+    setCurrentGoalType(GoalType.Group);
     resetGoalForm();
     setGoalModalVisibility(true);
   }
 
   function openIndividualGoalModal(memberIndex: number) {
-    setCurrentGoalType(GoalCreationType.IndividualGoal);
+    setCurrentGoalType(GoalType.Individual);
     setSelectedMemberIndex(memberIndex);
     resetGoalForm();
     setGoalModalVisibility(true);
@@ -177,28 +291,65 @@ export default function GroupSettings() {
     setTitleValue("");
   }
 
-  function createGoal() {
+  async function createGoal() {
+    if (!group || members.length === 0) return;
+
     const newGoal: Goal = {
       activity: activityValue || OtherActivity.Steps,
       target: amountValue || 1,
-      metric: Metric.Count,
-      goalId: (++localId).toString(), //TODO: update when hooked to server
-      type: GoalType.Individual,
-      title: titleValue || "hello",
+      metric: metricValue,
+      goalId: "-1", // This will be replaced by the server
+      type: currentGoalType,
+      title: titleValue || "Goal",
       progress: {},
     };
 
-    if (currentGoalType === GoalCreationType.GroupGoal) {
-      setGroupGoals((prev) => [...prev, newGoal]);
-    } else if (
-      currentGoalType === GoalCreationType.IndividualGoal &&
-      selectedMemberIndex >= 0
-    ) {
-      setMemberGoals((prev) => {
-        newGoal.progress = { [members[selectedMemberIndex][0]]: 0 };
-        return [...prev, newGoal];
-      });
+    try {
+      if (currentGoalType === GoalType.Group) {
+        const response = await create(members[0][0], groupId, newGoal);
+        setGroupGoals((prev) => [...prev, response]);
+
+        // Update group with the new goal
+        if (group) {
+          const updatedGroup = {
+            ...group,
+            goals: [
+              ...group.goals.filter((g) => g.type !== GoalType.Group),
+              ...groupGoals,
+              response,
+            ],
+          };
+          contextGroups.set(groupId, updatedGroup);
+          setGroup(updatedGroup);
+        }
+      } else if (
+        currentGoalType === GoalType.Individual &&
+        selectedMemberIndex >= 0
+      ) {
+        const response = await create(
+          members[selectedMemberIndex][0],
+          groupId,
+          newGoal,
+        );
+        setMemberGoals((prev) => [...prev, response]);
+
+        if (group) {
+          const updatedGroup = {
+            ...group,
+            goals: [
+              ...group.goals.filter((g) => g.type !== GoalType.Individual),
+              ...memberGoals,
+              response,
+            ],
+          };
+          contextGroups.set(groupId, updatedGroup);
+          setGroup(updatedGroup);
+        }
+      }
+    } catch (e) {
+      console.log("Error creating goal:", e);
     }
+
     setGoalModalVisibility(false);
   }
 
@@ -209,17 +360,23 @@ export default function GroupSettings() {
       case settingsDeletion.GroupGoal:
         return `Are you sure you want to delete the group goal "${itemToDelete.name}"?`;
       case settingsDeletion.IndividualGoal:
-        return `Are you sure you want to delete the individual goal "${itemToDelete.name}" for ${members[itemToDelete.memberIndex]}?`;
+        return `Are you sure you want to delete the individual goal "${itemToDelete.name}" for ${
+          itemToDelete.memberIndex >= 0 && members[itemToDelete.memberIndex]
+            ? members[itemToDelete.memberIndex][1]
+            : "this member"
+        }?`;
       default:
         return "Are you sure you want to delete this item?";
     }
   }
 
   function getGoalModalTitle() {
-    if (currentGoalType === GoalCreationType.GroupGoal) {
+    if (currentGoalType === GoalType.Group) {
       return "New Group Goal";
     } else {
-      return `New Goal for ${members[selectedMemberIndex][1]}`;
+      return selectedMemberIndex >= 0 && members[selectedMemberIndex]
+        ? `New Goal for ${members[selectedMemberIndex][1]}`
+        : "New Individual Goal";
     }
   }
 
@@ -227,6 +384,27 @@ export default function GroupSettings() {
     Member = "member",
     GroupGoal = "groupGoal",
     IndividualGoal = "individualGoal",
+  }
+
+  if (!group) {
+    return (
+      <>
+        <Stack.Screen
+          options={{
+            title: "Settings",
+            headerLeft: () => <Back />,
+          }}
+        />
+        <View
+          style={[
+            globalStyles.viewContainer,
+            { justifyContent: "center", alignItems: "center" },
+          ]}
+        >
+          <Text style={styles.text}>Loading group settings...</Text>
+        </View>
+      </>
+    );
   }
 
   return (
@@ -320,9 +498,9 @@ export default function GroupSettings() {
             style={globalStyles.inputField}
             keyboardType="numeric"
             value={amountValue ? String(amountValue) : ""}
-            onChangeText={(text) => setAmountValue(Number(text))}
+            onChangeText={(text) => setAmountValue(Number(text) || 0)}
           />
-          {currentGoalType === GoalCreationType.GroupGoal ? (
+          {currentGoalType === GoalType.Group ? (
             <>
               <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
                 Title
@@ -330,13 +508,11 @@ export default function GroupSettings() {
               <TextInput
                 style={globalStyles.inputField}
                 keyboardType="default"
-                value={titleValue ? String(titleValue) : ""}
+                value={titleValue}
                 onChangeText={(text) => setTitleValue(text)}
               />
             </>
-          ) : (
-            ""
-          )}
+          ) : null}
         </CustomModal>
 
         <CustomModal
@@ -462,14 +638,14 @@ export default function GroupSettings() {
               <>
                 {memberGoals
                   .filter((goal) => goal.progress[memberId] >= 0)
-                  .map((goal, goalIndex) => (
+                  .map((goal) => (
                     <SettingsGoal
                       unit={""}
                       key={goal.goalId}
                       {...goal}
                       padding={0}
                       onRemove={() =>
-                        promptRemoveIndividualGoal(goalIndex, memberIndex)
+                        promptRemoveIndividualGoal(goal.goalId, memberIndex)
                       }
                     />
                   ))}
