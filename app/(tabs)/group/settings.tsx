@@ -38,6 +38,7 @@ export default function GroupSettings() {
   const { id } = useLocalSearchParams();
   const groupId = id?.toString() || "";
   const { contextGroups } = useGroups();
+  const theGroup = contextGroups.get(groupId);
 
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<[string, string][]>([]);
@@ -45,8 +46,8 @@ export default function GroupSettings() {
   const [memberGoals, setMemberGoals] = useState<Goal[]>([]);
 
   useEffect(() => {
-    if (groupId && contextGroups.has(groupId)) {
-      const currentGroup = contextGroups.get(groupId)!;
+    if (groupId && theGroup != null) {
+      const currentGroup = theGroup;
       console.log("Loading group from contextGroups:", groupId, currentGroup);
       setGroup(currentGroup);
       setMembers(Object.entries(currentGroup.users));

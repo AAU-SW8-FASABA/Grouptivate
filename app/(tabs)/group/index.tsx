@@ -29,41 +29,54 @@ export default function Group() {
   const groupId = id.toString();
   const router = useRouter();
   const { contextGroups } = useGroups();
-  const theGroup = contextGroups.get(groupId)!;
-  const [group, setGroup] = useState<Group>(theGroup);
+  const [group, setGroup] = useState<Group | null>(null)
+  const theGroup = contextGroups.get(groupId)
+  if(theGroup != null){
+      setGroup(theGroup);
+  }
 
   useFocusEffect(() => {
-    setGroup(contextGroups.get(groupId)!);
+    if(theGroup != null){
+      setGroup(theGroup);
+  }
+    // if(contextGroups.has(groupId)){
+    //   setGroup(contextGroups.get(groupId));
+    // };
   });
 
   let groupGoalsProgress: Map<string, number> = new Map();
   let groupGoalsDone: boolean = false;
   let groupGoals: Goal[] = [];
+  let userGoals: Map<string, Goal[]> = new Map();
 
   function loadgroup() {
-    groupGoals = group.goals.filter((goal) => {
-      return goal.type === "group";
-    });
-    groupGoals.forEach((goal) => {
-      groupGoalsProgress.set(
-        goal.goalId,
-        Object.values(goal.progress).reduce((sum, add) => sum + add, 0),
+    if (group){
+      groupGoals = group.goals.filter((goal) => {
+        return goal.type === "group";
+      });
+    
+      groupGoals.forEach((goal) => {
+        groupGoalsProgress.set(
+          goal.goalId,
+          Object.values(goal.progress).reduce((sum, add) => sum + add, 0),
+        );
+      });
+      groupGoalsDone = groupGoals.every(
+        (goal) => (groupGoalsProgress.get(goal.goalId) ?? 0) >= goal.target,
       );
-    });
-    groupGoalsDone = groupGoals.every(
-      (goal) => (groupGoalsProgress.get(goal.goalId) ?? 0) >= goal.target,
-    );
+      Object.keys(group.users).forEach((userId) => {
+        userGoals.set(
+          userId,
+          group.goals.filter((goal) => {
+            return goal.type === "individual" && goal.progress[userId] >= 0;
+          }),
+        );
+      });
+    }
   }
   loadgroup();
-  let userGoals: Map<string, Goal[]> = new Map();
-  Object.keys(group.users).forEach((userId) => {
-    userGoals.set(
-      userId,
-      group.goals.filter((goal) => {
-        return goal.type === "individual" && goal.progress[userId] >= 0;
-      }),
-    );
-  });
+  
+  
 
   function daysUntilNextMonday(): number {
     const today = new Date();
@@ -86,7 +99,7 @@ export default function Group() {
       <Stack.Screen
         options={{
           headerTitle:
-            group.groupName && typeof group.groupName === "string"
+            group && group.groupName && typeof group.groupName === "string"
               ? group.groupName
               : "Group Name",
           headerLeft: () => <Back />,
@@ -115,14 +128,14 @@ export default function Group() {
           <ContainerWithBlueBox
             text1="Days Left"
             text2={
-              group.interval === Interval.Daily
+              group && group.interval === Interval.Daily
                 ? "1"
-                : group.interval === Interval.Weekly
+                : group && group.interval === Interval.Weekly
                   ? daysUntilNextMonday().toString()
                   : daysUntilNextMonth().toString()
             }
           />
-          <ContainerWithBlueBox text1="Streak" text2={group.streak + "🔥"} />
+          <ContainerWithBlueBox text1="Streak" text2={group ? group.streak + "🔥" : "🔥"} />
         </View>
 
         <Container style={{ marginTop: 8 }}>
@@ -135,7 +148,7 @@ export default function Group() {
           >
             <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
             <Text style={[styles.text, { fontSize: 16 }]}>
-              {Object.entries(group.users).reduce((count, [userId]) => {
+              {group ? Object.entries(group.users).reduce((count, [userId]) => {
                 if (!groupGoalsDone) return count;
 
                 const goals = userGoals.get(userId);
@@ -144,13 +157,13 @@ export default function Group() {
                 );
 
                 return count + (allGoalsDone ? 1 : 0);
-              }, 0)}
-              / {Object.keys(group.users).length} members finished
+              }, 0) : 0}
+              / {group ? Object.keys(group.users).length : 0} members finished
             </Text>
           </View>
           <View style={{ marginTop: 10 }}>
             <ProgressBarPercentage
-              progress={
+              progress={ group ?
                 (group.goals.reduce(
                   (acc, goal) =>
                     acc +
@@ -163,7 +176,7 @@ export default function Group() {
                 ) /
                   group.goals!.length) *
                 100
-              }
+              : 0}
             />
           </View>
         </Container>
@@ -172,7 +185,7 @@ export default function Group() {
           <Text style={[globalStyles.sectionHeader, { marginTop: 6 }]}>
             Group Goals
           </Text>
-          {groupGoals.map((goal) => (
+          {group ? groupGoals.map((goal) => (
             <CollapsibleContainer key={goal.goalId}>
               <View>
                 <View style={styles.row}>
@@ -227,19 +240,19 @@ export default function Group() {
                 {Object.entries(goal.progress).map(([userId, progress]) => (
                   <NameProgress
                     key={userId}
-                    name={group.users[userId]}
+                    name={ group.users[userId] }
                     progress={progress}
                     target={goal.target}
                   />
                 ))}
               </View>
             </CollapsibleContainer>
-          ))}
+          )) : ""}
         </View>
 
         <View style={globalStyles.section}>
           <Text style={globalStyles.sectionHeader}>Members</Text>
-          {Object.entries(group.users).map(([userId, name]) => (
+          {group ? Object.entries(group.users).map(([userId, name]) => (
             <View key={userId}>
               <CollapsibleContainer>
                 <View style={styles.row}>
@@ -295,7 +308,7 @@ export default function Group() {
                 </View>
               </CollapsibleContainer>
             </View>
-          ))}
+          )) : ""}
         </View>
       </CustomScrollView>
     </>
