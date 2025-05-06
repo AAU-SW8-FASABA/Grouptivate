@@ -1,9 +1,10 @@
 import { Platform } from "react-native";
 import { Token } from "../API/schemas/Token";
+import Constants from "expo-constants";
 
 const SESSION_TOKEN_NAME = "SESSION_TOKEN";
 
-const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
+const SERVER_URL = Constants?.expoConfig?.extra?.apiUrl;
 if (!SERVER_URL) throw new Error("Missing a SERVER_URL in env");
 
 export const url = new URL(SERVER_URL);
