@@ -55,6 +55,8 @@ export default function Signup() {
         <TextInput
           value={username}
           autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="username-new"
           onChangeText={(text) => setUsername(text)}
           style={globalStyles.inputField}
         />
@@ -66,6 +68,8 @@ export default function Signup() {
         <TextInput
           secureTextEntry
           autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="password-new"
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={globalStyles.inputField}

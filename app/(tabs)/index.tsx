@@ -133,6 +133,8 @@ export default function Main() {
           <TextInput
             style={globalStyles.inputField}
             autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect={false}
             onChangeText={setGroupName}
             value={newGroupName}
           ></TextInput>

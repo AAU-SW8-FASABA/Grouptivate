@@ -505,6 +505,8 @@ export default function GroupSettings() {
           <TextInput
             style={globalStyles.inputField}
             autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect={false}
             keyboardType="numeric"
             value={amountValue ? String(amountValue) : ""}
             onChangeText={(text) => setAmountValue(Number(text) || 0)}
@@ -517,6 +519,9 @@ export default function GroupSettings() {
               <TextInput
                 style={globalStyles.inputField}
                 autoCapitalize="none"
+                autoComplete="off"
+                secureTextEntry={true}
+                autoCorrect={false}
                 keyboardType="default"
                 value={titleValue}
                 onChangeText={(text) => setTitleValue(text)}
@@ -539,6 +544,8 @@ export default function GroupSettings() {
           <TextInput
             style={globalStyles.inputField}
             autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect={false}
             placeholder="Enter user and hash: User#123"
             value={newMemberName}
             onChangeText={(text) => setNewMemberName(text)}
