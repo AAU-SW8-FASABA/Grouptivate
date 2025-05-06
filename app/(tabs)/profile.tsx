@@ -65,6 +65,23 @@ export default function Profile() {
           style={styles.profilePhoto}
         />
         <Text style={[styles.text, styles.profileName]}>{user.name}</Text>
+        <TouchableOpacity onPress={logout}>
+          <Text
+            style={[
+              styles.text,
+              styles.button,
+              {
+                backgroundColor: "#D9D9D9",
+                color: "black",
+                marginTop: 10,
+                paddingLeft: 10,
+                paddingRight: 10,
+              },
+            ]}
+          >
+            Log out
+          </Text>
+        </TouchableOpacity>
         <Text style={[styles.text, { fontSize: 32, marginTop: 50 }]}>
           Invitations
         </Text>
@@ -77,25 +94,6 @@ export default function Profile() {
             }}
           />
         ))}
-        <TouchableOpacity onPress={logout}>
-          <Text
-            style={[
-              styles.text,
-              styles.button,
-              { backgroundColor: "#D9D9D9", color: "black" },
-            ]}
-          >
-            Log out
-          </Text>
-        </TouchableOpacity>
-        <Text
-          style={[
-            styles.text,
-            { fontSize: 32, marginTop: 50, marginBottom: 10 },
-          ]}
-        >
-          Developer tools
-        </Text>
         <DeveloperTools />
       </View>
     </CustomScrollView>

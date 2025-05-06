@@ -1,6 +1,8 @@
 import { AppState } from "react-native";
+import { User } from "./API/schemas/User";
+import { Group } from "./API/schemas/Group";
 import { get as getUser } from "./server/user";
-import { get as getGroup } from "./server/group";
+import { get as getGroups } from "./server/groups";
 import { patch as patchGoal } from "./server/group/goal";
 import { Interval } from "./API/schemas/Interval";
 import { OtherActivity, SportActivity } from "./API/schemas/Activity";
@@ -28,27 +30,56 @@ export async function SyncActivity() {
     return;
   }
 
-  const user = await getUser();
+  let user: User;
+  try {
+    user = await getUser();
+  } catch {
+    console.warn("Unable sync activity progress, could not fetch user");
+    return;
+  }
+  let groups: Group[];
+  try {
+    groups = await getGroups();
+  } catch {
+    console.warn("Unable sync activity progress, could not fetch groups");
+    return;
+  }
 
-  const groups = await Promise.all(user.groups.map((group) => getGroup(group)));
+  if (groups.length === 0) {
+    console.info("Did not sync activity progress because there are no groups.");
+    return;
+  }
 
   const goalUpdates = await Promise.all(
     groups
       .map((group) =>
-        group.goals.map(async (goal) => ({
-          goalId: goal.goalId,
-          progress: await getGoalProgress(
-            healthAdapter,
-            goal.activity,
-            goal.metric,
-            group.interval,
-          ),
-        })),
+        group.goals
+          .filter((goal) => user.userId in goal.progress)
+          .map(async (goal) => ({
+            goalId: goal.goalId,
+            progress: await getGoalProgress(
+              healthAdapter,
+              goal.activity,
+              goal.metric,
+              group.interval,
+            ),
+          })),
       )
       .flat(),
   );
 
-  await patchGoal(goalUpdates);
+  if (goalUpdates.length === 0) {
+    console.info("Did not sync activity progress because there are no goals.");
+    return;
+  }
+
+  try {
+    await patchGoal(goalUpdates);
+  } catch {
+    console.warn(`Unable to sync activity progress`);
+    return;
+  }
+  console.info("Succesfully synced activity progress");
 }
 
 async function getGoalProgress(

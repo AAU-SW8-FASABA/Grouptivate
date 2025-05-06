@@ -25,7 +25,7 @@ import type { Goal } from "@/lib/API/schemas/Goal";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
 import { getDaysLeftInterval } from "@/lib/IntervalEndDate";
-import { GroupsContext, useGroups } from "@/lib/states/groupsState";
+import { useGroups } from "@/lib/states/groupsState";
 import { minBytes } from "valibot";
 
 export default function Main() {
@@ -47,7 +47,7 @@ export default function Main() {
     };
     fetchGroup();
     setIndividualGoals(splitGoalTypes(GoalType.Individual));
-  }, [user]);
+  }, [user, contextGroups]);
 
   function splitGoalTypes(goalTypeFilter: string): Goal[] {
     const filteredGoals: Goal[] = user.goals.filter((goal) => {
@@ -185,7 +185,10 @@ export default function Main() {
         </Collapsible>
         <View style={[styles.row]}>
           <Text style={globalStyles.sectionHeader}>Groups</Text>
-          <TouchableOpacity onPress={() => setNewGroupModalVisibility(true)}>
+          <TouchableOpacity
+            testID="add-group-button"
+            onPress={() => setNewGroupModalVisibility(true)}
+          >
             <UniversalIcon
               source={IconSource.FontAwesome6}
               name="plus"

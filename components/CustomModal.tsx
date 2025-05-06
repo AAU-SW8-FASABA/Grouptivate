@@ -1,14 +1,15 @@
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { PropsWithChildren } from "react";
+import { GoalType } from "@/lib/API/schemas/Goal";
 
 export enum modalMode {
   Create = "create",
   Delete = "delete",
 }
-export enum GoalCreationType {
-  GroupGoal = "groupGoal",
-  IndividualGoal = "individualGoal",
-}
+// export enum GoalCreationType {
+//   GroupGoal = "groupGoal",
+//   IndividualGoal = "individualGoal",
+// }
 
 export function CustomModal({
   children,
@@ -24,10 +25,10 @@ export function CustomModal({
   isVisible: boolean;
   mode: modalMode;
   setIsVisible: (value: boolean) => void;
-  callback: (goal: GoalCreationType) => void;
+  callback: (goal: GoalType) => void;
 }) {
   const handleConfirm = () => {
-    callback(GoalCreationType.GroupGoal);
+    callback(GoalType.Group);
     setIsVisible(false);
   };
 
