@@ -7,7 +7,7 @@ import {
   Image,
 } from "react-native";
 import { useEffect, useMemo, useState } from "react";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 
 import { CustomModal, modalMode } from "@/components/CustomModal";
@@ -27,6 +27,7 @@ import {
   sportActivityMetadata,
 } from "@/lib/ActivityMetadata";
 import { Group } from "@/lib/API/schemas/Group";
+import { useUser } from "@/lib/states/userState";
 import { Goal, GoalType } from "@/lib/API/schemas/Goal";
 import { getAske } from "@/lib/aske";
 import { useGroups } from "@/lib/states/groupsState";
@@ -36,9 +37,11 @@ import { _delete, create } from "@/lib/server/group/goal";
 
 export default function GroupSettings() {
   const { id } = useLocalSearchParams();
+  const { user } = useUser()
   const groupId = id?.toString() || "";
   const { contextGroups } = useGroups();
   const theGroup = contextGroups.get(groupId);
+  const router = useRouter()
 
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<[string, string][]>([]);
@@ -176,6 +179,11 @@ export default function GroupSettings() {
               goal.progress[itemToDelete.id] !== 0,
           ),
         );
+        if( itemToDelete.id == user.userId){
+          router.push({
+            pathname: "/",
+          })
+        }
       } catch (e) {
         console.log("Error removing member:", e);
       }

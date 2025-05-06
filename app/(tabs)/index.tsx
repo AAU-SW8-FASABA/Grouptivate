@@ -29,7 +29,6 @@ import { prettyName } from "@/lib/PrettyName";
 import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
 import { minBytes } from "valibot";
-import { User } from "@/lib/API/schemas/User";
 
 export default function Main() {
   let { user } = useUser();
@@ -102,7 +101,7 @@ export default function Main() {
               goal.target,
           0,
         ) /
-          group.goals!.length) *
+          group.goals.length) *
         100;
       return progress;
     }
