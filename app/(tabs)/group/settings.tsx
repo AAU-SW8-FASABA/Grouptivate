@@ -294,11 +294,10 @@ export default function GroupSettings() {
   async function createGoal() {
     if (!group || members.length === 0) return;
 
-    const newGoal: Goal = {
+    const newGoal: Omit<Goal, "goalId"> = {
       activity: activityValue || OtherActivity.Steps,
       target: amountValue || 1,
       metric: metricValue,
-      goalId: "-1", // This will be replaced by the server
       type: currentGoalType,
       title: titleValue || "Goal",
       progress: {},

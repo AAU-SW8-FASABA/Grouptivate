@@ -37,17 +37,11 @@ export default function Group() {
   const { contextGroups } = useGroups();
   const [group, setGroup] = useState<Group | null>(null);
   const theGroup = contextGroups.get(groupId);
-  if (theGroup != null) {
-    setGroup(theGroup);
-  }
 
   useFocusEffect(() => {
     if (theGroup != null) {
       setGroup(theGroup);
     }
-    // if(contextGroups.has(groupId)){
-    //   setGroup(contextGroups.get(groupId));
-    // };
   });
 
   let groupGoalsProgress: Map<string, number> = new Map();
