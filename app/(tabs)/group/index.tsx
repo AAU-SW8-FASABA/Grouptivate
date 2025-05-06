@@ -1,11 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import {
-  Stack,
-  useRouter,
-  useLocalSearchParams,
-  useFocusEffect,
-} from "expo-router";
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { Back } from "@/components/Back";
@@ -27,6 +23,7 @@ import {
   otherActivityMetadata,
 } from "@/lib/ActivityMetadata";
 import { getAske } from "@/lib/aske";
+import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
 
 export default function Group() {
@@ -36,12 +33,13 @@ export default function Group() {
   const { contextGroups } = useGroups();
   const [group, setGroup] = useState<GroupType | null>(null);
   const theGroup = contextGroups.get(groupId);
+  const isFocused = useIsFocused();
 
-  useFocusEffect(() => {
+  useEffect(() => {
     if (theGroup != null) {
       setGroup(theGroup);
     }
-  });
+  }, [isFocused]);
 
   let groupGoalsProgress: Map<string, number> = new Map();
   let groupGoalsDone: boolean = false;
@@ -74,22 +72,6 @@ export default function Group() {
     }
   }
   loadgroup();
-
-  function daysUntilNextMonday(): number {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const daysUntilMonday = (8 - dayOfWeek) % 7 || 7;
-    return daysUntilMonday;
-  }
-  function daysUntilNextMonth(): number {
-    const today = new Date();
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-    const diffDays = Math.ceil(
-      (nextMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    return diffDays;
-  }
 
   return (
     <>
@@ -125,11 +107,9 @@ export default function Group() {
           <ContainerWithBlueBox
             text1="Days Left"
             text2={
-              group && group.interval === Interval.Daily
-                ? "1"
-                : group && group.interval === Interval.Weekly
-                  ? daysUntilNextMonday().toString()
-                  : daysUntilNextMonth().toString()
+              group && group.interval != Interval.Daily
+                ? Math.ceil(getDaysLeftInInterval(group.interval)).toString()
+                : "Today"
             }
           />
           <ContainerWithBlueBox
@@ -166,7 +146,7 @@ export default function Group() {
           <View style={{ marginTop: 10 }}>
             <ProgressBarPercentage
               progress={
-                group
+                group?.goals.length
                   ? (group.goals.reduce(
                       (acc, goal) =>
                         acc +
@@ -281,14 +261,17 @@ export default function Group() {
                       <View style={{ width: "40%", marginRight: 30 }}>
                         <ProgressBarPercentage
                           progress={
-                            (userGoals
-                              .get(userId)!
-                              .reduce(
-                                (acc, a) => acc + a.progress[userId] / a.target,
-                                0,
-                              ) /
-                              userGoals.get(userId)!.length) *
-                            100
+                            userGoals.get(userId)?.length
+                              ? (userGoals
+                                  .get(userId)!
+                                  .reduce(
+                                    (acc, a) =>
+                                      acc + a.progress[userId] / a.target,
+                                    0,
+                                  ) /
+                                  userGoals.get(userId)!.length) *
+                                100
+                              : 0
                           }
                           target={100}
                         />

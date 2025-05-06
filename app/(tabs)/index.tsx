@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 import { useUser } from "@/lib/states/userState";
@@ -17,16 +18,21 @@ import { GoalContainer } from "@/components/GoalContainer";
 import { GroupContainer } from "@/components/GroupContainer";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
-import { get as getGroup, create as postCreateGroup } from "@/lib/server/group";
+import { create as postCreateGroup } from "@/lib/server/group";
+import { get as getGroups } from "@/lib/server/groups";
+import { get as getUser } from "@/lib/server/user";
 import { Interval } from "@/lib/API/schemas/Interval";
-
 import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
+import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
+import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
+import { minBytes } from "valibot";
 
 export default function Main() {
-  const { user } = useUser();
+  let { user } = useUser();
+  const { setUser } = useUser();
   const { contextGroups } = useGroups();
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
@@ -34,21 +40,22 @@ export default function Main() {
   const [intervalValue, setIntervalValue] = useState(Interval.Weekly);
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]);
-  const [goals] = useState<Goal[]>([]);
+  const [individualGoals, setIndividualGoals] = useState<Goal[]>([]);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    const fetchGroup = async () => {
-      const fetchedGroups: Group[] = [];
-      for (const groupId of user.groups) {
-        const group = await getGroup(groupId);
-
-        contextGroups.set(groupId, group);
-        fetchedGroups.push(group);
-      }
+    const fetchData = async () => {
+      user = await getUser();
+      setUser(user);
+      const fetchedGroups = await getGroups();
+      fetchedGroups.forEach((group) => contextGroups.set(group.groupId, group));
       setGroups(fetchedGroups);
+      setIndividualGoals(
+        user.goals.filter((goal) => goal.type == GoalType.Individual),
+      );
     };
-    fetchGroup();
-  }, [user, contextGroups]);
+    fetchData();
+  }, [isFocused]);
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
@@ -64,9 +71,53 @@ export default function Main() {
     contextGroups.set(responseGroup.groupId, responseGroup);
     setGroups((prev) => [...prev, responseGroup]);
   }
-  //function calculateIndividualProgress(): number {
-  //
-  //}
+
+  function individualProgress(group: Group) {
+    const userGoals = group.goals.filter(
+      (goal) =>
+        goal.type == GoalType.Individual && goal.progress[user.userId] != null,
+    );
+    if (userGoals.length) {
+      const progress =
+        (userGoals.reduce(
+          (acc, goal) =>
+            acc + Math.min(goal.progress[user.userId] / goal.target, 1),
+          0,
+        ) /
+          userGoals.length) *
+        100;
+      return progress;
+    }
+    return 0;
+  }
+
+  function groupProgress(group: Group) {
+    if (group.goals.length) {
+      const progress =
+        (group.goals.reduce(
+          (acc, goal) =>
+            acc +
+            Object.values(goal.progress).reduce((sum, add) => sum + add, 0) /
+              goal.target,
+          0,
+        ) /
+          group.goals.length) *
+        100;
+      return progress;
+    }
+    return 0;
+  }
+
+  function findGoalEndDate(goal: Goal): number {
+    let daysUntilEndDate: number;
+    groups.forEach((group) => {
+      if (group.goals.includes(goal)) {
+        daysUntilEndDate = Math.ceil(getDaysLeftInInterval(group.interval));
+        return daysUntilEndDate;
+      }
+    });
+    return 0;
+  }
 
   return (
     <Suspense>
@@ -122,14 +173,14 @@ export default function Main() {
           />
         </CustomModal>
         <Collapsible title="Goals" style={{ marginTop: 6 }}>
-          {goals.map((goal) => (
+          {individualGoals.map((goal) => (
             <GoalContainer
               key={goal.goalId}
               activity={goal.activity}
               metric={goal.metric}
-              progress={goal.progress.amount}
+              progress={goal.progress[user.userId]}
               target={goal.target}
-              days={2}
+              days={findGoalEndDate(goal)}
             ></GoalContainer>
           ))}
         </Collapsible>
@@ -160,11 +211,9 @@ export default function Main() {
           >
             <GroupContainer
               group={group}
-              days={2}
-              groupProgress={10}
-              groupTarget={4}
-              individualProgress={5}
-              individualTarget={4}
+              days={Math.ceil(getDaysLeftInInterval(group.interval))}
+              groupProgress={groupProgress(group)}
+              individualProgress={individualProgress(group)}
               style={{ marginBottom: 8 }}
             />
           </TouchableOpacity>

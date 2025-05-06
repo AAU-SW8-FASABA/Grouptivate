@@ -19,23 +19,23 @@ export function GroupContainer({
   group,
   days,
   groupProgress,
-  groupTarget,
   individualProgress,
-  individualTarget,
   style,
 }: {
   group: Pick<Group, "groupId" | "groupName" | "users">;
   days: number;
   groupProgress: number;
-  groupTarget: number;
   individualProgress: number;
-  individualTarget: number;
   style?: StyleProp<ViewStyle>;
 }) {
   const [image, setImage] = useState(defaultAske);
   useEffect(() => {
     setImage(getAske(group));
   }, [group]);
+  let daysLeft = days + " days left";
+  if (days === 1) {
+    daysLeft = "Today";
+  }
 
   return (
     <Container style={style}>
@@ -49,19 +49,17 @@ export function GroupContainer({
             {group.groupName}
           </Text>
         </View>
-        <Text style={[styles.text, { fontSize: 16 }]}>{days} days left</Text>
+        <Text style={[styles.text, { fontSize: 16 }]}>{daysLeft}</Text>
       </View>
       <HR />
       <ProgressBarIcon
         progress={groupProgress}
-        target={groupTarget}
         iconSource={IconSource.FontAwesome6}
         icon="users"
         iconSize={20}
       />
       <ProgressBarIcon
         progress={individualProgress}
-        target={individualTarget}
         iconSource={IconSource.FontAwesome6}
         icon="user-large"
         iconSize={20}

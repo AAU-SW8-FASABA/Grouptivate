@@ -9,6 +9,7 @@ import { OtherActivity, SportActivity } from "./API/schemas/Activity";
 import { Metric } from "./API/schemas/Metric";
 import { HealthAdapter } from "./HealthAdapter/HealthAdapter";
 import { getHealthAdapter } from "./HealthAdapter/Helpers";
+import { getStartDateFromInterval } from "./IntervalDates";
 
 /**
  * Sync new activity information to the server.
@@ -96,20 +97,4 @@ async function getGoalProgress(
     activity,
     metric,
   });
-}
-
-function getStartDateFromInterval(interval: Interval): Date {
-  const date = new Date();
-  switch (interval) {
-    case Interval.Monthly: {
-      date.setDate(0);
-      break;
-    }
-    case Interval.Weekly: {
-      date.setDate(date.getDate() - date.getDay());
-      break;
-    }
-  }
-  date.setHours(0, 0, 0, 0);
-  return date;
 }
