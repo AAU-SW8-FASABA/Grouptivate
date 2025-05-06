@@ -67,19 +67,20 @@ export default function Main() {
     setGroups((prev) => [...prev, responseGroup]);
   }
 
-  function individualProgress() {
-    if (user.goals.length) {
+  function individualProgress(group:Group) {
+    const userGoals = group.goals.filter((goal) => goal.type == GoalType.Individual && goal.progress[user.userId] != null)
+    if (userGoals.length) {
       const progress =
-        (user.goals.reduce(
+        (userGoals.reduce(
           (acc, goal) =>
             acc +
             Math.min(
-              goal.progress[user.userId] / (goal.target / goal.progress.length),
-              1,
+              goal.progress[user.userId] / goal.target,
+              1
             ),
           0,
         ) /
-          individualGoals.length) *
+          userGoals.length) *
         100;
       return progress;
     }
@@ -208,7 +209,7 @@ export default function Main() {
               group={group}
               days={getDaysLeftInterval(group.interval)}
               groupProgress={groupProgress(group)}
-              individualProgress={individualProgress()}
+              individualProgress={individualProgress(group)}
               style={{ marginBottom: 8 }}
             />
           </TouchableOpacity>
