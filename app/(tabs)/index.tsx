@@ -29,7 +29,6 @@ import { getDaysLeftInterval } from "@/lib/IntervalEndDate";
 import { useGroups } from "@/lib/states/groupsState";
 import { minBytes } from "valibot";
 
-
 export default function Main() {
   const { user } = useUser();
   const { contextGroups } = useGroups();
@@ -41,7 +40,7 @@ export default function Main() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [individualGoals, setIndividualGoals] = useState<Goal[]>([]);
   const isFocused = useIsFocused();
-  console.log(user)
+  console.log(user);
   useEffect(() => {
     const fetchGroup = async () => {
       const fetchedGroups = await getGroups();
@@ -49,7 +48,9 @@ export default function Main() {
       setGroups(fetchedGroups);
     };
     fetchGroup();
-    setIndividualGoals(user.goals.filter((goal) => goal.type == GoalType.Individual))
+    setIndividualGoals(
+      user.goals.filter((goal) => goal.type == GoalType.Individual),
+    );
   }, [user, isFocused]);
 
   const intervals = Object.values(Interval).map((value) => ({
@@ -67,17 +68,16 @@ export default function Main() {
     setGroups((prev) => [...prev, responseGroup]);
   }
 
-  function individualProgress(group:Group) {
-    const userGoals = group.goals.filter((goal) => goal.type == GoalType.Individual && goal.progress[user.userId] != null)
+  function individualProgress(group: Group) {
+    const userGoals = group.goals.filter(
+      (goal) =>
+        goal.type == GoalType.Individual && goal.progress[user.userId] != null,
+    );
     if (userGoals.length) {
       const progress =
         (userGoals.reduce(
           (acc, goal) =>
-            acc +
-            Math.min(
-              goal.progress[user.userId] / goal.target,
-              1
-            ),
+            acc + Math.min(goal.progress[user.userId] / goal.target, 1),
           0,
         ) /
           userGoals.length) *

@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import {
-  Stack,
-  useRouter,
-  useLocalSearchParams,
-} from "expo-router";
+import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
@@ -37,7 +33,7 @@ export default function Group() {
   const { contextGroups } = useGroups();
   const [group, setGroup] = useState<Group | null>(null);
   const theGroup = contextGroups.get(groupId);
-  const isFocused = useIsFocused()
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (theGroup != null) {
@@ -112,8 +108,8 @@ export default function Group() {
             text1="Days Left"
             text2={
               group && group.interval != Interval.Daily
-                  ? getDaysLeftInterval(group.interval).toString()
-                  : "Today"
+                ? getDaysLeftInterval(group.interval).toString()
+                : "Today"
             }
           />
           <ContainerWithBlueBox
@@ -266,16 +262,16 @@ export default function Group() {
                         <ProgressBarPercentage
                           progress={
                             userGoals.get(userId)?.length
-                            ?
-                              (userGoals
-                                .get(userId)!
-                                .reduce(
-                                  (acc, a) => acc + a.progress[userId] / a.target,
-                                  0,
-                                ) /
-                                userGoals.get(userId)!.length) *
-                              100
-                            : 0
+                              ? (userGoals
+                                  .get(userId)!
+                                  .reduce(
+                                    (acc, a) =>
+                                      acc + a.progress[userId] / a.target,
+                                    0,
+                                  ) /
+                                  userGoals.get(userId)!.length) *
+                                100
+                              : 0
                           }
                           target={100}
                         />

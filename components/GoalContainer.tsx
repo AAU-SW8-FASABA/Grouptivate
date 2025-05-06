@@ -27,7 +27,7 @@ export function GoalContainer({
     activity
   ];
   const mMeta = metricMetadata[metric];
-  let daysLeftOfGoal = days === 0 ? "Today" : days.toString()
+  let daysLeftOfGoal = days === 0 ? "Today" : days.toString();
 
   return (
     <Container style={{ marginBottom: 8 }}>
