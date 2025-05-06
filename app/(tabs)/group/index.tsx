@@ -215,7 +215,7 @@ export default function Group() {
                             (sum, [key, val]) => sum + val,
                             0,
                           )}{" "}
-                          / {goal.target} {goal.metric}
+                          / {goal.target} {metricMetadata[goal.metric].unit}
                         </Text>
                       </View>
                       <View style={styles.box} />

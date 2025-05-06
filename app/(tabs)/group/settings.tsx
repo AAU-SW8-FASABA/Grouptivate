@@ -33,6 +33,7 @@ import { useGroups } from "@/lib/states/groupsState";
 import { create as createInvite } from "@/lib/server/group/invite";
 import { remove } from "@/lib/server/group/remove";
 import { _delete, create } from "@/lib/server/group/goal";
+import { metricMetadata } from "@/lib/MetricMetadata";
 
 export default function GroupSettings() {
   const { id } = useLocalSearchParams();
@@ -581,7 +582,7 @@ export default function GroupSettings() {
         <Collapsible title="Group Goals">
           {groupGoals.map((goal, index) => (
             <SettingsGoal
-              unit={""}
+              unit={metricMetadata[goal.metric].unit}
               key={goal.goalId}
               {...goal}
               onRemove={() => promptRemoveGoal(index)}
@@ -639,7 +640,7 @@ export default function GroupSettings() {
                   .filter((goal) => goal.progress[memberId] >= 0)
                   .map((goal) => (
                     <SettingsGoal
-                      unit={""}
+                      unit={metricMetadata[goal.metric].unit}
                       key={goal.goalId}
                       {...goal}
                       padding={0}
