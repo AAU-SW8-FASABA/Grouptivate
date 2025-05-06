@@ -504,6 +504,7 @@ export default function GroupSettings() {
           </Text>
           <TextInput
             style={globalStyles.inputField}
+            autoCapitalize="none"
             keyboardType="numeric"
             value={amountValue ? String(amountValue) : ""}
             onChangeText={(text) => setAmountValue(Number(text) || 0)}
@@ -515,6 +516,7 @@ export default function GroupSettings() {
               </Text>
               <TextInput
                 style={globalStyles.inputField}
+                autoCapitalize="none"
                 keyboardType="default"
                 value={titleValue}
                 onChangeText={(text) => setTitleValue(text)}
@@ -536,6 +538,7 @@ export default function GroupSettings() {
           </Text>
           <TextInput
             style={globalStyles.inputField}
+            autoCapitalize="none"
             placeholder="Enter user and hash: User#123"
             value={newMemberName}
             onChangeText={(text) => setNewMemberName(text)}

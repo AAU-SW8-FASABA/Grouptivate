@@ -132,6 +132,7 @@ export default function Main() {
           <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
           <TextInput
             style={globalStyles.inputField}
+            autoCapitalize="none"
             onChangeText={setGroupName}
             value={newGroupName}
           ></TextInput>

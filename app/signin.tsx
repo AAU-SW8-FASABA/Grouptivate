@@ -52,6 +52,7 @@ export default function Signin() {
         </Text>
         <TextInput
           placeholder="Username"
+          autoCapitalize="none"
           value={username}
           onChangeText={(text) => setUsername(text)}
           style={globalStyles.inputField}
@@ -63,6 +64,7 @@ export default function Signin() {
         </Text>
         <TextInput
           placeholder="Password"
+          autoCapitalize="none"
           secureTextEntry
           value={password}
           onChangeText={(text) => setPassword(text)}
