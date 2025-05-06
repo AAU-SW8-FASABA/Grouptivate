@@ -11,7 +11,7 @@ import {
 export async function create(
   userId: User["userId"],
   groupId: Group["groupId"],
-  goal: Omit<Goal, "uuid" | "group" | "progress">,
+  goal: Omit<Goal, "goalId" | "group" | "progress">,
 ) {
   const response = await fetchApi({
     path: "/group/goal",
