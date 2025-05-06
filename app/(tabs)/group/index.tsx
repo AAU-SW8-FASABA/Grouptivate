@@ -18,7 +18,7 @@ import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import { NameProgress } from "@/components/NameProgress";
 import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
-import type { Group } from "@/lib/API/schemas/Group";
+import type { Group as GroupType } from "@/lib/API/schemas/Group";
 import { Interval } from "@/lib/API/schemas/Interval";
 import { Goal } from "@/lib/API/schemas/Goal";
 import { metricMetadata } from "@/lib/MetricMetadata";
@@ -34,7 +34,7 @@ export default function Group() {
   const groupId = id.toString();
   const router = useRouter();
   const { contextGroups } = useGroups();
-  const [group, setGroup] = useState<Group | null>(null);
+  const [group, setGroup] = useState<GroupType | null>(null);
   const theGroup = contextGroups.get(groupId);
 
   useFocusEffect(() => {

@@ -60,7 +60,7 @@ export default function GroupSettings() {
     } else {
       console.log("Group not found in contextGroups:", groupId);
     }
-  }, [groupId, contextGroups]);
+  }, [groupId, theGroup]);
 
   // Debug output
   useEffect(() => {
@@ -80,16 +80,16 @@ export default function GroupSettings() {
     memberIndex: -1,
   });
 
-  function updateGroup() {
-    if (!group) return;
+  // function updateGroup() {
+  //   if (!group) return;
 
-    const updatedGroup: Group = {
-      ...group,
-      goals: [...memberGoals, ...groupGoals],
-    };
-    contextGroups.set(groupId, updatedGroup);
-    setGroup(updatedGroup);
-  }
+  //   const updatedGroup: Group = {
+  //     ...group,
+  //     goals: [...memberGoals, ...groupGoals],
+  //   };
+  //   contextGroups.set(groupId, updatedGroup);
+  //   setGroup(updatedGroup);
+  // }
 
   async function inviteMember() {
     if (newMemberName.trim() !== "") {
