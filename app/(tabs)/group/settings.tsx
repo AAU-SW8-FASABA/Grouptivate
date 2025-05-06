@@ -37,11 +37,11 @@ import { _delete, create } from "@/lib/server/group/goal";
 
 export default function GroupSettings() {
   const { id } = useLocalSearchParams();
-  const { user } = useUser()
+  const { user } = useUser();
   const groupId = id?.toString() || "";
   const { contextGroups } = useGroups();
   const theGroup = contextGroups.get(groupId);
-  const router = useRouter()
+  const router = useRouter();
 
   const [group, setGroup] = useState<Group | null>(null);
   const [members, setMembers] = useState<[string, string][]>([]);
@@ -179,10 +179,10 @@ export default function GroupSettings() {
               goal.progress[itemToDelete.id] !== 0,
           ),
         );
-        if( itemToDelete.id == user.userId){
+        if (itemToDelete.id == user.userId) {
           router.push({
             pathname: "/",
-          })
+          });
         }
       } catch (e) {
         console.log("Error removing member:", e);

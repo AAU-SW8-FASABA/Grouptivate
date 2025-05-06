@@ -45,8 +45,8 @@ export default function Main() {
 
   useEffect(() => {
     const fetchData = async () => {
-      user = await getUser()
-      setUser(user)
+      user = await getUser();
+      setUser(user);
       const fetchedGroups = await getGroups();
       fetchedGroups.forEach((group) => contextGroups.set(group.groupId, group));
       setGroups(fetchedGroups);
@@ -54,7 +54,7 @@ export default function Main() {
         user.goals.filter((goal) => goal.type == GoalType.Individual),
       );
     };
-    fetchData();    
+    fetchData();
   }, [isFocused]);
 
   const intervals = Object.values(Interval).map((value) => ({
