@@ -180,7 +180,7 @@ export default function GroupSettings() {
               goal.progress[itemToDelete.id] !== 0,
           ),
         );
-        if (itemToDelete.id == user.userId) {
+        if (itemToDelete.id === user.userId) {
           router.push({
             pathname: "/",
           });

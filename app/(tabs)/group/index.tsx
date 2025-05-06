@@ -39,7 +39,7 @@ export default function Group() {
     if (theGroup != null) {
       setGroup(theGroup);
     }
-  }, [isFocused]);
+  }, [theGroup, isFocused]);
 
   let groupGoalsProgress: Map<string, number> = new Map();
   let groupGoalsDone: boolean = false;
@@ -107,7 +107,7 @@ export default function Group() {
           <ContainerWithBlueBox
             text1="Days Left"
             text2={
-              group && group.interval != Interval.Daily
+              group && group.interval !== Interval.Daily
                 ? Math.ceil(getDaysLeftInInterval(group.interval)).toString()
                 : "Today"
             }
