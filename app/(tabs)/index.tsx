@@ -20,6 +20,7 @@ import globalStyles from "@/constants/styles";
 import { CustomScrollView } from "@/components/CusomScrollView";
 import { create as postCreateGroup } from "@/lib/server/group";
 import { get as getGroups } from "@/lib/server/groups";
+import { get as getUser } from "@/lib/server/user";
 import { Interval } from "@/lib/API/schemas/Interval";
 import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
@@ -28,9 +29,11 @@ import { prettyName } from "@/lib/PrettyName";
 import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
 import { minBytes } from "valibot";
+import { User } from "@/lib/API/schemas/User";
 
 export default function Main() {
-  const { user } = useUser();
+  let { user } = useUser();
+  const { setUser } = useUser();
   const { contextGroups } = useGroups();
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
@@ -40,18 +43,20 @@ export default function Main() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [individualGoals, setIndividualGoals] = useState<Goal[]>([]);
   const isFocused = useIsFocused();
-  console.log(user);
+
   useEffect(() => {
-    const fetchGroup = async () => {
+    const fetchData = async () => {
+      user = await getUser()
+      setUser(user)
       const fetchedGroups = await getGroups();
       fetchedGroups.forEach((group) => contextGroups.set(group.groupId, group));
       setGroups(fetchedGroups);
+      setIndividualGoals(
+        user.goals.filter((goal) => goal.type == GoalType.Individual),
+      );
     };
-    fetchGroup();
-    setIndividualGoals(
-      user.goals.filter((goal) => goal.type == GoalType.Individual),
-    );
-  }, [user, isFocused]);
+    fetchData();    
+  }, [isFocused]);
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
