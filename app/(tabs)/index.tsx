@@ -25,7 +25,7 @@ import type { Group } from "@/lib/API/schemas/Group";
 import type { Goal } from "@/lib/API/schemas/Goal";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
-import { getDaysLeftInterval } from "@/lib/IntervalEndDate";
+import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
 import { minBytes } from "valibot";
 
@@ -108,7 +108,7 @@ export default function Main() {
     let daysUntilEndDate: number;
     groups.forEach((group) => {
       if (group.goals.includes(goal)) {
-        daysUntilEndDate = getDaysLeftInterval(group.interval);
+        daysUntilEndDate = Math.ceil(getDaysLeftInInterval(group.interval));
         return daysUntilEndDate;
       }
     });
@@ -207,7 +207,7 @@ export default function Main() {
           >
             <GroupContainer
               group={group}
-              days={getDaysLeftInterval(group.interval)}
+              days={Math.ceil(getDaysLeftInInterval(group.interval))}
               groupProgress={groupProgress(group)}
               individualProgress={individualProgress(group)}
               style={{ marginBottom: 8 }}

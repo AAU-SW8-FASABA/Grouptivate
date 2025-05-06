@@ -23,7 +23,7 @@ import {
   otherActivityMetadata,
 } from "@/lib/ActivityMetadata";
 import { getAske } from "@/lib/aske";
-import { getDaysLeftInterval } from "@/lib/IntervalEndDate";
+import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
 
 export default function Group() {
@@ -108,7 +108,7 @@ export default function Group() {
             text1="Days Left"
             text2={
               group && group.interval != Interval.Daily
-                ? getDaysLeftInterval(group.interval).toString()
+                ? Math.ceil(getDaysLeftInInterval(group.interval)).toString()
                 : "Today"
             }
           />
