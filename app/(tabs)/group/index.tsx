@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import { Stack, useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
+import {
+  Stack,
+  useRouter,
+  useLocalSearchParams,
+  useFocusEffect,
+} from "expo-router";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { Back } from "@/components/Back";
