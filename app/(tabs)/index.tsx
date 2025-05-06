@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 import { useUser } from "@/lib/states/userState";
@@ -28,6 +29,7 @@ import { getDaysLeftInterval } from "@/lib/IntervalEndDate";
 import { useGroups } from "@/lib/states/groupsState";
 import { minBytes } from "valibot";
 
+
 export default function Main() {
   const { user } = useUser();
   const { contextGroups } = useGroups();
@@ -38,7 +40,8 @@ export default function Main() {
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]);
   const [individualGoals, setIndividualGoals] = useState<Goal[]>([]);
-
+  const isFocused = useIsFocused();
+  console.log(user)
   useEffect(() => {
     const fetchGroup = async () => {
       const fetchedGroups = await getGroups();
@@ -46,15 +49,8 @@ export default function Main() {
       setGroups(fetchedGroups);
     };
     fetchGroup();
-    setIndividualGoals(splitGoalTypes(GoalType.Individual));
-  }, [user, contextGroups]);
-
-  function splitGoalTypes(goalTypeFilter: string): Goal[] {
-    const filteredGoals: Goal[] = user.goals.filter((goal) => {
-      return goal.type == goalTypeFilter;
-    });
-    return filteredGoals;
-  }
+    setIndividualGoals(user.goals.filter((goal) => goal.type == GoalType.Individual))
+  }, [user, isFocused]);
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),

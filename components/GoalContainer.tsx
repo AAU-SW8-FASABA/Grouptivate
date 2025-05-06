@@ -27,6 +27,7 @@ export function GoalContainer({
     activity
   ];
   const mMeta = metricMetadata[metric];
+  let daysLeftOfGoal = days === 0 ? "Today" : days.toString()
 
   return (
     <Container style={{ marginBottom: 8 }}>
@@ -43,7 +44,7 @@ export function GoalContainer({
         </View>
         <View style={styles.box}>
           <Text style={[styles.text, { fontSize: 16, marginLeft: "auto" }]}>
-            {days} days left
+            {daysLeftOfGoal}
           </Text>
         </View>
       </View>
