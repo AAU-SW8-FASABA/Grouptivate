@@ -91,27 +91,3 @@ fi
 main
 
 exit 1
-
-# TODO: Tests
-# - Users
-#   - Sign Up X
-#   - Sign In X
-#   - Log Out X
-# - Groups
-#   - Create Group  X
-#   - Open Group    X
-#   - Close Group   X
-#   - Delete Group  X
-# - Goals
-#   - Create Individual Goal X
-#   - Create Group Goal      X
-#   - Delete Individual Goal X
-#   - Delete Group Goal      X
-#   - [Increment Streak]
-#   - Progress Registers Y
-# - Invites
-#   - Invite user X
-#   - Decline invite X
-#   - Accept invite X 
-#   - Invites are deleted when group is deleted X
-
