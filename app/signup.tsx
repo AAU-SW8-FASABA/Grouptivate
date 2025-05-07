@@ -66,10 +66,11 @@ export default function Signup() {
           Password
         </Text>
         <TextInput
-          secureTextEntry
+          placeholder="Password"
           autoCapitalize="none"
-          autoCorrect={false}
           autoComplete="password-new"
+          autoCorrect={false}
+          secureTextEntry
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={globalStyles.inputField}
