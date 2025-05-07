@@ -30,8 +30,7 @@ import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
 
 export default function Main() {
-  let { user } = useUser();
-  const { setUser } = useUser();
+  const { user, setUser } = useUser();
   const { contextGroups } = useGroups();
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
@@ -44,13 +43,13 @@ export default function Main() {
 
   useEffect(() => {
     const fetchData = async () => {
-      user = await getUser();
-      setUser(user);
+      const fetchedUser = await getUser();
+      setUser(fetchedUser);
       const fetchedGroups = await getGroups();
       fetchedGroups.forEach((group) => contextGroups.set(group.groupId, group));
       setGroups(fetchedGroups);
       setIndividualGoals(
-        user.goals.filter((goal) => goal.type === GoalType.Individual),
+        fetchedUser.goals.filter((goal) => goal.type === GoalType.Individual),
       );
     };
     fetchData();

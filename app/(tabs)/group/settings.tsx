@@ -520,7 +520,6 @@ export default function GroupSettings() {
                 style={globalStyles.inputField}
                 autoCapitalize="none"
                 autoComplete="off"
-                secureTextEntry={true}
                 autoCorrect={false}
                 keyboardType="default"
                 value={titleValue}
