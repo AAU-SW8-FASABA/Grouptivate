@@ -125,6 +125,9 @@ export function DeveloperTools() {
           </Text>
           <TextInput
             style={globalStyles.inputField}
+            autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect={false}
             value={String(amountValue)}
             onChangeText={(text) => setAmountValue(Number(text))}
           ></TextInput>
