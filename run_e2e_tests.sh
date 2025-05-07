@@ -25,7 +25,7 @@ prepare_server() {
   fi
 
   # Clone server
-  run_and_check git clone git@github.com:AAU-SW8-FASABA/Grouptivate-Server.git --recurse-submodules
+  run_and_check git clone https://github.com/AAU-SW8-FASABA/Grouptivate-Server.git --recurse-submodules
 
   # Install dependencies
   (
