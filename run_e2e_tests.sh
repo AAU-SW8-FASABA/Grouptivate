@@ -57,7 +57,7 @@ run_test() {
     EXPO_RELEASE_CONFIG="--variant release"
   fi
 
-  if ! OUTPUT=$(ENDTOEND=true npx expo run:${PLATFORM//-} --no-bundler $EXPO_RELEASE_CONFIG 2>&1); then
+  if ! OUTPUT=$(PLATFORM=${PLATFORM//-} ENDTOEND=true npx expo run:${PLATFORM//-} --no-bundler $EXPO_RELEASE_CONFIG 2>&1); then
     echo "$OUTPUT"
   fi
 
