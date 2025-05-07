@@ -51,7 +51,13 @@ run_test() {
   
   # Build the application for release using local server
   echo "📲 - Building and installing the app"
-  if ! OUTPUT=$(ENDTOEND=true npx expo run:${PLATFORM//-} --no-bundler --configuration Release 2>&1); then
+  if [ "$PLATFORM" = "--ios" ]; then
+    EXPO_RELEASE_CONFIG="--configuration Release"
+  elif [ "$PLATFORM" = "--android" ]; then
+    EXPO_RELEASE_CONFIG="--variant release"
+  fi
+
+  if ! OUTPUT=$(ENDTOEND=true npx expo run:${PLATFORM//-} --no-bundler $EXPO_RELEASE_CONFIG 2>&1); then
     echo "$OUTPUT"
   fi
 
