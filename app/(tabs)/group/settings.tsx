@@ -545,7 +545,7 @@ export default function GroupSettings() {
             autoCapitalize="none"
             autoComplete="off"
             autoCorrect={false}
-            placeholder="Enter user and hash: User#123"
+            placeholder="Enter username"
             value={newMemberName}
             onChangeText={(text) => setNewMemberName(text)}
           />
@@ -564,6 +564,7 @@ export default function GroupSettings() {
           >
             <TouchableOpacity
               style={styles.row}
+              testID="inviteMemberButtonTestId"
               onPress={() => setInviteModalVisibility(true)}
             >
               <UniversalIcon
@@ -608,7 +609,11 @@ export default function GroupSettings() {
           <View
             style={[styles.row, { justifyContent: "center", marginBottom: 8 }]}
           >
-            <TouchableOpacity style={styles.row} onPress={openGroupGoalModal}>
+            <TouchableOpacity
+              testID="create-group-goal"
+              style={styles.row}
+              onPress={openGroupGoalModal}
+            >
               <UniversalIcon
                 source={IconSource.FontAwesome6}
                 name="circle-plus"
@@ -642,6 +647,7 @@ export default function GroupSettings() {
                   {memberName}
                 </Text>
                 <TouchableOpacity
+                  testID="add-individual-goal"
                   onPress={() => openIndividualGoalModal(memberIndex)}
                 >
                   <UniversalIcon

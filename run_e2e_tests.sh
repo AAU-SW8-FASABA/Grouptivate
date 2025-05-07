@@ -51,7 +51,7 @@ run_test() {
   
   # Build the application for release using local server
   echo "📲 - Building and installing the app"
-  if ! OUTPUT=$(SERVER=local npx expo run:${PLATFORM//-} --no-bundler --configuration Release 2>&1); then
+  if ! OUTPUT=$(ENDTOEND=true npx expo run:${PLATFORM//-} --no-bundler --configuration Release 2>&1); then
     echo "$OUTPUT"
   fi
 
@@ -91,3 +91,27 @@ fi
 main
 
 exit 1
+
+# TODO: Tests
+# - Users
+#   - Sign Up X
+#   - Sign In X
+#   - Log Out X
+# - Groups
+#   - Create Group  X
+#   - Open Group    X
+#   - Close Group   X
+#   - Delete Group  X
+# - Goals
+#   - Create Individual Goal X
+#   - Create Group Goal      X
+#   - Delete Individual Goal X
+#   - Delete Group Goal      X
+#   - [Increment Streak]
+#   - Progress Registers Y
+# - Invites
+#   - Invite user X
+#   - Decline invite X
+#   - Accept invite X 
+#   - Invites are deleted when group is deleted X
+

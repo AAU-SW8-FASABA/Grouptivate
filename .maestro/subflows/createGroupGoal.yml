@@ -1,0 +1,15 @@
+appId: com.fasaba.Grouptivate
+---
+- tapOn:
+    id: settings-button
+- tapOn:
+    id: create-group-goal
+- tapOn:
+    below: Amount
+- inputText: 5
+- pressKey: Enter
+- tapOn:
+    below: Title
+- inputText: My Title
+- pressKey: Enter
+- tapOn: Create

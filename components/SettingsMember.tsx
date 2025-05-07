@@ -37,7 +37,7 @@ export function SettingsMember({ user, style, onRemove }: Props) {
           {user.name}
         </Text>
       </Container>
-      <TouchableOpacity onPress={onRemove}>
+      <TouchableOpacity testID="remove-user-button" onPress={onRemove}>
         <UniversalIcon
           source={IconSource.FontAwesome6}
           name="circle-minus"

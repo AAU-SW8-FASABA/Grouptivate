@@ -1,0 +1,13 @@
+appId: com.fasaba.Grouptivate
+---
+- tapOn:
+    id: settings-button
+- tapOn:
+    id: inviteMemberButtonTestId
+- tapOn:
+    below: Name
+- inputText: ${USERNAME}
+- pressKey: Enter
+- tapOn: .*Create.*
+- tapOn:
+    id: back-button

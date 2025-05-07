@@ -1,0 +1,13 @@
+appId: com.fasaba.Grouptivate
+---
+- tapOn: "Sign in"
+- tapOn:
+    below: "Username"
+- inputText: ${USERNAME}
+- tapOn:
+    below: "Password"
+- inputText: ${PASSWORD}
+- pressKey: Enter
+- tapOn:
+    text: "Log in"
+    index: 1

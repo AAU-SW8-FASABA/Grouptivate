@@ -8,6 +8,7 @@ export function Back() {
 
   return (
     <TouchableOpacity
+      testID="back-button"
       style={{ flexDirection: "row", alignItems: "center", marginLeft: 5 }}
       onPress={() => router.back()}
     >

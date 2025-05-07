@@ -1,0 +1,28 @@
+appId: com.fasaba.Grouptivate
+env:
+  USERNAME: TestUser
+  PASSWORD: Password1
+---
+- launchApp
+- runFlow:
+    file: subflows/signUp.yml
+    env:
+      USERNAME: ${USERNAME}
+      PASSWORD: ${PASSWORD}
+- assertVisible: Grouptivate
+- assertVisible: .*Goals.*
+- assertVisible: .*Groups.*
+- assertVisible: "Home, tab, 1 of 4"
+- assertVisible: "Profile, tab, 2 of 4"
+- runFlow:
+    file: subflows/signOut.yml
+- runFlow:
+    file: subflows/signIn.yml
+    env:
+      USERNAME: ${USERNAME}
+      PASSWORD: ${PASSWORD}
+- assertVisible: Grouptivate
+- assertVisible: .*Goals.*
+- assertVisible: .*Groups.*
+- assertVisible: "Home, tab, 1 of 4"
+- assertVisible: "Profile, tab, 2 of 4"

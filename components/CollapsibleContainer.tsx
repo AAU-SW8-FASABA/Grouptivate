@@ -13,9 +13,13 @@ import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 export function CollapsibleContainer({
   children,
   style,
+  username,
+  idName,
 }: {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  username?: string;
+  idName?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [child1, child2] = React.Children.toArray(children);
@@ -23,6 +27,7 @@ export function CollapsibleContainer({
   return (
     <View style={styles.container}>
       <TouchableOpacity
+        testID="open-collapsible-container"
         style={styles.collapse}
         onPress={() => setIsOpen((value) => !value)}
       >

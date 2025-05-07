@@ -26,6 +26,7 @@ export function Invite({ inviterName, groupName, handleInvite }: InviteProps) {
           <TouchableOpacity
             style={{ marginBottom: 5 }}
             onPress={() => handleInvite(InviteAnswer.Accept)}
+            testID="inviteAcceptButtonTestId"
           >
             <Text
               style={[
@@ -37,7 +38,10 @@ export function Invite({ inviterName, groupName, handleInvite }: InviteProps) {
               Accept
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleInvite(InviteAnswer.Decline)}>
+          <TouchableOpacity
+            onPress={() => handleInvite(InviteAnswer.Decline)}
+            testID="inviteDeclineButtonTestId"
+          >
             <Text
               style={[
                 styles.text,

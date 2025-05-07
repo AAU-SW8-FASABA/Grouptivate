@@ -84,6 +84,7 @@ export default function Group() {
           headerLeft: () => <Back />,
           headerRight: () => (
             <TouchableOpacity
+              testID="settings-button"
               style={{ marginRight: 15 }}
               onPress={() =>
                 router.push({
