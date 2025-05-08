@@ -34,13 +34,15 @@ env:
     env:
       USERNAME: ${USERNAME2}
       PASSWORD: ${PASSWORD2}
-- tapOn: "Profile, tab, 2 of 4"
+- tapOn:
+    id: profile-tab-buttonid
 - assertVisible: .*${GROUPNAME}.*
 - assertVisible: .*Accept.*
 - assertVisible: .*Decline.*
 - tapOn:
     id: inviteAcceptButtonTestId
-- tapOn: Home, tab, 1 of 4
+- tapOn:
+    id: home-tab-buttonid
 - tapOn:
     id: open-group
 - assertVisible: .*${GROUPNAME}.*

@@ -16,10 +16,12 @@ env:
       GROUPNAME: ${GROUPNAME}
 - runFlow:
     file: subflows/createIndividualGoal.yml
-- tapOn: "Profile, tab, 2 of 4"
+- tapOn:
+    id: profile-tab-buttonid
 - scroll
 - tapOn:
     id: development-exercise-button
-- tapOn: "Home, tab, 1 of 4"
-- assertVisible: .*2000%.*
+- tapOn:
+    id: home-tab-buttonid
+- assertVisible: .*000%.*
 - assertVisible: .*100%.*

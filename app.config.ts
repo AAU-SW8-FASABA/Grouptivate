@@ -17,6 +17,18 @@ if (process.env.ENDTOEND === "true") {
 export default ({ config }: ConfigContext) => {
   return {
     ...config,
+    plugins: config.plugins?.map((plugin) => {
+      if (Array.isArray(plugin) && plugin[0] === "expo-build-properties") {
+        if (!plugin[1].android) {
+          plugin[1].android = {};
+        }
+
+        plugin[1].android.usesCleartextTraffic =
+          process.env.ENDTOEND === "true";
+      }
+
+      return plugin;
+    }),
     extra: {
       endtoend: process.env.ENDTOEND === "true" ? true : false,
       apiUrl,

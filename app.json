@@ -19,6 +19,7 @@
       },
       "package": "com.fasaba.Grouptivate",
       "permissions": [
+        "android.permission.INTERNET",
         "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
         "android.permission.health.READ_EXERCISE",
         "android.permission.health.READ_DISTANCE",

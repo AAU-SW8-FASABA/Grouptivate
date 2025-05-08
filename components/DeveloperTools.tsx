@@ -145,6 +145,7 @@ export function DeveloperTools() {
                     ? OtherActivity.Steps
                     : activityValue,
                 };
+
                 if (Constants?.expoConfig?.extra?.endtoend) {
                   setMetricValue(Metric.Count);
                 }
@@ -161,7 +162,10 @@ export function DeveloperTools() {
                     );
                   }
                 } else if (isCountOnlyInsertOptions(options)) {
-                  if (metricValue === Metric.Count) {
+                  if (
+                    Constants?.expoConfig?.extra?.endtoend ||
+                    metricValue === Metric.Count
+                  ) {
                     options.count = amountValue;
                     healthAdapter?.insertData(options);
                   } else {

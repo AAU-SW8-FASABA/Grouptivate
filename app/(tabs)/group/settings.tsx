@@ -586,6 +586,7 @@ export default function GroupSettings() {
           mode={modalMode.Delete}
           setIsVisible={setDeleteModalVisibility}
           callback={confirmDelete}
+          confirmButtonId="modal-delete-button-id"
         >
           <Text
             style={[

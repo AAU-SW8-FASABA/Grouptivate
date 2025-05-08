@@ -31,7 +31,8 @@ env:
     id: settings-button
 - tapOn:
     id: remove-user-button
-- tapOn: .*Delete.*
+- tapOn:
+    id: modal-delete-button-id
 - runFlow:
     file: subflows/signOut.yml
 - runFlow:
@@ -39,7 +40,8 @@ env:
     env:
       USERNAME: ${USERNAME2}
       PASSWORD: ${PASSWORD2}
-- tapOn: "Profile, tab, 2 of 4"
+- tapOn:
+    id: profile-tab-buttonid
 - assertNotVisible: .*${GROUPNAME}.*
 - assertNotVisible: .*Accept.*
 - assertNotVisible: .*Decline.*

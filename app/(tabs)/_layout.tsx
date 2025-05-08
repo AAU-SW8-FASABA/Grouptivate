@@ -44,6 +44,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          tabBarButtonTestID: "home-tab-buttonid",
           title: "Home",
           headerTitle: "Grouptivate",
           tabBarIcon: ({ color }) => (
@@ -59,6 +60,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
+          tabBarButtonTestID: "profile-tab-buttonid",
           title: "Profile",
           headerTitle: "Grouptivate",
           tabBarIcon: ({ color }) => (

@@ -12,8 +12,10 @@ env:
 - assertVisible: Grouptivate
 - assertVisible: .*Goals.*
 - assertVisible: .*Groups.*
-- assertVisible: "Home, tab, 1 of 4"
-- assertVisible: "Profile, tab, 2 of 4"
+- assertVisible:
+    id: home-tab-buttonid
+- assertVisible:
+    id: profile-tab-buttonid
 - runFlow:
     file: subflows/signOut.yml
 - runFlow:
@@ -24,5 +26,7 @@ env:
 - assertVisible: Grouptivate
 - assertVisible: .*Goals.*
 - assertVisible: .*Groups.*
-- assertVisible: "Home, tab, 1 of 4"
-- assertVisible: "Profile, tab, 2 of 4"
+- assertVisible:
+    id: home-tab-buttonid
+- assertVisible:
+    id: profile-tab-buttonid
