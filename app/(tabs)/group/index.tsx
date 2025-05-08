@@ -117,19 +117,19 @@ export default function Group() {
             text2={group ? group.streak + "🔥" : "🔥"}
           />
         </View>
-
-        <Container style={{ marginTop: 8 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
-            <Text style={[styles.text, { fontSize: 16 }]}>
-              {group
-                ? Object.entries(group.users).reduce((count, [userId]) => {
+        <View>
+          {group && group.goals.length > 0 ? (
+            <Container style={{ marginTop: 8 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
+                <Text style={[styles.text, { fontSize: 16 }]}>
+                  {Object.entries(group.users).reduce((count, [userId]) => {
                     if (!groupGoalsDone) return count;
 
                     const goals = userGoals.get(userId);
@@ -138,16 +138,15 @@ export default function Group() {
                     );
 
                     return count + (allGoalsDone ? 1 : 0);
-                  }, 0)
-                : 0}
-              / {group ? Object.keys(group.users).length : 0} members finished
-            </Text>
-          </View>
-          <View style={{ marginTop: 10 }}>
-            <ProgressBarPercentage
-              progress={
-                group?.goals.length
-                  ? (group.goals.reduce(
+                  }, 0)}
+                  {" /"} {Object.keys(group.users).length}
+                  {" members finished"}
+                </Text>
+              </View>
+              <View style={{ marginTop: 10 }}>
+                <ProgressBarPercentage
+                  progress={
+                    (group.goals.reduce(
                       (acc, goal) =>
                         acc +
                         Object.values(goal.progress).reduce(
@@ -159,11 +158,12 @@ export default function Group() {
                     ) /
                       group.goals!.length) *
                     100
-                  : 0
-              }
-            />
-          </View>
-        </Container>
+                  }
+                />
+              </View>
+            </Container>
+          ) : null}
+        </View>
 
         <View style={globalStyles.section}>
           <Text style={[globalStyles.sectionHeader, { marginTop: 6 }]}>

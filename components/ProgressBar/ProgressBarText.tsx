@@ -12,8 +12,8 @@ export function ProgressBarText({
   unit: string;
 }) {
   const progressPercentage = Math.min((progress / target) * 100, 100);
-  const isRightAligned = progressPercentage < 60;
-  const indent = 5;
+  const isRightAligned = progressPercentage < 90;
+  const indent = 5.5;
 
   return (
     <View style={styles.progress}>
@@ -31,12 +31,12 @@ export function ProgressBarText({
           isRightAligned
             ? {
                 left: `${progressPercentage}%`,
-                transform: [{ translateX: indent }, { translateY: "-50%" }],
+                transform: [{ translateX: indent }],
                 color: primaryColor,
               }
             : {
                 right: `${100 - progressPercentage}%`,
-                transform: [{ translateX: -indent }, { translateY: "-50%" }],
+                transform: [{ translateX: -indent }],
                 color: "#FFFFFF",
               },
         ]}
@@ -48,19 +48,16 @@ export function ProgressBarText({
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   progress: {
     flex: 1,
+    justifyContent: "center",
   },
   progressText: {
     fontFamily: "Roboto",
     fontWeight: 500,
     fontSize: 16,
     position: "absolute",
-    top: "50%",
+    paddingHorizontal: 4,
+    paddingVertical: 4,
   },
 });

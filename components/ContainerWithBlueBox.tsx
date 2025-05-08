@@ -27,8 +27,9 @@ const styles = StyleSheet.create({
   blueContainer: {
     backgroundColor: primaryColor,
     borderRadius: 5,
-    marginTop: 5,
+    marginTop: 10,
     padding: 5,
+    height: 45,
   },
   text: {
     fontFamily: "Roboto",

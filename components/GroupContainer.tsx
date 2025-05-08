@@ -56,14 +56,16 @@ export function GroupContainer({
         progress={groupProgress}
         iconSource={IconSource.FontAwesome6}
         icon="users"
-        iconSize={20}
+        iconSize={16}
       />
-      <ProgressBarIcon
-        progress={individualProgress}
-        iconSource={IconSource.FontAwesome6}
-        icon="user-large"
-        iconSize={20}
-      />
+      <View style={{ paddingRight: 0 }}>
+        <ProgressBarIcon
+          progress={individualProgress}
+          iconSource={IconSource.FontAwesome6}
+          icon="user-large"
+          iconSize={20}
+        />
+      </View>
     </Container>
   );
 }
