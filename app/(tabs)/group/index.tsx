@@ -117,53 +117,57 @@ export default function Group() {
             text2={group ? group.streak + "🔥" : "🔥"}
           />
         </View>
+        <View>
+          {group !== null && group.goals.length > 0 ? (
+            <Container style={{ marginTop: 8 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
+                <Text style={[styles.text, { fontSize: 16 }]}>
+                  {group
+                    ? Object.entries(group.users).reduce((count, [userId]) => {
+                        if (!groupGoalsDone) return count;
 
-        <Container style={{ marginTop: 8 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
-            <Text style={[styles.text, { fontSize: 16 }]}>
-              {group
-                ? Object.entries(group.users).reduce((count, [userId]) => {
-                    if (!groupGoalsDone) return count;
+                        const goals = userGoals.get(userId);
+                        const allGoalsDone = goals?.every(
+                          (goal) => goal.progress[userId] >= goal.target,
+                        );
 
-                    const goals = userGoals.get(userId);
-                    const allGoalsDone = goals?.every(
-                      (goal) => goal.progress[userId] >= goal.target,
-                    );
-
-                    return count + (allGoalsDone ? 1 : 0);
-                  }, 0)
-                : 0}
-              / {group ? Object.keys(group.users).length : 0} members finished
-            </Text>
-          </View>
-          <View style={{ marginTop: 10 }}>
-            <ProgressBarPercentage
-              progress={
-                group?.goals.length
-                  ? (group.goals.reduce(
-                      (acc, goal) =>
-                        acc +
-                        Object.values(goal.progress).reduce(
-                          (sum, add) => sum + add,
+                        return count + (allGoalsDone ? 1 : 0);
+                      }, 0)
+                    : 0}
+                  {" /"} {group ? Object.keys(group.users).length : 0}
+                  {" members finished"}
+                </Text>
+              </View>
+              <View style={{ marginTop: 10 }}>
+                <ProgressBarPercentage
+                  progress={
+                    group?.goals.length
+                      ? (group.goals.reduce(
+                          (acc, goal) =>
+                            acc +
+                            Object.values(goal.progress).reduce(
+                              (sum, add) => sum + add,
+                              0,
+                            ) /
+                              goal.target,
                           0,
                         ) /
-                          goal.target,
-                      0,
-                    ) /
-                      group.goals!.length) *
-                    100
-                  : 0
-              }
-            />
-          </View>
-        </Container>
+                          group.goals!.length) *
+                        100
+                      : 0
+                  }
+                />
+              </View>
+            </Container>
+          ) : null}
+        </View>
 
         <View style={globalStyles.section}>
           <Text style={[globalStyles.sectionHeader, { marginTop: 6 }]}>

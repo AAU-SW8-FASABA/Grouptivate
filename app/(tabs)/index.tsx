@@ -28,6 +28,7 @@ import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
 import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
+import { Container } from "@/components/Container";
 
 export default function Main() {
   const { user, setUser } = useUser();
