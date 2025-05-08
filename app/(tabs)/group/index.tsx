@@ -118,7 +118,7 @@ export default function Group() {
           />
         </View>
         <View>
-          {group !== null && group.goals.length > 0 ? (
+          {group && group.goals.length > 0 ? (
             <Container style={{ marginTop: 8 }}>
               <View
                 style={{
@@ -141,27 +141,25 @@ export default function Group() {
                         return count + (allGoalsDone ? 1 : 0);
                       }, 0)
                     : 0}
-                  {" /"} {group ? Object.keys(group.users).length : 0}
+                  {" /"} {Object.keys(group.users).length}
                   {" members finished"}
                 </Text>
               </View>
               <View style={{ marginTop: 10 }}>
                 <ProgressBarPercentage
                   progress={
-                    group?.goals.length
-                      ? (group.goals.reduce(
-                          (acc, goal) =>
-                            acc +
-                            Object.values(goal.progress).reduce(
-                              (sum, add) => sum + add,
-                              0,
-                            ) /
-                              goal.target,
+                    (group.goals.reduce(
+                      (acc, goal) =>
+                        acc +
+                        Object.values(goal.progress).reduce(
+                          (sum, add) => sum + add,
                           0,
                         ) /
-                          group.goals!.length) *
-                        100
-                      : 0
+                          goal.target,
+                      0,
+                    ) /
+                      group.goals!.length) *
+                    100
                   }
                 />
               </View>
