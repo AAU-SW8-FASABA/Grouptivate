@@ -1,0 +1,49 @@
+appId: com.fasaba.Grouptivate
+env:
+  USERNAME1: TestUser1
+  PASSWORD1: Password1
+  USERNAME2: TestUser2
+  PASSWORD2: Password2
+  GROUPNAME: Group Name
+---
+- launchApp
+- runFlow:
+    file: subflows/signUp.yml
+    env:
+      USERNAME: ${USERNAME2}
+      PASSWORD: ${PASSWORD2}
+- runFlow:
+    file: subflows/signOut.yml
+- runFlow:
+    file: subflows/signUp.yml
+    env:
+      USERNAME: ${USERNAME1}
+      PASSWORD: ${PASSWORD1}
+- runFlow:
+    file: subflows/createGroup.yml
+    env:
+      GROUPNAME: ${GROUPNAME}
+- runFlow:
+    file: subflows/inviteUser.yml
+    env:
+      USERNAME: ${USERNAME2}
+- tapOn:
+    id: settings-button
+- tapOn:
+    id: remove-user-button
+- tapOn:
+    id: modal-delete-button-id
+- runFlow:
+    file: subflows/signOut.yml
+- runFlow:
+    file: subflows/signIn.yml
+    env:
+      USERNAME: ${USERNAME2}
+      PASSWORD: ${PASSWORD2}
+- tapOn:
+    id: profile-tab-buttonid
+- assertNotVisible: .*${GROUPNAME}.*
+- assertNotVisible: .*Accept.*
+- assertNotVisible: .*Decline.*
+- assertNotVisible:
+    id: inviteAcceptButtonTestId

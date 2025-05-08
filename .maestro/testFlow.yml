@@ -1,5 +1,0 @@
-appId: com.fasaba.Grouptivate
----
-- launchApp
-- runFlow: subflows/createAccount.yml
-- assertVisible: "Profile, tab, 2 of 4"

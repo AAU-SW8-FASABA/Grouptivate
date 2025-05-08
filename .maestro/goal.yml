@@ -1,0 +1,48 @@
+appId: com.fasaba.Grouptivate
+env:
+  USERNAME: TestUser
+  PASSWORD: Password1
+  GROUPNAME: My Group
+---
+- launchApp
+- runFlow:
+    file: subflows/signUp.yml
+    env:
+      USERNAME: ${USERNAME}
+      PASSWORD: ${PASSWORD}
+- runFlow:
+    file: subflows/createGroup.yml
+    env:
+      GROUPNAME: ${GROUPNAME}
+- runFlow: subflows/createIndividualGoal.yml
+- tapOn:
+    id: back-button
+- tapOn:
+    id: open-collapsible-container
+- assertVisible: .*0 / 5.*
+- tapOn:
+    id: settings-button
+- tapOn:
+    id: open-collapsible-container
+- tapOn:
+    id: delete-goal
+- tapOn: Delete
+- tapOn:
+    id: back-button
+- assertNotVisible: .*0 / 5.*
+- runFlow: subflows/createGroupGoal.yml
+- assertVisible: .*Steps.*
+- assertVisible: .*5.*
+- tapOn:
+    id: back-button
+- assertVisible: .*My Title.*
+- assertVisible: .*0 / 5.*
+- tapOn:
+    id: settings-button
+- tapOn:
+    id: delete-goal
+- tapOn: Delete
+- tapOn:
+    id: back-button
+- assertNotVisible: .*My Title.*
+- assertNotVisible: .*0 / 5.*

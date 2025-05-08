@@ -1,0 +1,27 @@
+appId: com.fasaba.Grouptivate
+env:
+  USERNAME: TestUser1
+  PASSWORD: Password1
+  GROUPNAME: Group Name
+---
+- launchApp
+- runFlow:
+    file: subflows/signUp.yml
+    env:
+      USERNAME: ${USERNAME}
+      PASSWORD: ${PASSWORD}
+- runFlow:
+    file: subflows/createGroup.yml
+    env:
+      GROUPNAME: ${GROUPNAME}
+- runFlow:
+    file: subflows/createIndividualGoal.yml
+- tapOn:
+    id: profile-tab-buttonid
+- scroll
+- tapOn:
+    id: development-exercise-button
+- tapOn:
+    id: home-tab-buttonid
+- assertVisible: .*000%.*
+- assertVisible: .*100%.*

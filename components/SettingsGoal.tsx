@@ -43,7 +43,7 @@ export function SettingsGoal({
           </View>
         </View>
       </Container>
-      <TouchableOpacity onPress={onRemove}>
+      <TouchableOpacity testID="delete-goal" onPress={onRemove}>
         <UniversalIcon
           source={IconSource.FontAwesome6}
           name="circle-minus"

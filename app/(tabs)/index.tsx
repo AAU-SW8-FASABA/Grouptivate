@@ -202,6 +202,7 @@ export default function Main() {
         </View>
         {groups.map((group) => (
           <TouchableOpacity
+            testID="open-group"
             key={group.groupId}
             onPress={() =>
               router.push({

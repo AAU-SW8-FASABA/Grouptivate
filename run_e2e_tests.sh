@@ -25,7 +25,7 @@ prepare_server() {
   fi
 
   # Clone server
-  run_and_check git clone git@github.com:AAU-SW8-FASABA/Grouptivate-Server.git --recurse-submodules
+  run_and_check git clone https://github.com/AAU-SW8-FASABA/Grouptivate-Server.git --recurse-submodules
 
   # Install dependencies
   (
@@ -51,7 +51,15 @@ run_test() {
   
   # Build the application for release using local server
   echo "📲 - Building and installing the app"
-  if ! OUTPUT=$(SERVER=local npx expo run:${PLATFORM//-} --no-bundler --configuration Release 2>&1); then
+  if [ "$PLATFORM" = "--ios" ]; then
+    EXPO_RELEASE_CONFIG="--configuration Release"
+  elif [ "$PLATFORM" = "--android" ]; then
+    EXPO_RELEASE_CONFIG="--variant release"
+  fi
+
+  strippedPlatform=${PLATFORM//-}
+  
+  if ! OUTPUT=$(PLATFORM=$strippedPlatform ENDTOEND=true npx expo run:$strippedPlatform --no-bundler $EXPO_RELEASE_CONFIG 2>&1); then
     echo "$OUTPUT"
   fi
 

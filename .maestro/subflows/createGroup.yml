@@ -1,0 +1,11 @@
+appId: com.fasaba.Grouptivate
+---
+- tapOn:
+    id: add-group-button
+- tapOn:
+    below: Group Name
+- inputText: ${GROUPNAME}
+- pressKey: Enter
+- tapOn: Create
+- tapOn:
+    id: open-group

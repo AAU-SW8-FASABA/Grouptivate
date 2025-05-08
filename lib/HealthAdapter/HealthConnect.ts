@@ -2,6 +2,7 @@ import { OtherActivity } from "../API/schemas/Activity";
 import { activityMapping } from "./HealthConnect/HealthConnectConstants";
 import {
   CaloriesOnlyOptions,
+  CountOnlyInsertOption,
   CountOnlyOptions,
   HealthAdapter,
   InsertOptions,
@@ -410,12 +411,14 @@ export class HealthConnectAdapter extends HealthAdapter {
    * @param {InsertOptions} data - Contains the timerange for the data and the amount of Floors climbed.
    *
    */
-  private async insertFloorsClimbedData(data: InsertOptions): Promise<void> {
+  private async insertFloorsClimbedData(
+    data: CountOnlyInsertOption,
+  ): Promise<void> {
     try {
       await insertRecords([
         {
           recordType: RecordEnum.FloorsClimbed,
-          floors: 26700,
+          floors: data.count,
           startTime: data.startDate.toISOString(),
           endTime: data.endDate.toISOString(),
           metadata: {
@@ -437,12 +440,14 @@ export class HealthConnectAdapter extends HealthAdapter {
    *
    * @param {InsertOptions} data - Contains the timerange for the data and the amount of steps.
    */
-  private async insertStepCountData(data: InsertOptions): Promise<void> {
+  private async insertStepCountData(
+    data: CountOnlyInsertOption,
+  ): Promise<void> {
     try {
       await insertRecords([
         {
           recordType: RecordEnum.Steps,
-          count: 1,
+          count: data.count,
           startTime: data.startDate.toISOString(),
           endTime: data.endDate.toISOString(),
           metadata: {
@@ -451,7 +456,7 @@ export class HealthConnectAdapter extends HealthAdapter {
           },
         },
       ]).then((ids) => {
-        console.log("Records inserted", { ids });
+        console.log("Records inserted with count: ", data.count, { ids });
       });
     } catch (error) {
       console.log("Could not insert step count data", error);

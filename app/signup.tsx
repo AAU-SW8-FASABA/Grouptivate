@@ -53,6 +53,7 @@ export default function Signup() {
           Username
         </Text>
         <TextInput
+          placeholder="Username"
           value={username}
           autoCapitalize="none"
           autoCorrect={false}

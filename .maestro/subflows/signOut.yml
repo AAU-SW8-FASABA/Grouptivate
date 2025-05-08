@@ -1,0 +1,8 @@
+appId: com.fasaba.Grouptivate
+---
+- tapOn:
+    id: profile-tab-buttonid
+- assertVisible: Invitations
+- tapOn: "Log out"
+- assertVisible: "Sign in"
+- assertVisible: "Sign up"

@@ -19,6 +19,7 @@ import {
   isSportInsertOptions,
 } from "@/lib/HealthAdapter/HealthAdapter";
 import { SyncActivity } from "@/lib/ActivitySync";
+import Constants from "expo-constants";
 
 export function DeveloperTools() {
   const activities = [
@@ -43,7 +44,7 @@ export function DeveloperTools() {
 
   const healthAdapterPromise = getHealthAdapter();
 
-  return __DEV__ ? (
+  return __DEV__ || Constants?.expoConfig?.extra?.endtoend ? (
     <>
       <Text
         style={[styles.text, { fontSize: 32, marginTop: 50, marginBottom: 10 }]}
@@ -133,14 +134,21 @@ export function DeveloperTools() {
           ></TextInput>
           <View style={{ width: "50%" }}>
             <TouchableOpacity
+              testID="development-exercise-button"
               style={{ marginTop: 10, marginBottom: 5 }}
               onPress={async () => {
                 const healthAdapter = await healthAdapterPromise;
                 const options = {
                   startDate: new Date(Date.now() - 1000),
                   endDate: new Date(),
-                  activity: activityValue,
+                  activity: Constants?.expoConfig?.extra?.endtoend
+                    ? OtherActivity.Steps
+                    : activityValue,
                 };
+
+                if (Constants?.expoConfig?.extra?.endtoend) {
+                  setMetricValue(Metric.Count);
+                }
                 if (isSportInsertOptions(options)) {
                   if (metricValue === Metric.Distance) {
                     options.distance = amountValue;
@@ -154,7 +162,10 @@ export function DeveloperTools() {
                     );
                   }
                 } else if (isCountOnlyInsertOptions(options)) {
-                  if (metricValue === Metric.Count) {
+                  if (
+                    Constants?.expoConfig?.extra?.endtoend ||
+                    metricValue === Metric.Count
+                  ) {
                     options.count = amountValue;
                     healthAdapter?.insertData(options);
                   } else {

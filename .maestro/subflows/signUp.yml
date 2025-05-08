@@ -3,10 +3,10 @@ appId: com.fasaba.Grouptivate
 - tapOn: "Sign up"
 - tapOn:
     below: "Username"
-- inputText: "testing"
+- inputText: ${USERNAME}
 - tapOn:
     below: "Password"
-- inputText: "Password1"
+- inputText: ${PASSWORD}
 - pressKey: Enter
 - tapOn:
     text: "Create account"

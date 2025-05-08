@@ -19,6 +19,8 @@ export function CustomModal({
   mode,
   setIsVisible,
   callback,
+  isVisibleButtonTestId,
+  confirmButtonId,
 }: PropsWithChildren & {
   title: string;
   height: number;
@@ -26,6 +28,8 @@ export function CustomModal({
   mode: modalMode;
   setIsVisible: (value: boolean) => void;
   callback: (goal: GoalType) => void;
+  isVisibleButtonTestId?: string;
+  confirmButtonId?: string;
 }) {
   const handleConfirm = () => {
     callback(GoalType.Group);
@@ -67,6 +71,7 @@ export function CustomModal({
           <View style={styles.row}>
             <TouchableOpacity
               style={styles.box}
+              testID={isVisibleButtonTestId}
               onPress={() => setIsVisible(false)}
             >
               <Text style={[styles.text, { marginRight: "auto" }]}>Cancel</Text>
@@ -74,7 +79,11 @@ export function CustomModal({
             <View style={styles.box}>
               <Text style={styles.text}>{title}</Text>
             </View>
-            <TouchableOpacity style={styles.box} onPress={handleConfirm}>
+            <TouchableOpacity
+              testID={confirmButtonId}
+              style={styles.box}
+              onPress={handleConfirm}
+            >
               <Text
                 style={[styles.text, { marginLeft: "auto", fontWeight: 700 }]}
               >
