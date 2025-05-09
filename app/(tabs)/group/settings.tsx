@@ -13,8 +13,8 @@ import { Dropdown } from "react-native-element-dropdown";
 import { CustomModal, modalMode } from "@/components/CustomModal";
 import { Back } from "@/components/Back";
 import { Collapsible } from "@/components/Collapsible";
-import { SettingsMember } from "@/components/SettingsMember";
-import { SettingsGoal } from "@/components/SettingsGoal";
+import { SettingsMember } from "@/components/group/settings/SettingsMember";
+import { SettingsGoal } from "@/components/group/settings/SettingsGoal";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import globalStyles from "@/constants/styles";
@@ -409,7 +409,7 @@ export default function GroupSettings() {
             { justifyContent: "center", alignItems: "center" },
           ]}
         >
-          <Text style={styles.text}>Loading group settings...</Text>
+          <Text style={globalStyles.textStyle}>Loading group settings...</Text>
         </View>
       </>
     );
@@ -432,7 +432,7 @@ export default function GroupSettings() {
           setIsVisible={setGoalModalVisibility}
           callback={createGoal}
         >
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Activity
           </Text>
           <Dropdown
@@ -440,9 +440,9 @@ export default function GroupSettings() {
               styles.dropdown,
               isActivityFocus && { borderColor: "blue" },
             ]}
-            placeholderStyle={[styles.text, { fontSize: 20 }]}
-            selectedTextStyle={[styles.text, { fontSize: 20 }]}
-            itemTextStyle={[styles.text, { fontSize: 20 }]}
+            placeholderStyle={globalStyles.smallTitle}
+            selectedTextStyle={globalStyles.smallTitle}
+            itemTextStyle={globalStyles.smallTitle}
             data={activities}
             labelField="label"
             valueField="value"
@@ -467,14 +467,14 @@ export default function GroupSettings() {
               />
             )}
           />
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Metric
           </Text>
           <Dropdown
             style={[styles.dropdown, isMetricFocus && { borderColor: "blue" }]}
-            placeholderStyle={[styles.text, { fontSize: 20 }]}
-            selectedTextStyle={[styles.text, { fontSize: 20 }]}
-            itemTextStyle={[styles.text, { fontSize: 20 }]}
+            placeholderStyle={globalStyles.smallTitle}
+            selectedTextStyle={globalStyles.smallTitle}
+            itemTextStyle={globalStyles.smallTitle}
             data={metrics}
             labelField="label"
             valueField="value"
@@ -499,7 +499,7 @@ export default function GroupSettings() {
               />
             )}
           />
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Amount
           </Text>
           <TextInput
@@ -513,7 +513,7 @@ export default function GroupSettings() {
           />
           {currentGoalType === GoalType.Group ? (
             <>
-              <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+              <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
                 Title
               </Text>
               <TextInput
@@ -537,9 +537,7 @@ export default function GroupSettings() {
           setIsVisible={setInviteModalVisibility}
           callback={inviteMember}
         >
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
-            Name
-          </Text>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>Name</Text>
           <TextInput
             style={globalStyles.inputField}
             autoCapitalize="none"
@@ -572,9 +570,7 @@ export default function GroupSettings() {
                 name="circle-plus"
                 size={24}
               />
-              <Text style={[styles.text, styles.buttonText]}>
-                Invite Member
-              </Text>
+              <Text style={styles.buttonText}>Invite Member</Text>
             </TouchableOpacity>
           </View>
         </Collapsible>
@@ -590,7 +586,7 @@ export default function GroupSettings() {
         >
           <Text
             style={[
-              styles.text,
+              globalStyles.textStyle,
               { fontSize: 18, marginTop: 10, textAlign: "center" },
             ]}
           >
@@ -620,7 +616,7 @@ export default function GroupSettings() {
                 name="circle-plus"
                 size={24}
               />
-              <Text style={[styles.text, styles.buttonText]}>Create goal</Text>
+              <Text style={[styles.buttonText]}>Create goal</Text>
             </TouchableOpacity>
           </View>
         </Collapsible>
@@ -628,22 +624,14 @@ export default function GroupSettings() {
         <Collapsible title="Individual Goals">
           {members.map(([memberId, memberName], memberIndex) => (
             <CollapsibleContainer key={memberId}>
-              <View
-                style={[
-                  styles.row,
-                  { justifyContent: "space-between", marginRight: 50 },
-                ]}
-              >
+              <>
                 <Image
                   source={getAske({ userId: memberId, name: memberName })}
                   style={{ width: 32, height: 32, borderRadius: 100 }}
                 />
                 <Text
                   numberOfLines={1}
-                  style={[
-                    styles.text,
-                    { fontSize: 20, flex: 1, marginLeft: 10 },
-                  ]}
+                  style={[globalStyles.smallTitle, { flex: 1, marginLeft: 10 }]}
                 >
                   {memberName}
                 </Text>
@@ -655,10 +643,14 @@ export default function GroupSettings() {
                     source={IconSource.FontAwesome6}
                     name="plus"
                     size={24}
-                    style={{ flex: 1 }}
+                    style={{
+                      position: "relative",
+                      marginLeft: 10,
+                      marginRight: 15,
+                    }}
                   />
                 </TouchableOpacity>
-              </View>
+              </>
               <>
                 {memberGoals
                   .filter((goal) => goal.progress[memberId] >= 0)
@@ -683,16 +675,12 @@ export default function GroupSettings() {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",
   },
   buttonText: {
-    fontSize: 20,
+    ...globalStyles.smallTitle,
     marginLeft: 5,
   },
   input: {

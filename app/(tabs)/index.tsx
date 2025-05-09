@@ -128,7 +128,7 @@ export default function Main() {
           setIsVisible={setNewGroupModalVisibility}
           callback={createGroup}
         >
-          <Text style={[styles.text, { fontSize: 20 }]}>Group Name</Text>
+          <Text style={globalStyles.smallTitle}>Group Name</Text>
           <TextInput
             style={globalStyles.inputField}
             autoCapitalize="none"
@@ -137,7 +137,7 @@ export default function Main() {
             onChangeText={setGroupName}
             value={newGroupName}
           ></TextInput>
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Interval
           </Text>
           <Dropdown
@@ -145,9 +145,9 @@ export default function Main() {
               styles.dropdown,
               isIntervalFocus && { borderColor: "blue" },
             ]}
-            placeholderStyle={[styles.text, { fontSize: 20 }]}
-            selectedTextStyle={[styles.text, { fontSize: 20 }]}
-            itemTextStyle={[styles.text, { fontSize: 20 }]}
+            placeholderStyle={globalStyles.smallTitle}
+            selectedTextStyle={globalStyles.smallTitle}
+            itemTextStyle={globalStyles.smallTitle}
             data={intervals}
             labelField="label"
             valueField="value"
@@ -226,10 +226,6 @@ export default function Main() {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",

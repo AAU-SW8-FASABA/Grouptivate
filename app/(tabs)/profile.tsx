@@ -64,11 +64,11 @@ export default function Profile() {
           borderRadius={100}
           style={styles.profilePhoto}
         />
-        <Text style={[styles.text, styles.profileName]}>{user.name}</Text>
+        <Text style={[globalStyles.title, { marginTop: 20 }]}>{user.name}</Text>
         <TouchableOpacity onPress={logout}>
           <Text
             style={[
-              styles.text,
+              globalStyles.smallTitle,
               styles.button,
               {
                 backgroundColor: "#D9D9D9",
@@ -82,7 +82,7 @@ export default function Profile() {
             Log out
           </Text>
         </TouchableOpacity>
-        <Text style={[styles.text, { fontSize: 32, marginTop: 50 }]}>
+        <Text style={[globalStyles.textStyle, { fontSize: 32, marginTop: 50 }]}>
           Invitations
         </Text>
         {invites.map((invite, index) => (
@@ -101,10 +101,6 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
   center: {
     display: "flex",
     alignItems: "center",
@@ -115,10 +111,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
   },
-  profileName: {
-    fontSize: 24,
-    marginTop: 20,
-  },
   column: {
     display: "flex",
     flexDirection: "row",
@@ -126,7 +118,6 @@ const styles = StyleSheet.create({
   },
   button: {
     textAlign: "center",
-    fontSize: 20,
     borderRadius: 5,
     height: 32,
     lineHeight: 32,

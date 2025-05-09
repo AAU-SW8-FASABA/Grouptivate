@@ -13,48 +13,50 @@ import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 export function CollapsibleContainer({
   children,
   style,
-  username,
-  idName,
 }: {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  username?: string;
-  idName?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [child1, child2] = React.Children.toArray(children);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TouchableOpacity
         testID="open-collapsible-container"
-        style={styles.collapse}
         onPress={() => setIsOpen((value) => !value)}
       >
-        <UniversalIcon
-          source={IconSource.FontAwesome6}
-          name={"chevron-down"}
-          size={20}
-          color="black"
-          style={{
-            transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
-            marginTop: 5,
-            marginRight: 5,
-          }}
-        />
+        <View style={styles.top}>
+          {child1}
+          <UniversalIcon
+            source={IconSource.FontAwesome6}
+            name={"chevron-down"}
+            size={20}
+            color="black"
+            style={{
+              position: "relative",
+              transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
+            }}
+          />
+        </View>
+        {isOpen && (
+          <>
+            <HR />
+            <View>{child2}</View>
+          </>
+        )}
       </TouchableOpacity>
-      {child1}
-      {isOpen && (
-        <>
-          <HR />
-          <View>{child2}</View>
-        </>
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  top: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   container: {
     flexDirection: "column",
     backgroundColor: "#EFEFF3",
@@ -62,12 +64,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     flex: 1,
-    marginBottom: 8,
-  },
-  collapse: {
-    position: "absolute",
-    top: 8,
-    right: 10,
-    zIndex: 99,
   },
 });

@@ -7,7 +7,6 @@ export function HR() {
         borderBottomWidth: 1,
         opacity: 0.5,
         marginTop: 10,
-        marginBottom: 10,
       }}
     />
   );

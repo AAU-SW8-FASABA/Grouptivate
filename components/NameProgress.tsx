@@ -1,3 +1,4 @@
+import globalStyles from "@/constants/styles";
 import { StyleSheet, View, Text } from "react-native";
 
 export function NameProgress({
@@ -13,10 +14,12 @@ export function NameProgress({
 
   return (
     <View style={styles.container}>
-      <Text numberOfLines={1} style={[styles.text, { flex: 1 }]}>
+      <Text numberOfLines={1} style={[globalStyles.textStyle, { flex: 1 }]}>
         {name}
       </Text>
-      <Text style={styles.text}>| {progressPercentage.toFixed(0)}%</Text>
+      <Text style={globalStyles.textStyle}>
+        | {progressPercentage.toFixed(0)}%
+      </Text>
     </View>
   );
 }
@@ -30,10 +33,5 @@ const styles = StyleSheet.create({
     flexBasis: "48%",
     borderRadius: 5,
     padding: 10,
-  },
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-    fontSize: 20,
   },
 });
