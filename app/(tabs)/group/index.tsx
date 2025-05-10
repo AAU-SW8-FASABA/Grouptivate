@@ -232,7 +232,7 @@ export default function Group() {
                       key={userId}
                       name={group.users[userId]}
                       progress={progress}
-                      target={goal.target}
+                      target={goal.target / Object.entries(group.users).length}
                     />
                   ))}
                 </>
