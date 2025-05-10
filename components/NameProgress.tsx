@@ -14,7 +14,11 @@ export function NameProgress({
 
   return (
     <View style={styles.container}>
-      <Text numberOfLines={1} style={[globalStyles.textStyle, { flex: 1 }]}>
+      <Text
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        style={[globalStyles.smallTitle]}
+      >
         {name}
       </Text>
       <Text style={globalStyles.textStyle}>
@@ -26,11 +30,11 @@ export function NameProgress({
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 10,
     flexDirection: "row",
     backgroundColor: "white",
     justifyContent: "space-between",
     flex: 1,
-    flexBasis: "48%",
     borderRadius: 5,
     padding: 10,
   },

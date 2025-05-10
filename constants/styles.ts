@@ -42,6 +42,12 @@ const globalStyles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
+  column: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
   textStyle: textStyle.text,
 
   title: {
