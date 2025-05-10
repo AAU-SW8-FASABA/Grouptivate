@@ -18,7 +18,13 @@ export function CollapsibleContainer({
   style?: StyleProp<ViewStyle>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [child1, child2] = React.Children.toArray(children);
+  const childArray = React.Children.toArray(children);
+
+  if (childArray.length < 1) return;
+
+  const topElements = childArray.slice(0, -1);
+  const contentElement =
+    childArray.length > 1 ? childArray[childArray.length - 1] : undefined;
 
   return (
     <View style={[styles.container, style]}>
@@ -26,23 +32,27 @@ export function CollapsibleContainer({
         testID="open-collapsible-container"
         onPress={() => setIsOpen((value) => !value)}
       >
-        <View style={styles.top}>
-          {child1}
-          <UniversalIcon
-            source={IconSource.FontAwesome6}
-            name={"chevron-down"}
-            size={20}
-            color="black"
-            style={{
-              position: "relative",
-              transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
-            }}
-          />
-        </View>
+        {topElements.map((elem, index) => (
+          <View style={styles.top}>
+            {elem}
+            {index === 0 && (
+              <UniversalIcon
+                source={IconSource.FontAwesome6}
+                name={"chevron-down"}
+                size={20}
+                color="black"
+                style={{
+                  position: "relative",
+                  transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
+                }}
+              />
+            )}
+          </View>
+        ))}
         {isOpen && (
           <>
             <HR />
-            <View>{child2}</View>
+            <View>{contentElement}</View>
           </>
         )}
       </TouchableOpacity>

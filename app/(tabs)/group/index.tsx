@@ -179,52 +179,47 @@ export default function Group() {
               Group Goals
             </Text>
             {groupGoals.map((goal) => (
-              <CollapsibleContainer key={goal.goalId}>
-                <View>
-                  <View style={globalStyles.row}>
-                    <View style={styles.box}>
-                      <Text
-                        style={[globalStyles.title, { marginRight: "auto" }]}
-                      >
-                        {goal.title}
-                      </Text>
-                    </View>
-                    <View style={styles.box}>
-                      <Text
-                        style={[globalStyles.bodyText, { textAlign: "center" }]}
-                      >
-                        {Object.entries(goal.progress).reduce(
+              <CollapsibleContainer key={goal.goalId} style={{ marginTop: 10 }}>
+                <>
+                  <Text style={[globalStyles.title]}>{goal.title}</Text>
+                  <Text
+                    style={[globalStyles.bodyText, { textAlign: "center" }]}
+                  >
+                    {Object.entries(goal.progress).reduce(
+                      (sum, [key, val]) => sum + val,
+                      0,
+                    )}{" "}
+                    / {goal.target} {metricMetadata[goal.metric].unit}
+                  </Text>
+                </>
+                <>
+                  <View
+                    style={{ minWidth: "40%", marginRight: 6, flexGrow: 1 }}
+                  >
+                    <ProgressBarIcon
+                      progress={
+                        (Object.entries(goal.progress).reduce(
                           (sum, [key, val]) => sum + val,
                           0,
-                        )}{" "}
-                        / {goal.target} {metricMetadata[goal.metric].unit}
-                      </Text>
-                    </View>
-                    <View style={styles.box} />
+                        ) /
+                          goal.target) *
+                        100
+                      }
+                      iconSource={
+                        {
+                          ...sportActivityMetadata,
+                          ...otherActivityMetadata,
+                        }[goal.activity].iconSource
+                      }
+                      icon={
+                        {
+                          ...sportActivityMetadata,
+                          ...otherActivityMetadata,
+                        }[goal.activity].icon
+                      }
+                    />
                   </View>
-                  <ProgressBarIcon
-                    progress={
-                      (Object.entries(goal.progress).reduce(
-                        (sum, [key, val]) => sum + val,
-                        0,
-                      ) /
-                        goal.target) *
-                      100
-                    }
-                    iconSource={
-                      {
-                        ...sportActivityMetadata,
-                        ...otherActivityMetadata,
-                      }[goal.activity].iconSource
-                    }
-                    icon={
-                      {
-                        ...sportActivityMetadata,
-                        ...otherActivityMetadata,
-                      }[goal.activity].icon
-                    }
-                  />
-                </View>
+                </>
                 <View style={[globalStyles.row, { gap: 10, flexWrap: "wrap" }]}>
                   {Object.entries(goal.progress).map(([userId, progress]) => (
                     <NameProgress
