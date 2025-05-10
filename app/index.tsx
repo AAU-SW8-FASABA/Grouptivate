@@ -7,6 +7,7 @@ import { useUser } from "@/lib/states/userState";
 import { get as getUser } from "@/lib/server/user";
 import { SetupActivitySync } from "@/lib/ActivitySync";
 import globalStyles from "@/constants/styles";
+import { showAlert } from "@/lib/Alert";
 
 export default function Authentication() {
   const router = useRouter();
@@ -20,9 +21,14 @@ export default function Authentication() {
       if (token) {
         const isValid = await verify();
         if (isValid) {
-          const theUser = await getUser();
-          console.log("SETTING THE USER!", theUser);
-          setUser(theUser);
+          const userResponse = await getUser();
+
+          if (userResponse.error) {
+            showAlert(userResponse);
+            return;
+          }
+
+          setUser(userResponse.data);
           router.push("/(tabs)");
         } else {
           await deleteToken();

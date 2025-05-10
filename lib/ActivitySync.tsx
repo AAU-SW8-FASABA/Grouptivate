@@ -10,6 +10,7 @@ import { Metric } from "./API/schemas/Metric";
 import { HealthAdapter } from "./HealthAdapter/HealthAdapter";
 import { getHealthAdapter } from "./HealthAdapter/Helpers";
 import { getStartDateFromInterval } from "./IntervalDates";
+import { showAlert } from "./Alert";
 
 /**
  * Sync new activity information to the server.
@@ -33,14 +34,28 @@ export async function SyncActivity() {
 
   let user: User;
   try {
-    user = await getUser();
+    const userResponse = await getUser();
+
+    if (userResponse.error) {
+      showAlert(userResponse);
+      return;
+    }
+
+    user = userResponse.data;
   } catch {
     console.warn("Unable sync activity progress, could not fetch user");
     return;
   }
   let groups: Group[];
   try {
-    groups = await getGroups();
+    const groupsResponse = await getGroups();
+
+    if (groupsResponse.error) {
+      showAlert(groupsResponse);
+      return;
+    }
+
+    groups = groupsResponse.data;
   } catch {
     console.warn("Unable sync activity progress, could not fetch groups");
     return;
