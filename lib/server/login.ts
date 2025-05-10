@@ -31,5 +31,5 @@ export async function verify(): Promise<boolean> {
     searchParams: {},
     requestBody: undefined,
   });
-  return response === null;
+  return response.error === null;
 }

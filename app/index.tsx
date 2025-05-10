@@ -17,6 +17,7 @@ export default function Authentication() {
       const token = await getToken();
       if (token) {
         const isValid = await verify();
+
         if (isValid) {
           const userResponse = await getUser();
 

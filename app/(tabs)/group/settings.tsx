@@ -289,7 +289,7 @@ export default function GroupSettings() {
       : Object.values(Metric);
 
     return supportedMetrics.map((value) => ({
-      label: prettyName(value),
+      label: `${prettyName(value)} ${metricMetadata[value].unit ? `(${metricMetadata[value].unit})` : ""}`,
       value,
     }));
   }, [activityValue]);
@@ -499,7 +499,10 @@ export default function GroupSettings() {
               setMetricValue(item);
             }}
             data={metrics}
-            value={{ label: prettyName(metricValue), value: metricValue }}
+            value={{
+              label: prettyName(metricValue),
+              value: metricValue,
+            }}
           />
           <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Amount

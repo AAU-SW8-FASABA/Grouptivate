@@ -22,6 +22,8 @@ export async function SetupActivitySync(userId: string) {
 }
 
 export async function SyncActivity(userId: string, groups?: Group[]) {
+  if (AppState.currentState !== "active") return;
+
   const healthAdapter = await getHealthAdapter();
   if (!healthAdapter) {
     console.log(

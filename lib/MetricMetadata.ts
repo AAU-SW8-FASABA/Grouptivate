@@ -8,7 +8,7 @@ export type MetricMetadata = {
 };
 
 export const metricMetadata: Record<Metric, MetricMetadata> = {
-  duration: { unit: "min" },
+  duration: { unit: "sec" },
   distance: { unit: "m" },
   count: { unit: "" },
   calories: { unit: "kcal" },

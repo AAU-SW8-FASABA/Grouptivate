@@ -17,7 +17,7 @@ export type FetchReturnType<T> =
   | ErrorMessage
   | {
       data: T;
-      error: undefined;
+      error: null;
     };
 
 function getErrorMessage(error: unknown) {
@@ -150,5 +150,5 @@ export async function fetchApi<
     };
   }
 
-  return null;
+  return { error: null, data: null };
 }
