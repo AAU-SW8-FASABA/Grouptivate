@@ -179,11 +179,25 @@ export default function Group() {
               Group Goals
             </Text>
             {groupGoals.map((goal) => (
-              <CollapsibleContainer key={goal.goalId} style={{ marginTop: 10 }}>
+              <CollapsibleContainer
+                key={goal.goalId}
+                style={{ marginTop: 10 }}
+                arrowStyle={styles.box}
+              >
                 <>
-                  <Text style={[globalStyles.title]}>{goal.title}</Text>
                   <Text
-                    style={[globalStyles.bodyText, { textAlign: "center" }]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={[globalStyles.title, styles.box]}
+                  >
+                    {goal.title}
+                  </Text>
+                  <Text
+                    style={[
+                      globalStyles.bodyText,
+                      { textAlign: "center" },
+                      styles.box,
+                    ]}
                   >
                     {Object.entries(goal.progress).reduce(
                       (sum, [key, val]) => sum + val,
@@ -239,8 +253,6 @@ export default function Group() {
 
 const styles = StyleSheet.create({
   box: {
-    display: "flex",
-    justifyContent: "center",
     flex: 1,
   },
 });

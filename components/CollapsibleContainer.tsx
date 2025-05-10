@@ -5,18 +5,19 @@ import {
   TouchableOpacity,
   StyleProp,
   ViewStyle,
+  TextStyle,
 } from "react-native";
 
 import { HR } from "./HR";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 
-export function CollapsibleContainer({
-  children,
-  style,
-}: {
+interface Props {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-}) {
+  arrowStyle?: StyleProp<TextStyle>;
+}
+
+export function CollapsibleContainer({ children, style, arrowStyle }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const childArray = React.Children.toArray(children);
 
@@ -41,10 +42,14 @@ export function CollapsibleContainer({
                 name={"chevron-down"}
                 size={20}
                 color="black"
-                style={{
-                  position: "relative",
-                  transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
-                }}
+                style={[
+                  {
+                    position: "relative",
+                    transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
+                    textAlign: "right",
+                  },
+                  arrowStyle,
+                ]}
               />
             )}
           </View>
