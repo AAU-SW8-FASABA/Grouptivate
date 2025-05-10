@@ -628,7 +628,7 @@ export default function GroupSettings() {
 
         <Collapsible title="Individual Goals">
           {members.map(([memberId, memberName], memberIndex) => (
-            <CollapsibleContainer key={memberId}>
+            <CollapsibleContainer key={memberId} style={{ marginBottom: 8 }}>
               <>
                 <Image
                   source={getAske({ userId: memberId, name: memberName })}
