@@ -175,13 +175,11 @@ export default function Group() {
           </View>
 
           <View style={globalStyles.section}>
-            <Text style={[globalStyles.sectionHeader, { marginTop: 6 }]}>
-              Group Goals
-            </Text>
+            <Text style={[globalStyles.sectionHeader]}>Group Goals</Text>
             {groupGoals.map((goal) => (
               <CollapsibleContainer
                 key={goal.goalId}
-                style={{ marginTop: 10 }}
+                style={{ marginBottom: 8 }}
                 arrowStyle={styles.box}
               >
                 <>

@@ -31,7 +31,7 @@ export function SettingsGoal({
   onRemove,
 }: Props) {
   return (
-    <View style={[globalStyles.row, { marginTop: 10 }, style]}>
+    <View style={[globalStyles.row, { marginBottom: 8 }, style]}>
       <Container style={[globalStyles.row, { padding }]}>
         <Text numberOfLines={1} style={globalStyles.smallTitle}>
           {prettyName(activity)}

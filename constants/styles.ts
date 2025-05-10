@@ -25,6 +25,7 @@ const globalStyles = StyleSheet.create({
   },
 
   section: {
+    marginTop: 10,
     paddingTop: 0,
   },
 
