@@ -71,19 +71,40 @@ export async function fetchApi<
     ? InferInput<R>
     : undefined;
 }) {
+  // Initialize variables
   const newUrl = new URL(path, url);
+  const headers: Record<string, string> = {};
+
+  // Parse request body
+  if (schema.requestBody) {
+    const parsedRequestBody = safeParse(schema.requestBody, requestBody);
+
+    if (!parsedRequestBody.success) {
+      return {
+        error: ErrorType.InputError,
+        message: parsedRequestBody.issues.join(", "),
+      };
+    }
+  }
+
+  // Set search params
+  // TODO: Parse
   for (const [key, value] of Object.entries(searchParams)) {
     newUrl.searchParams.set(key, JSON.stringify(value));
   }
-  const headers: Record<string, string> = {};
+
+  // Set Content-Type
   if (schema.requestBody) {
     headers["Content-Type"] = "application/json;charset=UTF-8";
   }
+
+  // Set token
   const token = await getToken();
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
+  // Perform request
   let response;
   try {
     response = await fetch(newUrl, {
@@ -95,6 +116,7 @@ export async function fetchApi<
     return { error: ErrorType.NetworkError, message: getErrorMessage(error) };
   }
 
+  // Parse response
   try {
     if (!response.ok) {
       const parsedError = safeParse(ErrorMessageSchema, await response.json());

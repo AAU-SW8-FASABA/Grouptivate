@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
-import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { Back } from "@/components/Back";

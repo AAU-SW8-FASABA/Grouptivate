@@ -1,4 +1,4 @@
-import { useEffect, useState, Suspense, useCallback } from "react";
+import { useState, Suspense, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -6,7 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 import { useUser } from "@/lib/states/userState";
