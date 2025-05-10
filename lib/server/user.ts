@@ -7,27 +7,21 @@ import {
 } from "@/lib/API/schemas/User";
 import type { Password } from "../API/schemas/Password";
 
-export async function create(
-  name: User["name"],
-  password: Password,
-): Promise<User | false> {
-  let response;
-  try {
-    response = await fetchApi({
-      path: "/user",
-      method: "POST",
-      schema: UserCreateRequestSchema,
-      searchParams: {},
-      requestBody: { name, password },
-    });
-    await setToken(response.token);
-    return { name, groups: [], goals: [], userId: response.userId };
-  } catch {
-    return false;
-  }
+export async function create(name: User["name"], password: Password) {
+  const response = await fetchApi({
+    path: "/user",
+    method: "POST",
+    schema: UserCreateRequestSchema,
+    searchParams: {},
+    requestBody: { name, password },
+  });
+
+  if (!response.error) await setToken(response.data.token);
+
+  return response;
 }
 
-export async function get(): Promise<User> {
+export async function get() {
   const response = await fetchApi({
     path: "/user",
     method: "GET",
@@ -35,5 +29,11 @@ export async function get(): Promise<User> {
     searchParams: {},
     requestBody: undefined,
   });
-  return response;
+
+  if (response.error) return response;
+
+  return {
+    data: response.data,
+    error: response.error,
+  };
 }

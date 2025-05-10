@@ -1,7 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
+import globalStyles from "@/constants/styles";
 
 export function Back() {
   const router = useRouter();
@@ -19,14 +20,7 @@ export function Back() {
         color="white"
         style={{ marginLeft: 10, marginRight: 5 }}
       />
-      <Text style={[styles.text, { color: "white", fontSize: 20 }]}>Back</Text>
+      <Text style={[globalStyles.smallTitle, { color: "white" }]}>Back</Text>
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
-});

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   StyleProp,
@@ -9,10 +8,11 @@ import {
   Image,
 } from "react-native";
 
-import { Container } from "./Container";
-import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
+import { Container } from "../../Container";
+import { IconSource, UniversalIcon } from "../../ui/UniversalIcon";
 import { User } from "@/lib/API/schemas/User";
-import { defaultAske, getAske } from "@/lib/aske";
+import { defaultAske, getAske } from "@/lib/Aske";
+import globalStyles from "@/constants/styles";
 
 interface Props {
   user: Pick<User, "userId" | "name">;
@@ -27,37 +27,32 @@ export function SettingsMember({ user, style, onRemove }: Props) {
   }, [user]);
 
   return (
-    <View style={[styles.row, style]}>
-      <Container style={{ flexDirection: "row" }}>
+    <View style={[globalStyles.row, { marginBottom: 8 }, style]}>
+      <Container style={{ flexDirection: "row", alignItems: "center" }}>
         <Image
           source={image}
           style={{ width: 32, height: 32, borderRadius: 100 }}
         />
-        <Text numberOfLines={1} style={{ ...styles.text, marginLeft: 10 }}>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[globalStyles.smallTitle, { marginLeft: 10 }]}
+        >
           {user.name}
         </Text>
       </Container>
-      <TouchableOpacity testID="remove-user-button" onPress={onRemove}>
+      <TouchableOpacity
+        style={{ marginLeft: 8 }}
+        testID="remove-user-button"
+        onPress={onRemove}
+      >
         <UniversalIcon
           source={IconSource.FontAwesome6}
           name="circle-minus"
           size={24}
-          style={{ marginTop: 10, marginLeft: 5 }}
+          style={{ position: "relative" }}
         />
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-    fontSize: 20,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-});

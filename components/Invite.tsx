@@ -1,4 +1,5 @@
 import { Container } from "@/components/Container";
+import globalStyles from "@/constants/styles";
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 
 export enum InviteAnswer {
@@ -17,10 +18,12 @@ export function Invite({ inviterName, groupName, handleInvite }: InviteProps) {
     <Container style={{ marginBottom: 8 }}>
       <View style={styles.column}>
         <View>
-          <Text style={[styles.text, { fontSize: 12, color: "#4A4A4A" }]}>
+          <Text
+            style={[globalStyles.textStyle, { fontSize: 12, color: "#4A4A4A" }]}
+          >
             {inviterName} invited you to:
           </Text>
-          <Text style={[styles.text, { fontSize: 24 }]}>{groupName}</Text>
+          <Text style={globalStyles.title}>{groupName}</Text>
         </View>
         <View style={{ width: "50%" }}>
           <TouchableOpacity
@@ -30,7 +33,7 @@ export function Invite({ inviterName, groupName, handleInvite }: InviteProps) {
           >
             <Text
               style={[
-                styles.text,
+                globalStyles.smallTitle,
                 styles.button,
                 { backgroundColor: "#57A773", color: "white" },
               ]}
@@ -44,7 +47,7 @@ export function Invite({ inviterName, groupName, handleInvite }: InviteProps) {
           >
             <Text
               style={[
-                styles.text,
+                globalStyles.smallTitle,
                 styles.button,
                 { backgroundColor: "#D0312D", color: "white" },
               ]}
@@ -59,10 +62,6 @@ export function Invite({ inviterName, groupName, handleInvite }: InviteProps) {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
   center: {
     display: "flex",
     alignItems: "center",
@@ -73,10 +72,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
   },
-  profileName: {
-    fontSize: 24,
-    marginTop: 20,
-  },
   column: {
     display: "flex",
     flexDirection: "row",
@@ -84,7 +79,6 @@ const styles = StyleSheet.create({
   },
   button: {
     textAlign: "center",
-    fontSize: 20,
     borderRadius: 5,
     height: 32,
     lineHeight: 32,

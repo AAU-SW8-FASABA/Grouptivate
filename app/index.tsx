@@ -5,23 +5,28 @@ import { verify } from "@/lib/server/login";
 import { useEffect } from "react";
 import { useUser } from "@/lib/states/userState";
 import { get as getUser } from "@/lib/server/user";
-import { SetupActivitySync } from "@/lib/ActivitySync";
+import globalStyles from "@/constants/styles";
+import { showAlert } from "@/lib/Alert";
 
 export default function Authentication() {
   const router = useRouter();
   const { setUser } = useUser();
-
-  SetupActivitySync();
 
   useEffect(() => {
     async function fetchData() {
       const token = await getToken();
       if (token) {
         const isValid = await verify();
+
         if (isValid) {
-          const theUser = await getUser();
-          console.log("SETTING THE USER!", theUser);
-          setUser(theUser);
+          const userResponse = await getUser();
+
+          if (userResponse.error) {
+            showAlert(userResponse);
+            return;
+          }
+
+          setUser(userResponse.data);
           router.push("/(tabs)");
         } else {
           await deleteToken();
@@ -31,15 +36,15 @@ export default function Authentication() {
     fetchData();
   }, [router, setUser]);
 
-  //TODO: Splash screen?
-
   return (
     <>
       <View style={styles.header}>
-        <Text style={[styles.text, { fontSize: 40, color: "white" }]}>
+        <Text
+          style={[globalStyles.textStyle, { fontSize: 40, color: "white" }]}
+        >
           Grouptivate
         </Text>
-        <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
+        <Text style={[globalStyles.smallTitle, { color: "white" }]}>
           Cooperation based exercising
         </Text>
       </View>
@@ -48,7 +53,7 @@ export default function Authentication() {
           style={[styles.button, { backgroundColor: "#4062BB" }]}
           onPress={() => router.push("/signin")}
         >
-          <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
+          <Text style={[globalStyles.smallTitle, { color: "white" }]}>
             Sign in
           </Text>
         </TouchableOpacity>
@@ -56,9 +61,7 @@ export default function Authentication() {
           style={[styles.button, { backgroundColor: "#D9D9D9" }]}
           onPress={() => router.push("/signup")}
         >
-          <Text style={[styles.text, { fontSize: 20, color: "black" }]}>
-            Sign up
-          </Text>
+          <Text style={globalStyles.smallTitle}>Sign up</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -66,10 +69,6 @@ export default function Authentication() {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
   header: {
     alignItems: "center",
     backgroundColor: "#1E4E8C",

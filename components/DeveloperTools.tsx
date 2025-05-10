@@ -47,14 +47,17 @@ export function DeveloperTools() {
   return __DEV__ || Constants?.expoConfig?.extra?.endtoend ? (
     <>
       <Text
-        style={[styles.text, { fontSize: 32, marginTop: 50, marginBottom: 10 }]}
+        style={[
+          globalStyles.textStyle,
+          { fontSize: 32, marginTop: 50, marginBottom: 10 },
+        ]}
       >
         Developer tools
       </Text>
       <View>
         <Container>
           <Text style={[styles.headerText]}>Perform activity</Text>
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.textStyle, { marginTop: 10 }]}>
             Activity
           </Text>
           <Dropdown
@@ -62,9 +65,9 @@ export function DeveloperTools() {
               styles.dropdown,
               isActivityFocus && { borderColor: "blue" },
             ]}
-            placeholderStyle={[styles.text, { fontSize: 20 }]}
-            selectedTextStyle={[styles.text, { fontSize: 20 }]}
-            itemTextStyle={[styles.text, { fontSize: 20 }]}
+            placeholderStyle={globalStyles.smallTitle}
+            selectedTextStyle={globalStyles.smallTitle}
+            itemTextStyle={globalStyles.smallTitle}
             data={activities}
             labelField="label"
             valueField="value"
@@ -89,14 +92,14 @@ export function DeveloperTools() {
               />
             )}
           />
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Metric
           </Text>
           <Dropdown
             style={[styles.dropdown, isMetricFocus && { borderColor: "blue" }]}
-            placeholderStyle={[styles.text, { fontSize: 20 }]}
-            selectedTextStyle={[styles.text, { fontSize: 20 }]}
-            itemTextStyle={[styles.text, { fontSize: 20 }]}
+            placeholderStyle={globalStyles.smallTitle}
+            selectedTextStyle={globalStyles.smallTitle}
+            itemTextStyle={globalStyles.smallTitle}
             data={metrics}
             labelField="label"
             valueField="value"
@@ -121,7 +124,7 @@ export function DeveloperTools() {
               />
             )}
           />
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Amount
           </Text>
           <TextInput
@@ -179,7 +182,6 @@ export function DeveloperTools() {
             >
               <Text
                 style={[
-                  styles.text,
                   styles.button,
                   { backgroundColor: "#57A773", color: "white" },
                 ]}
@@ -196,14 +198,8 @@ export function DeveloperTools() {
 
 const styles = StyleSheet.create({
   headerText: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-    fontSize: 20,
+    ...globalStyles.smallTitle,
     textAlign: "center",
-  },
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
   },
   row: {
     flexDirection: "row",
@@ -211,13 +207,13 @@ const styles = StyleSheet.create({
   },
   button: {
     textAlign: "center",
-    fontSize: 20,
+    ...globalStyles.smallTitle,
     borderRadius: 5,
     height: 32,
     lineHeight: 32,
   },
   buttonText: {
-    fontSize: 20,
+    ...globalStyles.smallTitle,
     marginLeft: 5,
   },
   input: {

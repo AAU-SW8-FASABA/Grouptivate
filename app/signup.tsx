@@ -10,7 +10,7 @@ import { useRouter } from "expo-router";
 import globalStyles from "@/constants/styles";
 import { create, get as getUser } from "@/lib/server/user";
 import { useUser } from "@/lib/states/userState";
-import { User } from "@/lib/API/schemas/User";
+import { showAlert } from "@/lib/Alert";
 
 export default function Signup() {
   const router = useRouter();
@@ -21,37 +21,36 @@ export default function Signup() {
   async function createAccount() {
     // TODO: Input Validation
 
-    const success = await create(username, password);
-    if (!success) {
-      // TODO: Handle error
-      console.log("Error creating account");
+    const response = await create(username, password);
+    if (response.error) {
+      showAlert(response);
       return;
     }
 
-    let theUser: User = await getUser();
-    setUser(theUser);
+    const userResponse = await getUser();
+    if (userResponse.error) {
+      showAlert(userResponse);
+      return;
+    }
+
+    setUser(userResponse.data);
     router.push("/(tabs)");
   }
 
   return (
     <>
       <View style={styles.header}>
-        <Text style={[styles.text, { fontSize: 40, color: "black" }]}>
+        <Text
+          style={[globalStyles.textStyle, { fontSize: 40, color: "black" }]}
+        >
           Create account
         </Text>
-        <Text
-          style={[
-            styles.text,
-            { fontSize: 20, color: "black", textAlign: "center" },
-          ]}
-        >
+        <Text style={[globalStyles.smallTitle, { textAlign: "center" }]}>
           To create an account you must select a unique username
         </Text>
       </View>
       <View style={styles.inputView}>
-        <Text style={[styles.text, { fontSize: 20, color: "black" }]}>
-          Username
-        </Text>
+        <Text style={globalStyles.smallTitle}>Username</Text>
         <TextInput
           placeholder="Username"
           value={username}
@@ -61,9 +60,7 @@ export default function Signup() {
           onChangeText={(text) => setUsername(text)}
           style={globalStyles.inputField}
         />
-        <Text
-          style={[styles.text, { fontSize: 20, color: "black", marginTop: 10 }]}
-        >
+        <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
           Password
         </Text>
         <TextInput
@@ -82,7 +79,7 @@ export default function Signup() {
           style={[styles.button, { backgroundColor: "#4062BB" }]}
           onPress={() => createAccount()}
         >
-          <Text style={[styles.text, { fontSize: 20, color: "white" }]}>
+          <Text style={[globalStyles.smallTitle, { color: "white" }]}>
             Create account
           </Text>
         </TouchableOpacity>
@@ -90,7 +87,7 @@ export default function Signup() {
           style={[styles.button, { backgroundColor: "#D9D9D9" }]}
           onPress={() => router.back()}
         >
-          <Text style={[styles.text, { fontSize: 20, color: "black" }]}>
+          <Text style={[globalStyles.smallTitle, { color: "black" }]}>
             Back
           </Text>
         </TouchableOpacity>
@@ -100,10 +97,6 @@ export default function Signup() {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
   header: {
     alignItems: "center",
     marginTop: 175,

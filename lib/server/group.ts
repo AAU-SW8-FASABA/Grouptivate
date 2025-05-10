@@ -3,14 +3,14 @@ import {
   GroupCreateRequestSchema,
   GroupGetRequestSchema,
 } from "@/lib/API/schemas/Group";
-import { fetchApi } from "./fetch";
+import { fetchApi, FetchReturnType } from "./fetch";
 import { User } from "../API/schemas/User";
 
 export async function create(
   user: Pick<User, "name" | "userId">,
   groupName: Group["groupName"],
   interval: Group["interval"],
-): Promise<Group> {
+): Promise<FetchReturnType<Group>> {
   const response = await fetchApi({
     path: "/group",
     method: "POST",
@@ -21,19 +21,27 @@ export async function create(
       interval,
     },
   });
+
+  if (response.error) return response;
+
   return {
-    groupName,
-    interval,
-    users: {
-      [user.userId]: user.name,
+    data: {
+      groupName,
+      groupId: response.data.groupId,
+      interval,
+      users: {
+        [user.userId]: user.name,
+      },
+      goals: [],
+      streak: 0,
     },
-    goals: [],
-    streak: 0,
-    ...response,
+    error: response.error,
   };
 }
 
-export async function get(groupId: Group["groupId"]): Promise<Group> {
+export async function get(
+  groupId: Group["groupId"],
+): Promise<FetchReturnType<Group>> {
   const response = await fetchApi({
     path: "/group",
     method: "GET",
@@ -41,8 +49,14 @@ export async function get(groupId: Group["groupId"]): Promise<Group> {
     searchParams: { groupId },
     requestBody: undefined,
   });
+
+  if (response.error) return response;
+
   return {
-    groupId,
-    ...response,
+    data: {
+      groupId,
+      ...response.data,
+    },
+    error: response.error,
   };
 }

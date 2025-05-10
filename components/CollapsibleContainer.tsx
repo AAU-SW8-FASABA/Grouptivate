@@ -5,56 +5,73 @@ import {
   TouchableOpacity,
   StyleProp,
   ViewStyle,
+  TextStyle,
 } from "react-native";
 
 import { HR } from "./HR";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 
-export function CollapsibleContainer({
-  children,
-  style,
-  username,
-  idName,
-}: {
+interface Props {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  username?: string;
-  idName?: string;
-}) {
+  arrowStyle?: StyleProp<TextStyle>;
+}
+
+export function CollapsibleContainer({ children, style, arrowStyle }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [child1, child2] = React.Children.toArray(children);
+  const childArray = React.Children.toArray(children);
+
+  if (childArray.length < 1) return;
+
+  const topElements = childArray.slice(0, -1);
+  const contentElement =
+    childArray.length > 1 ? childArray[childArray.length - 1] : undefined;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TouchableOpacity
         testID="open-collapsible-container"
-        style={styles.collapse}
         onPress={() => setIsOpen((value) => !value)}
       >
-        <UniversalIcon
-          source={IconSource.FontAwesome6}
-          name={"chevron-down"}
-          size={20}
-          color="black"
-          style={{
-            transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
-            marginTop: 5,
-            marginRight: 5,
-          }}
-        />
+        {topElements.map((elem, index) => (
+          <View key={index} style={styles.top}>
+            {elem}
+            {index === 0 && (
+              <UniversalIcon
+                source={IconSource.FontAwesome6}
+                name={"chevron-down"}
+                size={20}
+                color="black"
+                style={[
+                  {
+                    position: "relative",
+                    transform: [{ rotate: isOpen ? "180deg" : "0deg" }],
+                    textAlign: "right",
+                  },
+                  arrowStyle,
+                ]}
+              />
+            )}
+          </View>
+        ))}
+        {isOpen && (
+          <>
+            <HR />
+            <View>{contentElement}</View>
+          </>
+        )}
       </TouchableOpacity>
-      {child1}
-      {isOpen && (
-        <>
-          <HR />
-          <View>{child2}</View>
-        </>
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  top: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   container: {
     flexDirection: "column",
     backgroundColor: "#EFEFF3",
@@ -62,12 +79,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     flex: 1,
-    marginBottom: 8,
-  },
-  collapse: {
-    position: "absolute",
-    top: 8,
-    right: 10,
-    zIndex: 99,
   },
 });

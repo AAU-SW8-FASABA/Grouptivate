@@ -8,9 +8,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import { Container } from "./Container";
-import { IconSource, UniversalIcon } from "./ui/UniversalIcon";
+import { Container } from "../../Container";
+import { IconSource, UniversalIcon } from "../../ui/UniversalIcon";
 import { prettyName } from "@/lib/PrettyName";
+import globalStyles from "@/constants/styles";
 
 interface Props {
   activity: string;
@@ -30,25 +31,27 @@ export function SettingsGoal({
   onRemove,
 }: Props) {
   return (
-    <View style={[styles.row, { marginBottom: 8 }]}>
-      <Container style={{ padding }}>
-        <View style={styles.row}>
-          <Text numberOfLines={1} style={[styles.text, { fontSize: 20 }]}>
-            {prettyName(activity)}
+    <View style={[globalStyles.row, { marginBottom: 8 }, style]}>
+      <Container style={[globalStyles.row, { padding }]}>
+        <Text numberOfLines={1} style={globalStyles.smallTitle}>
+          {prettyName(activity)}
+        </Text>
+        <View style={styles.targetContainer}>
+          <Text style={globalStyles.bodyText}>
+            {target} {unit}
           </Text>
-          <View style={styles.targetContainer}>
-            <Text style={[styles.text, { fontSize: 16 }]}>
-              {target} {unit}
-            </Text>
-          </View>
         </View>
       </Container>
-      <TouchableOpacity testID="delete-goal" onPress={onRemove}>
+      <TouchableOpacity
+        testID="delete-goal"
+        style={{ marginLeft: 8 }}
+        onPress={onRemove}
+      >
         <UniversalIcon
           source={IconSource.FontAwesome6}
           name="circle-minus"
           size={24}
-          style={{ marginTop: 10, marginLeft: 5 }}
+          style={{ position: "relative" }}
         />
       </TouchableOpacity>
     </View>
@@ -56,15 +59,6 @@ export function SettingsGoal({
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   targetContainer: {
     backgroundColor: "#D9D9D9",
     borderRadius: 5,

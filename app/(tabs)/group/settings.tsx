@@ -8,17 +8,16 @@ import {
 } from "react-native";
 import { useEffect, useMemo, useState } from "react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Dropdown } from "react-native-element-dropdown";
 
 import { CustomModal, modalMode } from "@/components/CustomModal";
 import { Back } from "@/components/Back";
 import { Collapsible } from "@/components/Collapsible";
-import { SettingsMember } from "@/components/SettingsMember";
-import { SettingsGoal } from "@/components/SettingsGoal";
+import { SettingsMember } from "@/components/group/settings/SettingsMember";
+import { SettingsGoal } from "@/components/group/settings/SettingsGoal";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import globalStyles from "@/constants/styles";
-import { CustomScrollView } from "@/components/CusomScrollView";
+import { CustomScrollView } from "@/components/CustomScrollView";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { prettyName } from "@/lib/PrettyName";
 import { Metric } from "@/lib/API/schemas/Metric";
@@ -29,18 +28,23 @@ import {
 import { Group } from "@/lib/API/schemas/Group";
 import { useUser } from "@/lib/states/userState";
 import { Goal, GoalType } from "@/lib/API/schemas/Goal";
-import { getAske } from "@/lib/aske";
+import { getAske } from "@/lib/Aske";
 import { useGroups } from "@/lib/states/groupsState";
 import { create as createInvite } from "@/lib/server/group/invite";
 import { remove } from "@/lib/server/group/remove";
 import { _delete, create } from "@/lib/server/group/goal";
 import { metricMetadata } from "@/lib/MetricMetadata";
+import DropdownComponent, {
+  DropdownItem,
+} from "@/components/DropdownComponent";
+import { ErrorType, showAlert } from "@/lib/Alert";
+import { SyncActivity } from "@/lib/ActivitySync";
 
 export default function GroupSettings() {
   const { id } = useLocalSearchParams();
   const { user } = useUser();
   const groupId = id?.toString() || "";
-  const { contextGroups } = useGroups();
+  const { contextGroups, setContextGroups } = useGroups();
   const theGroup = contextGroups.get(groupId);
   const router = useRouter();
 
@@ -84,28 +88,21 @@ export default function GroupSettings() {
     memberIndex: -1,
   });
 
-  // function updateGroup() {
-  //   if (!group) return;
-
-  //   const updatedGroup: Group = {
-  //     ...group,
-  //     goals: [...memberGoals, ...groupGoals],
-  //   };
-  //   contextGroups.set(groupId, updatedGroup);
-  //   setGroup(updatedGroup);
-  // }
-
   async function inviteMember() {
     if (newMemberName.trim() !== "") {
-      try {
-        await createInvite(groupId, newMemberName);
-        // After inviting, we don't need to update local state as the group
-        // should be refreshed from the server later
-      } catch (e) {
-        console.log(e);
-      }
+      const inviteResponse = await createInvite(groupId, newMemberName);
+
+      // Show alert if invite failed
+      if (!inviteResponse) showAlert(inviteResponse);
+
       setNewMemberName("");
       setInviteModalVisibility(false);
+    } else {
+      // Inform the user that they must provide a username for the invite
+      showAlert({
+        error: ErrorType.InputError,
+        message: "A username is required to send an invitation",
+      });
     }
   }
 
@@ -153,7 +150,22 @@ export default function GroupSettings() {
       itemToDelete.index >= 0
     ) {
       try {
-        await remove(itemToDelete.id, groupId);
+        const removeResponse = await remove(itemToDelete.id, groupId);
+
+        if (removeResponse?.error) {
+          showAlert(removeResponse);
+
+          return;
+        }
+
+        // Go to Home if the user removed themselves
+        if (itemToDelete.id === user.userId) {
+          router.push({
+            pathname: "/",
+          });
+          return;
+        }
+
         // Update the local state immediately
         const newGroup = { ...group };
         delete newGroup.users[itemToDelete.id];
@@ -168,7 +180,8 @@ export default function GroupSettings() {
         newGroup.goals = updatedGoals;
 
         // Update context groups
-        contextGroups.set(groupId, newGroup);
+        const mutatedGroups = contextGroups.set(groupId, newGroup);
+        setContextGroups(mutatedGroups);
 
         // Update local state
         setGroup(newGroup);
@@ -180,11 +193,6 @@ export default function GroupSettings() {
               goal.progress[itemToDelete.id] !== 0,
           ),
         );
-        if (itemToDelete.id === user.userId) {
-          router.push({
-            pathname: "/",
-          });
-        }
       } catch (e) {
         console.log("Error removing member:", e);
       }
@@ -193,7 +201,12 @@ export default function GroupSettings() {
       itemToDelete.index >= 0
     ) {
       try {
-        await _delete(itemToDelete.id);
+        const deleteResponse = await _delete(itemToDelete.id);
+
+        if (deleteResponse.error) {
+          showAlert(deleteResponse);
+          return;
+        }
 
         // Update group goals in local state
         const updatedGroupGoals = groupGoals.filter(
@@ -213,15 +226,20 @@ export default function GroupSettings() {
               ),
             ],
           };
-          contextGroups.set(groupId, updatedGroup);
-          setGroup(updatedGroup);
+          const mutatedGroups = contextGroups.set(groupId, updatedGroup);
+          setContextGroups(mutatedGroups);
         }
       } catch (e) {
         console.log("Error deleting group goal:", e);
       }
     } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
       try {
-        await _delete(itemToDelete.id);
+        const deleteResponse = await _delete(itemToDelete.id);
+
+        if (deleteResponse.error) {
+          showAlert(deleteResponse);
+          return;
+        }
 
         // Update member goals in local state
         const updatedMemberGoals = memberGoals.filter(
@@ -237,14 +255,15 @@ export default function GroupSettings() {
               ...group.goals.filter((goal) => goal.goalId !== itemToDelete.id),
             ],
           };
-          contextGroups.set(groupId, updatedGroup);
+          const mutatedGroups = contextGroups.set(groupId, updatedGroup);
+          setContextGroups(mutatedGroups);
           setGroup(updatedGroup);
         }
       } catch (e) {
         console.log("Error deleting individual goal:", e);
       }
     }
-
+    SyncActivity(user.userId);
     setDeleteModalVisibility(false);
   }
 
@@ -254,7 +273,7 @@ export default function GroupSettings() {
   );
   const [selectedMemberIndex, setSelectedMemberIndex] = useState(-1);
 
-  const activities = [
+  const activities: DropdownItem<SportActivity | OtherActivity>[] = [
     ...Object.values(SportActivity),
     ...Object.values(OtherActivity),
   ].map((value) => ({ label: prettyName(value), value }));
@@ -262,7 +281,6 @@ export default function GroupSettings() {
   const [activityValue, setActivityValue] = useState<
     SportActivity | OtherActivity | null
   >(null);
-  const [isActivityFocus, setIsActivityFocus] = useState(false);
 
   const metrics = useMemo(() => {
     const supportedMetrics = activityValue
@@ -271,13 +289,12 @@ export default function GroupSettings() {
       : Object.values(Metric);
 
     return supportedMetrics.map((value) => ({
-      label: prettyName(value),
+      label: `${prettyName(value)} ${metricMetadata[value].unit ? `(${metricMetadata[value].unit})` : ""}`,
       value,
     }));
   }, [activityValue]);
 
   const [metricValue, setMetricValue] = useState<Metric>(Metric["Count"]);
-  const [isMetricFocus, setIsMetricFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
   const [titleValue, setTitleValue] = useState("");
 
@@ -303,19 +320,41 @@ export default function GroupSettings() {
   async function createGoal() {
     if (!group || members.length === 0) return;
 
+    if (!activityValue) {
+      showAlert({
+        error: ErrorType.InputError,
+        message: "You must select an activity",
+      });
+      return;
+    }
+
+    if (amountValue <= 0) {
+      showAlert({
+        error: ErrorType.InputError,
+        message: "You must input a positive target value",
+      });
+      return;
+    }
+
     const newGoal: Omit<Goal, "goalId"> = {
-      activity: activityValue || OtherActivity.Steps,
-      target: amountValue || 1,
+      activity: activityValue,
+      target: amountValue,
       metric: metricValue,
       type: currentGoalType,
-      title: titleValue || "Goal",
+      title: titleValue || prettyName(activityValue),
       progress: {},
     };
 
     try {
       if (currentGoalType === GoalType.Group) {
         const response = await create(members[0][0], groupId, newGoal);
-        setGroupGoals((prev) => [...prev, response]);
+
+        if (response.error) {
+          showAlert(response);
+          return;
+        }
+
+        setGroupGoals((prev) => [...prev, response.data]);
 
         // Update group with the new goal
         if (group) {
@@ -324,7 +363,7 @@ export default function GroupSettings() {
             goals: [
               ...group.goals.filter((g) => g.type !== GoalType.Group),
               ...groupGoals,
-              response,
+              response.data,
             ],
           };
           contextGroups.set(groupId, updatedGroup);
@@ -339,7 +378,13 @@ export default function GroupSettings() {
           groupId,
           newGoal,
         );
-        setMemberGoals((prev) => [...prev, response]);
+
+        if (response.error) {
+          showAlert(response);
+          return;
+        }
+
+        setMemberGoals((prev) => [...prev, response.data]);
 
         if (group) {
           const updatedGroup = {
@@ -347,7 +392,7 @@ export default function GroupSettings() {
             goals: [
               ...group.goals.filter((g) => g.type !== GoalType.Individual),
               ...memberGoals,
-              response,
+              response.data,
             ],
           };
           contextGroups.set(groupId, updatedGroup);
@@ -409,7 +454,7 @@ export default function GroupSettings() {
             { justifyContent: "center", alignItems: "center" },
           ]}
         >
-          <Text style={styles.text}>Loading group settings...</Text>
+          <Text style={globalStyles.textStyle}>Loading group settings...</Text>
         </View>
       </>
     );
@@ -432,74 +477,34 @@ export default function GroupSettings() {
           setIsVisible={setGoalModalVisibility}
           callback={createGoal}
         >
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Activity
           </Text>
-          <Dropdown
-            style={[
-              styles.dropdown,
-              isActivityFocus && { borderColor: "blue" },
-            ]}
-            placeholderStyle={[styles.text, { fontSize: 20 }]}
-            selectedTextStyle={[styles.text, { fontSize: 20 }]}
-            itemTextStyle={[styles.text, { fontSize: 20 }]}
-            data={activities}
-            labelField="label"
-            valueField="value"
-            placeholder="Select"
-            onFocus={() => setIsActivityFocus(true)}
-            onBlur={() => setIsActivityFocus(false)}
-            value={activityValue}
-            onChange={(item) => {
-              setActivityValue(item.value);
-              setIsActivityFocus(false);
+          <DropdownComponent<SportActivity | OtherActivity>
+            onChangeCallBack={(item) => {
+              setActivityValue(item);
             }}
-            renderRightIcon={() => (
-              <UniversalIcon
-                source={IconSource.FontAwesome6}
-                name="chevron-down"
-                size={20}
-                color="black"
-                style={{
-                  transform: [{ rotate: isMetricFocus ? "180deg" : "0deg" }],
-                  marginRight: 5,
-                }}
-              />
-            )}
+            data={activities}
+            value={
+              activityValue
+                ? { label: prettyName(activityValue), value: activityValue }
+                : null
+            }
           />
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Metric
           </Text>
-          <Dropdown
-            style={[styles.dropdown, isMetricFocus && { borderColor: "blue" }]}
-            placeholderStyle={[styles.text, { fontSize: 20 }]}
-            selectedTextStyle={[styles.text, { fontSize: 20 }]}
-            itemTextStyle={[styles.text, { fontSize: 20 }]}
-            data={metrics}
-            labelField="label"
-            valueField="value"
-            placeholder="Select"
-            onFocus={() => setIsMetricFocus(true)}
-            onBlur={() => setIsMetricFocus(false)}
-            value={metricValue}
-            onChange={(item) => {
-              setMetricValue(item.value);
-              setIsMetricFocus(false);
+          <DropdownComponent<Metric>
+            onChangeCallBack={(item) => {
+              setMetricValue(item);
             }}
-            renderRightIcon={() => (
-              <UniversalIcon
-                source={IconSource.FontAwesome6}
-                name="chevron-down"
-                size={20}
-                color="black"
-                style={{
-                  transform: [{ rotate: isMetricFocus ? "180deg" : "0deg" }],
-                  marginRight: 5,
-                }}
-              />
-            )}
+            data={metrics}
+            value={{
+              label: prettyName(metricValue),
+              value: metricValue,
+            }}
           />
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Amount
           </Text>
           <TextInput
@@ -513,7 +518,7 @@ export default function GroupSettings() {
           />
           {currentGoalType === GoalType.Group ? (
             <>
-              <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
+              <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
                 Title
               </Text>
               <TextInput
@@ -537,9 +542,7 @@ export default function GroupSettings() {
           setIsVisible={setInviteModalVisibility}
           callback={inviteMember}
         >
-          <Text style={[styles.text, { fontSize: 20, marginTop: 10 }]}>
-            Name
-          </Text>
+          <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>Name</Text>
           <TextInput
             style={globalStyles.inputField}
             autoCapitalize="none"
@@ -572,9 +575,7 @@ export default function GroupSettings() {
                 name="circle-plus"
                 size={24}
               />
-              <Text style={[styles.text, styles.buttonText]}>
-                Invite Member
-              </Text>
+              <Text style={styles.buttonText}>Invite Member</Text>
             </TouchableOpacity>
           </View>
         </Collapsible>
@@ -590,7 +591,7 @@ export default function GroupSettings() {
         >
           <Text
             style={[
-              styles.text,
+              globalStyles.textStyle,
               { fontSize: 18, marginTop: 10, textAlign: "center" },
             ]}
           >
@@ -620,30 +621,22 @@ export default function GroupSettings() {
                 name="circle-plus"
                 size={24}
               />
-              <Text style={[styles.text, styles.buttonText]}>Create goal</Text>
+              <Text style={[styles.buttonText]}>Create goal</Text>
             </TouchableOpacity>
           </View>
         </Collapsible>
 
         <Collapsible title="Individual Goals">
           {members.map(([memberId, memberName], memberIndex) => (
-            <CollapsibleContainer key={memberId}>
-              <View
-                style={[
-                  styles.row,
-                  { justifyContent: "space-between", marginRight: 50 },
-                ]}
-              >
+            <CollapsibleContainer key={memberId} style={{ marginBottom: 8 }}>
+              <>
                 <Image
                   source={getAske({ userId: memberId, name: memberName })}
                   style={{ width: 32, height: 32, borderRadius: 100 }}
                 />
                 <Text
                   numberOfLines={1}
-                  style={[
-                    styles.text,
-                    { fontSize: 20, flex: 1, marginLeft: 10 },
-                  ]}
+                  style={[globalStyles.smallTitle, { flex: 1, marginLeft: 10 }]}
                 >
                   {memberName}
                 </Text>
@@ -655,10 +648,14 @@ export default function GroupSettings() {
                     source={IconSource.FontAwesome6}
                     name="plus"
                     size={24}
-                    style={{ flex: 1 }}
+                    style={{
+                      position: "relative",
+                      marginLeft: 10,
+                      marginRight: 15,
+                    }}
                   />
                 </TouchableOpacity>
-              </View>
+              </>
               <>
                 {memberGoals
                   .filter((goal) => goal.progress[memberId] >= 0)
@@ -683,16 +680,12 @@ export default function GroupSettings() {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",
   },
   buttonText: {
-    fontSize: 20,
+    ...globalStyles.smallTitle,
     marginLeft: 5,
   },
   input: {
