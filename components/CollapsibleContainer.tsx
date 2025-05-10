@@ -33,7 +33,7 @@ export function CollapsibleContainer({
         onPress={() => setIsOpen((value) => !value)}
       >
         {topElements.map((elem, index) => (
-          <View style={styles.top}>
+          <View key={index} style={styles.top}>
             {elem}
             {index === 0 && (
               <UniversalIcon

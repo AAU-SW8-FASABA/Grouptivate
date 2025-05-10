@@ -17,11 +17,11 @@ export function NameProgress({
       <Text
         numberOfLines={1}
         ellipsizeMode="tail"
-        style={[globalStyles.smallTitle]}
+        style={globalStyles.largeBodyText}
       >
         {name}
       </Text>
-      <Text style={globalStyles.textStyle}>
+      <Text style={globalStyles.largeBodyText}>
         | {progressPercentage.toFixed(0)}%
       </Text>
     </View>

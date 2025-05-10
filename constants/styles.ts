@@ -65,6 +65,11 @@ const globalStyles = StyleSheet.create({
     ...textStyle.text,
   },
 
+  largeBodyText: {
+    fontSize: 18,
+    ...textStyle.text,
+  },
+
   bodyText: {
     fontSize: 16,
     ...textStyle.text,
