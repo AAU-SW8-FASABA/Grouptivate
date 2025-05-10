@@ -89,15 +89,19 @@ export default function GroupSettings() {
 
   async function inviteMember() {
     if (newMemberName.trim() !== "") {
-      try {
-        await createInvite(groupId, newMemberName);
-        // After inviting, we don't need to update local state as the group
-        // should be refreshed from the server later
-      } catch (e) {
-        console.log(e);
-      }
+      const inviteResponse = await createInvite(groupId, newMemberName);
+
+      // Show alert if invite failed
+      if (!inviteResponse) showAlert(inviteResponse);
+
       setNewMemberName("");
       setInviteModalVisibility(false);
+    } else {
+      // Inform the user that they must provide a username for the invite
+      showAlert({
+        error: ErrorType.InputError,
+        message: "A username is required to send an invitation",
+      });
     }
   }
 
