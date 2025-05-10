@@ -6,6 +6,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import { UserProvider } from "@/lib/states/userState";
+import { GroupsProvider } from "@/lib/states/groupsState";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -29,14 +30,16 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={DefaultTheme}>
       <UserProvider>
-        <Stack screenOptions={{ gestureEnabled: false, headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="signup" />
-          <Stack.Screen name="signin" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
+        <GroupsProvider>
+          <Stack screenOptions={{ gestureEnabled: false, headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="signup" />
+            <Stack.Screen name="signin" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </GroupsProvider>
       </UserProvider>
     </ThemeProvider>
   );

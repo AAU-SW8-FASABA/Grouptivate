@@ -1,7 +1,4 @@
 import { AppState } from "react-native";
-import { User } from "./API/schemas/User";
-import { Group } from "./API/schemas/Group";
-import { get as getUser } from "./server/user";
 import { get as getGroups } from "./server/groups";
 import { patch as patchGoal } from "./server/group/goal";
 import { Interval } from "./API/schemas/Interval";
@@ -11,19 +8,20 @@ import { HealthAdapter } from "./HealthAdapter/HealthAdapter";
 import { getHealthAdapter } from "./HealthAdapter/Helpers";
 import { getStartDateFromInterval } from "./IntervalDates";
 import { showAlert } from "./Alert";
+import { Group } from "./API/schemas/Group";
 
 /**
  * Sync new activity information to the server.
  */
-export function SetupActivitySync() {
+export async function SetupActivitySync(userId: string) {
   // Runs every time the app is opened or closed
   AppState.addEventListener("change", SyncActivity);
 
   // Run once at app startup
-  SyncActivity();
+  await SyncActivity(userId);
 }
 
-export async function SyncActivity() {
+export async function SyncActivity(userId: string, groups?: Group[]) {
   const healthAdapter = await getHealthAdapter();
   if (!healthAdapter) {
     console.log(
@@ -32,22 +30,7 @@ export async function SyncActivity() {
     return;
   }
 
-  let user: User;
-  try {
-    const userResponse = await getUser();
-
-    if (userResponse.error) {
-      showAlert(userResponse);
-      return;
-    }
-
-    user = userResponse.data;
-  } catch {
-    console.warn("Unable sync activity progress, could not fetch user");
-    return;
-  }
-  let groups: Group[];
-  try {
+  if (!groups) {
     const groupsResponse = await getGroups();
 
     if (groupsResponse.error) {
@@ -56,9 +39,6 @@ export async function SyncActivity() {
     }
 
     groups = groupsResponse.data;
-  } catch {
-    console.warn("Unable sync activity progress, could not fetch groups");
-    return;
   }
 
   if (groups.length === 0) {
@@ -70,7 +50,7 @@ export async function SyncActivity() {
     groups
       .map((group) =>
         group.goals
-          .filter((goal) => user.userId in goal.progress)
+          .filter((goal) => userId in goal.progress)
           .map(async (goal) => ({
             goalId: goal.goalId,
             progress: await getGoalProgress(

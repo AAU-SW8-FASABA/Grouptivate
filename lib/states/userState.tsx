@@ -32,7 +32,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (user.userId === "") return;
 
-    SetupActivitySync();
+    SetupActivitySync(user.userId);
   }, [user]);
 
   return (

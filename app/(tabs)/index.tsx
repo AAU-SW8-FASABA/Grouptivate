@@ -27,12 +27,13 @@ import type { Goal } from "@/lib/API/schemas/Goal";
 import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
 import { getDaysLeftInInterval } from "@/lib/IntervalDates";
-import { useGroups } from "@/lib/states/groupsState";
+import { ContextGroups, useGroups } from "@/lib/states/groupsState";
 import { showAlert } from "@/lib/Alert";
+import { SyncActivity } from "@/lib/ActivitySync";
 
 export default function Main() {
   const { user, setUser } = useUser();
-  const { contextGroups } = useGroups();
+  const { contextGroups, setContextGroups } = useGroups();
   const router = useRouter();
   const [newGroupModalVisibility, setNewGroupModalVisibility] = useState(false);
   const [newGroupName, setGroupName] = useState("");
@@ -47,22 +48,35 @@ export default function Main() {
       let isActive = true;
 
       const fetchData = async () => {
+        // Fetch User
         const userResponse = await getUser();
         if (userResponse.error) {
           showAlert(userResponse);
           return;
         }
 
+        // Set User
         setUser(userResponse.data);
+
+        // Fetch groups
         const groupResponse = await getGroups();
         if (groupResponse.error) {
           showAlert(groupResponse);
           return;
         }
-        groupResponse.data.forEach((group) =>
-          contextGroups.set(group.groupId, group),
+
+        // Set groups
+        setContextGroups(
+          groupResponse.data.reduce<ContextGroups>((acc, curr) => {
+            return acc.set(curr.groupId, curr);
+          }, new Map()),
         );
         setGroups(groupResponse.data);
+
+        // Sync activity given the user and the groups
+        SyncActivity(user.userId, groupResponse.data);
+
+        // Set individual goals
         setIndividualGoals(
           userResponse.data.goals.filter(
             (goal) => goal.type === GoalType.Individual,
@@ -74,7 +88,7 @@ export default function Main() {
       return () => {
         isActive = false;
       };
-    }, [contextGroups, setUser]),
+    }, [setContextGroups, setUser, user.userId]),
   );
 
   const intervals = Object.values(Interval).map((value) => ({

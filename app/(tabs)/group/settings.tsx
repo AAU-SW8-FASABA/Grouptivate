@@ -43,7 +43,7 @@ export default function GroupSettings() {
   const { id } = useLocalSearchParams();
   const { user } = useUser();
   const groupId = id?.toString() || "";
-  const { contextGroups } = useGroups();
+  const { contextGroups, setContextGroups } = useGroups();
   const theGroup = contextGroups.get(groupId);
   const router = useRouter();
 
@@ -151,9 +151,17 @@ export default function GroupSettings() {
       try {
         const removeResponse = await remove(itemToDelete.id, groupId);
 
-        if (removeResponse.error) {
+        if (removeResponse?.error) {
           showAlert(removeResponse);
+
           return;
+        }
+
+        // Go to Home if the user removed themselves
+        if (itemToDelete.id === user.userId) {
+          router.push({
+            pathname: "/",
+          });
         }
 
         // Update the local state immediately
@@ -170,7 +178,8 @@ export default function GroupSettings() {
         newGroup.goals = updatedGoals;
 
         // Update context groups
-        contextGroups.set(groupId, newGroup);
+        const mutatedGroups = contextGroups.set(groupId, newGroup);
+        setContextGroups(mutatedGroups);
 
         // Update local state
         setGroup(newGroup);
@@ -182,11 +191,6 @@ export default function GroupSettings() {
               goal.progress[itemToDelete.id] !== 0,
           ),
         );
-        if (itemToDelete.id === user.userId) {
-          router.push({
-            pathname: "/",
-          });
-        }
       } catch (e) {
         console.log("Error removing member:", e);
       }
