@@ -1,7 +1,7 @@
 import { Text, View, Image } from "react-native";
 import { ProgressBarPercentage } from "@/components/ProgressBar/ProgressBarPercentage";
 import globalStyles from "@/constants/styles";
-import { getAske } from "@/lib/aske";
+import { getAske } from "@/lib/Aske";
 
 interface Props {
   user: { id: string; name: string; progress: number };

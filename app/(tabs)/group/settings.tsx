@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { useEffect, useMemo, useState } from "react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Dropdown } from "react-native-element-dropdown";
 
 import { CustomModal, modalMode } from "@/components/CustomModal";
 import { Back } from "@/components/Back";
@@ -18,7 +17,7 @@ import { SettingsGoal } from "@/components/group/settings/SettingsGoal";
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import globalStyles from "@/constants/styles";
-import { CustomScrollView } from "@/components/CusomScrollView";
+import { CustomScrollView } from "@/components/CustomScrollView";
 import { OtherActivity, SportActivity } from "@/lib/API/schemas/Activity";
 import { prettyName } from "@/lib/PrettyName";
 import { Metric } from "@/lib/API/schemas/Metric";
@@ -29,12 +28,16 @@ import {
 import { Group } from "@/lib/API/schemas/Group";
 import { useUser } from "@/lib/states/userState";
 import { Goal, GoalType } from "@/lib/API/schemas/Goal";
-import { getAske } from "@/lib/aske";
+import { getAske } from "@/lib/Aske";
 import { useGroups } from "@/lib/states/groupsState";
 import { create as createInvite } from "@/lib/server/group/invite";
 import { remove } from "@/lib/server/group/remove";
 import { _delete, create } from "@/lib/server/group/goal";
 import { metricMetadata } from "@/lib/MetricMetadata";
+import DropdownComponent, {
+  DropdownItem,
+} from "@/components/DropdownComponent";
+import { ErrorType, showAlert } from "@/lib/Alert";
 
 export default function GroupSettings() {
   const { id } = useLocalSearchParams();
@@ -83,17 +86,6 @@ export default function GroupSettings() {
     id: "",
     memberIndex: -1,
   });
-
-  // function updateGroup() {
-  //   if (!group) return;
-
-  //   const updatedGroup: Group = {
-  //     ...group,
-  //     goals: [...memberGoals, ...groupGoals],
-  //   };
-  //   contextGroups.set(groupId, updatedGroup);
-  //   setGroup(updatedGroup);
-  // }
 
   async function inviteMember() {
     if (newMemberName.trim() !== "") {
@@ -254,7 +246,7 @@ export default function GroupSettings() {
   );
   const [selectedMemberIndex, setSelectedMemberIndex] = useState(-1);
 
-  const activities = [
+  const activities: DropdownItem<SportActivity | OtherActivity>[] = [
     ...Object.values(SportActivity),
     ...Object.values(OtherActivity),
   ].map((value) => ({ label: prettyName(value), value }));
@@ -262,7 +254,6 @@ export default function GroupSettings() {
   const [activityValue, setActivityValue] = useState<
     SportActivity | OtherActivity | null
   >(null);
-  const [isActivityFocus, setIsActivityFocus] = useState(false);
 
   const metrics = useMemo(() => {
     const supportedMetrics = activityValue
@@ -277,7 +268,6 @@ export default function GroupSettings() {
   }, [activityValue]);
 
   const [metricValue, setMetricValue] = useState<Metric>(Metric["Count"]);
-  const [isMetricFocus, setIsMetricFocus] = useState(false);
   const [amountValue, setAmountValue] = useState(0);
   const [titleValue, setTitleValue] = useState("");
 
@@ -303,19 +293,41 @@ export default function GroupSettings() {
   async function createGoal() {
     if (!group || members.length === 0) return;
 
+    if (!activityValue) {
+      showAlert({
+        error: ErrorType.InputError,
+        message: "You must select an activity",
+      });
+      return;
+    }
+
+    if (amountValue <= 0) {
+      showAlert({
+        error: ErrorType.InputError,
+        message: "You must input a positive target value",
+      });
+      return;
+    }
+
     const newGoal: Omit<Goal, "goalId"> = {
-      activity: activityValue || OtherActivity.Steps,
-      target: amountValue || 1,
+      activity: activityValue,
+      target: amountValue,
       metric: metricValue,
       type: currentGoalType,
-      title: titleValue || "Goal",
+      title: titleValue || prettyName(activityValue),
       progress: {},
     };
 
     try {
       if (currentGoalType === GoalType.Group) {
         const response = await create(members[0][0], groupId, newGoal);
-        setGroupGoals((prev) => [...prev, response]);
+
+        if (response.error) {
+          showAlert(response);
+          return;
+        }
+
+        setGroupGoals((prev) => [...prev, response.data]);
 
         // Update group with the new goal
         if (group) {
@@ -324,7 +336,7 @@ export default function GroupSettings() {
             goals: [
               ...group.goals.filter((g) => g.type !== GoalType.Group),
               ...groupGoals,
-              response,
+              response.data,
             ],
           };
           contextGroups.set(groupId, updatedGroup);
@@ -339,7 +351,13 @@ export default function GroupSettings() {
           groupId,
           newGoal,
         );
-        setMemberGoals((prev) => [...prev, response]);
+
+        if (response.error) {
+          showAlert(response);
+          return;
+        }
+
+        setMemberGoals((prev) => [...prev, response.data]);
 
         if (group) {
           const updatedGroup = {
@@ -347,7 +365,7 @@ export default function GroupSettings() {
             goals: [
               ...group.goals.filter((g) => g.type !== GoalType.Individual),
               ...memberGoals,
-              response,
+              response.data,
             ],
           };
           contextGroups.set(groupId, updatedGroup);
@@ -435,69 +453,26 @@ export default function GroupSettings() {
           <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Activity
           </Text>
-          <Dropdown
-            style={[
-              styles.dropdown,
-              isActivityFocus && { borderColor: "blue" },
-            ]}
-            placeholderStyle={globalStyles.smallTitle}
-            selectedTextStyle={globalStyles.smallTitle}
-            itemTextStyle={globalStyles.smallTitle}
-            data={activities}
-            labelField="label"
-            valueField="value"
-            placeholder="Select"
-            onFocus={() => setIsActivityFocus(true)}
-            onBlur={() => setIsActivityFocus(false)}
-            value={activityValue}
-            onChange={(item) => {
-              setActivityValue(item.value);
-              setIsActivityFocus(false);
+          <DropdownComponent<SportActivity | OtherActivity>
+            onChangeCallBack={(item) => {
+              setActivityValue(item);
             }}
-            renderRightIcon={() => (
-              <UniversalIcon
-                source={IconSource.FontAwesome6}
-                name="chevron-down"
-                size={20}
-                color="black"
-                style={{
-                  transform: [{ rotate: isMetricFocus ? "180deg" : "0deg" }],
-                  marginRight: 5,
-                }}
-              />
-            )}
+            data={activities}
+            value={
+              activityValue
+                ? { label: prettyName(activityValue), value: activityValue }
+                : null
+            }
           />
           <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Metric
           </Text>
-          <Dropdown
-            style={[styles.dropdown, isMetricFocus && { borderColor: "blue" }]}
-            placeholderStyle={globalStyles.smallTitle}
-            selectedTextStyle={globalStyles.smallTitle}
-            itemTextStyle={globalStyles.smallTitle}
-            data={metrics}
-            labelField="label"
-            valueField="value"
-            placeholder="Select"
-            onFocus={() => setIsMetricFocus(true)}
-            onBlur={() => setIsMetricFocus(false)}
-            value={metricValue}
-            onChange={(item) => {
-              setMetricValue(item.value);
-              setIsMetricFocus(false);
+          <DropdownComponent<Metric>
+            onChangeCallBack={(item) => {
+              setMetricValue(item);
             }}
-            renderRightIcon={() => (
-              <UniversalIcon
-                source={IconSource.FontAwesome6}
-                name="chevron-down"
-                size={20}
-                color="black"
-                style={{
-                  transform: [{ rotate: isMetricFocus ? "180deg" : "0deg" }],
-                  marginRight: 5,
-                }}
-              />
-            )}
+            data={metrics}
+            value={{ label: prettyName(metricValue), value: metricValue }}
           />
           <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
             Amount

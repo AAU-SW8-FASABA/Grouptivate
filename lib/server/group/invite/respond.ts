@@ -1,4 +1,4 @@
-import { fetchApi } from "../../fetch";
+import { fetchApi, FetchReturnType } from "../../fetch";
 import {
   Invite,
   InviteRespondRequestSchema,
@@ -7,8 +7,8 @@ import {
 export async function respond(
   inviteId: Invite["inviteId"],
   accepted: boolean,
-): Promise<void> {
-  await fetchApi({
+): Promise<FetchReturnType<null>> {
+  return await fetchApi({
     path: "/group/invite/respond",
     method: "POST",
     schema: InviteRespondRequestSchema,

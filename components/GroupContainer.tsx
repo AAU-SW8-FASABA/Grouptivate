@@ -1,18 +1,11 @@
-import {
-  StyleSheet,
-  StyleProp,
-  ViewStyle,
-  View,
-  Text,
-  Image,
-} from "react-native";
+import { StyleProp, ViewStyle, View, Text, Image } from "react-native";
 import { useEffect, useState } from "react";
 
 import { HR } from "./HR";
 import { IconSource } from "./ui/UniversalIcon";
 import { Container } from "./Container";
 import { ProgressBarIcon } from "./ProgressBar/ProgressBarIcon";
-import { defaultAske, getAske } from "@/lib/aske";
+import { defaultAske, getAske } from "@/lib/Aske";
 import { Group } from "@/lib/API/schemas/Group";
 import globalStyles from "@/constants/styles";
 
@@ -79,9 +72,3 @@ export function GroupContainer({
     </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  progress: {
-    flex: 1,
-  },
-});

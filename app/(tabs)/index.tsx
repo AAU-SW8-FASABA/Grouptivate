@@ -1,4 +1,4 @@
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -6,7 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
 import { useUser } from "@/lib/states/userState";
@@ -17,7 +17,7 @@ import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { GoalContainer } from "@/components/GoalContainer";
 import { GroupContainer } from "@/components/GroupContainer";
 import globalStyles from "@/constants/styles";
-import { CustomScrollView } from "@/components/CusomScrollView";
+import { CustomScrollView } from "@/components/CustomScrollView";
 import { create as postCreateGroup } from "@/lib/server/group";
 import { get as getGroups } from "@/lib/server/groups";
 import { get as getUser } from "@/lib/server/user";
@@ -28,6 +28,7 @@ import { GoalType } from "@/lib/API/schemas/Goal";
 import { prettyName } from "@/lib/PrettyName";
 import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
+import { showAlert } from "@/lib/Alert";
 
 export default function Main() {
   const { user, setUser } = useUser();
@@ -39,21 +40,42 @@ export default function Main() {
   const [isIntervalFocus, setIsIntervalFocus] = useState(false);
   const [groups, setGroups] = useState<Group[]>([]);
   const [individualGoals, setIndividualGoals] = useState<Goal[]>([]);
-  const isFocused = useIsFocused();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const fetchedUser = await getUser();
-      setUser(fetchedUser);
-      const fetchedGroups = await getGroups();
-      fetchedGroups.forEach((group) => contextGroups.set(group.groupId, group));
-      setGroups(fetchedGroups);
-      setIndividualGoals(
-        fetchedUser.goals.filter((goal) => goal.type === GoalType.Individual),
-      );
-    };
-    fetchData();
-  }, [isFocused]);
+  // TODO: Handle empty group name
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const fetchData = async () => {
+        const userResponse = await getUser();
+        if (userResponse.error) {
+          showAlert(userResponse);
+          return;
+        }
+
+        setUser(userResponse.data);
+        const groupResponse = await getGroups();
+        if (groupResponse.error) {
+          showAlert(groupResponse);
+          return;
+        }
+        groupResponse.data.forEach((group) =>
+          contextGroups.set(group.groupId, group),
+        );
+        setGroups(groupResponse.data);
+        setIndividualGoals(
+          userResponse.data.goals.filter(
+            (goal) => goal.type === GoalType.Individual,
+          ),
+        );
+      };
+      fetchData();
+
+      return () => {
+        isActive = false;
+      };
+    }, [contextGroups, setUser]),
+  );
 
   const intervals = Object.values(Interval).map((value) => ({
     label: prettyName(value),
@@ -61,13 +83,18 @@ export default function Main() {
   }));
 
   async function createGroup() {
-    const responseGroup = await postCreateGroup(
+    const groupResponse = await postCreateGroup(
       user,
       newGroupName,
       intervalValue,
     );
-    contextGroups.set(responseGroup.groupId, responseGroup);
-    setGroups((prev) => [...prev, responseGroup]);
+
+    if (groupResponse.error) {
+      showAlert(groupResponse);
+      return;
+    }
+    contextGroups.set(groupResponse.data.groupId, groupResponse.data);
+    setGroups((prev) => [...prev, groupResponse.data]);
   }
 
   function individualProgress(group: Group) {

@@ -10,7 +10,7 @@ import { useRouter } from "expo-router";
 import globalStyles from "@/constants/styles";
 import { create, get as getUser } from "@/lib/server/user";
 import { useUser } from "@/lib/states/userState";
-import { User } from "@/lib/API/schemas/User";
+import { showAlert } from "@/lib/Alert";
 
 export default function Signup() {
   const router = useRouter();
@@ -21,15 +21,19 @@ export default function Signup() {
   async function createAccount() {
     // TODO: Input Validation
 
-    const success = await create(username, password);
-    if (!success) {
-      // TODO: Handle error
-      console.log("Error creating account");
+    const response = await create(username, password);
+    if (response.error) {
+      showAlert(response);
       return;
     }
 
-    let theUser: User = await getUser();
-    setUser(theUser);
+    const userResponse = await getUser();
+    if (userResponse.error) {
+      showAlert(userResponse);
+      return;
+    }
+
+    setUser(userResponse.data);
     router.push("/(tabs)");
   }
 

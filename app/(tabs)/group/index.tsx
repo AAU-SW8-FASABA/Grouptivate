@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
-import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { Back } from "@/components/Back";
@@ -12,7 +12,7 @@ import { ProgressBarIcon } from "@/components/ProgressBar/ProgressBarIcon";
 import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import { NameProgress } from "@/components/NameProgress";
 import globalStyles from "@/constants/styles";
-import { CustomScrollView } from "@/components/CusomScrollView";
+import { CustomScrollView } from "@/components/CustomScrollView";
 import type { Group as GroupType } from "@/lib/API/schemas/Group";
 import { Interval } from "@/lib/API/schemas/Interval";
 import { Goal } from "@/lib/API/schemas/Goal";
@@ -31,21 +31,32 @@ export default function Group() {
   const router = useRouter();
   const { contextGroups } = useGroups();
   const [group, setGroup] = useState<GroupType | null>(null);
-  const theGroup = contextGroups.get(groupId);
-  const isFocused = useIsFocused();
 
-  useEffect(() => {
-    if (theGroup != null) {
-      setGroup(theGroup);
-    }
-  }, [theGroup, isFocused]);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const getGroupData = async () => {
+        const contextGroup = contextGroups.get(groupId);
+        if (contextGroup != null) {
+          setGroup(contextGroup);
+        }
+      };
+
+      getGroupData();
+
+      return () => {
+        isActive = false;
+      };
+    }, [contextGroups, groupId]),
+  );
 
   let groupGoalsProgress: Map<string, number> = new Map();
   let groupGoalsDone: boolean = false;
   let groupGoals: Goal[] = [];
   let userGoals: Map<string, Goal[]> = new Map();
 
-  function loadgroup() {
+  function loadGroup() {
     if (group) {
       groupGoals = group.goals.filter((goal) => {
         return goal.type === "group";
@@ -70,7 +81,7 @@ export default function Group() {
       });
     }
   }
-  loadgroup();
+  loadGroup();
 
   return (
     group && (

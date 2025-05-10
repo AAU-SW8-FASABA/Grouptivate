@@ -11,7 +11,7 @@ import globalStyles from "@/constants/styles";
 import { login as loginApi } from "@/lib/server/login";
 import { useUser } from "@/lib/states/userState";
 import { get as getUser } from "@/lib/server/user";
-import { User } from "@/lib/API/schemas/User";
+import { showAlert } from "@/lib/Alert";
 
 export default function Signin() {
   const router = useRouter();
@@ -21,14 +21,20 @@ export default function Signin() {
 
   async function login() {
     // TODO: Input Validation
-    const success = await loginApi(username, password);
-    if (!success) {
-      // TODO: Handle error
-      console.log("Error signing in");
+
+    const response = await loginApi(username, password);
+    if (response.error) {
+      showAlert(response);
       return;
     }
-    let theUser: User = await getUser();
-    setUser(theUser);
+
+    const userResponse = await getUser();
+    if (userResponse.error) {
+      showAlert(userResponse);
+      return;
+    }
+
+    setUser(userResponse.data);
     router.push("/(tabs)");
   }
   return (

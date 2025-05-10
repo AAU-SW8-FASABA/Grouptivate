@@ -11,7 +11,7 @@ import {
 import { Container } from "../../Container";
 import { IconSource, UniversalIcon } from "../../ui/UniversalIcon";
 import { User } from "@/lib/API/schemas/User";
-import { defaultAske, getAske } from "@/lib/aske";
+import { defaultAske, getAske } from "@/lib/Aske";
 import globalStyles from "@/constants/styles";
 
 interface Props {

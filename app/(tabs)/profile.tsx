@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 
 import { deleteToken } from "@/lib/server/config";
 import globalStyles from "@/constants/styles";
-import { CustomScrollView } from "@/components/CusomScrollView";
+import { CustomScrollView } from "@/components/CustomScrollView";
 import { DeveloperTools } from "@/components/DeveloperTools";
 import { Invite, InviteAnswer } from "@/components/Invite";
 import { useEffect, useState } from "react";
@@ -11,7 +11,8 @@ import { respond as respondInvite } from "@/lib/server/group/invite/respond";
 import { get as getInvites } from "@/lib/server/group/invite";
 import type { Invite as InviteType } from "@/lib/API/schemas/Invite";
 import { useUser } from "@/lib/states/userState";
-import { defaultAske, getAske } from "@/lib/aske";
+import { defaultAske, getAske } from "@/lib/Aske";
+import { showAlert } from "@/lib/Alert";
 
 export default function Profile() {
   const router = useRouter();
@@ -21,8 +22,13 @@ export default function Profile() {
     async function fetchInvites() {
       const fetchedInvites = await getInvites();
 
+      if (fetchedInvites.error) {
+        showAlert(fetchedInvites);
+        return;
+      }
+
       const inviteState = [];
-      for (const invite of fetchedInvites) {
+      for (const invite of fetchedInvites.data) {
         inviteState.push({
           inviteId: invite.inviteId,
           groupName: invite.groupName,
