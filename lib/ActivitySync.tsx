@@ -89,13 +89,12 @@ export async function SyncActivity() {
     return;
   }
 
-  try {
-    await patchGoal(goalUpdates);
-  } catch {
-    console.warn(`Unable to sync activity progress`);
+  const patchResponse = await patchGoal(goalUpdates);
+
+  if (patchResponse.error) {
+    showAlert(patchResponse);
     return;
   }
-  console.info("Succesfully synced activity progress");
 }
 
 async function getGoalProgress(

@@ -145,7 +145,13 @@ export default function GroupSettings() {
       itemToDelete.index >= 0
     ) {
       try {
-        await remove(itemToDelete.id, groupId);
+        const removeResponse = await remove(itemToDelete.id, groupId);
+
+        if (removeResponse.error) {
+          showAlert(removeResponse);
+          return;
+        }
+
         // Update the local state immediately
         const newGroup = { ...group };
         delete newGroup.users[itemToDelete.id];
@@ -185,7 +191,12 @@ export default function GroupSettings() {
       itemToDelete.index >= 0
     ) {
       try {
-        await _delete(itemToDelete.id);
+        const deleteResponse = await _delete(itemToDelete.id);
+
+        if (deleteResponse.error) {
+          showAlert(deleteResponse);
+          return;
+        }
 
         // Update group goals in local state
         const updatedGroupGoals = groupGoals.filter(
@@ -213,7 +224,12 @@ export default function GroupSettings() {
       }
     } else if (itemToDelete.type === settingsDeletion.IndividualGoal) {
       try {
-        await _delete(itemToDelete.id);
+        const deleteResponse = await _delete(itemToDelete.id);
+
+        if (deleteResponse.error) {
+          showAlert(deleteResponse);
+          return;
+        }
 
         // Update member goals in local state
         const updatedMemberGoals = memberGoals.filter(
