@@ -38,7 +38,7 @@ export default function MembersSection({ group, userGoalsMap }: Props) {
       <Text style={globalStyles.sectionHeader}>Members</Text>
       {group &&
         createGoalsObject(group).map((user) => (
-          <View key={user.id}>
+          <View key={user.id} style={{ marginBottom: 8 }}>
             <CollapsibleContainer>
               <MemberComponentTop user={user} />
               <View>
