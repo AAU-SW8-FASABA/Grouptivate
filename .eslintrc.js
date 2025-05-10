@@ -4,6 +4,11 @@ module.exports = {
   ignorePatterns: ["/dist/*"],
   plugins: ["prettier"],
   rules: {
-    "prettier/prettier": "warn",
+    "prettier/prettier": [
+      "warn",
+      {
+        endOfLine: "auto",
+      },
+    ],
   },
 };
