@@ -38,6 +38,7 @@ import DropdownComponent, {
   DropdownItem,
 } from "@/components/DropdownComponent";
 import { ErrorType, showAlert } from "@/lib/Alert";
+import { SyncActivity } from "@/lib/ActivitySync";
 
 export default function GroupSettings() {
   const { id } = useLocalSearchParams();
@@ -162,6 +163,7 @@ export default function GroupSettings() {
           router.push({
             pathname: "/",
           });
+          return;
         }
 
         // Update the local state immediately
@@ -224,8 +226,8 @@ export default function GroupSettings() {
               ),
             ],
           };
-          contextGroups.set(groupId, updatedGroup);
-          setGroup(updatedGroup);
+          const mutatedGroups = contextGroups.set(groupId, updatedGroup);
+          setContextGroups(mutatedGroups);
         }
       } catch (e) {
         console.log("Error deleting group goal:", e);
@@ -253,14 +255,15 @@ export default function GroupSettings() {
               ...group.goals.filter((goal) => goal.goalId !== itemToDelete.id),
             ],
           };
-          contextGroups.set(groupId, updatedGroup);
+          const mutatedGroups = contextGroups.set(groupId, updatedGroup);
+          setContextGroups(mutatedGroups);
           setGroup(updatedGroup);
         }
       } catch (e) {
         console.log("Error deleting individual goal:", e);
       }
     }
-
+    SyncActivity(user.userId);
     setDeleteModalVisibility(false);
   }
 
