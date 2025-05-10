@@ -1,5 +1,12 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { User } from "@/lib/API/schemas/User";
+import { SetupActivitySync } from "../ActivitySync";
 
 // Define the initial user state
 export const initialUser: User = {
@@ -21,6 +28,12 @@ export const UserContext = createContext<UserContextType>({
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>(initialUser);
+
+  useEffect(() => {
+    if (user.userId === "") return;
+
+    SetupActivitySync();
+  }, [user]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
