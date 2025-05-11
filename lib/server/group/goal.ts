@@ -1,4 +1,4 @@
-import { fetchApi } from "../fetch";
+import { fetchApi, FetchReturnType } from "../fetch";
 import { User } from "../../API/schemas/User";
 import { Group } from "@/lib/API/schemas/Group";
 import {
@@ -12,7 +12,7 @@ export async function create(
   userId: User["userId"],
   groupId: Group["groupId"],
   goal: Omit<Goal, "goalId" | "group" | "progress">,
-) {
+): Promise<FetchReturnType<Goal>> {
   const response = await fetchApi({
     path: "/group/goal",
     method: "POST",
@@ -20,10 +20,16 @@ export async function create(
     searchParams: { userId, groupId },
     requestBody: goal,
   });
+
+  if (response.error) return response;
+
   return {
-    ...goal,
-    progress: { [userId]: 0 },
-    ...response,
+    data: {
+      ...goal,
+      ...response.data,
+      progress: { [userId]: 0 },
+    },
+    error: response.error,
   };
 }
 
@@ -32,8 +38,8 @@ export async function patch(
     goalId: Goal["goalId"];
     progress: number;
   }[],
-): Promise<void> {
-  await fetchApi({
+): Promise<FetchReturnType<null>> {
+  return await fetchApi({
     path: "/group/goal",
     method: "PATCH",
     schema: GoalPatchRequestSchema,
@@ -42,8 +48,10 @@ export async function patch(
   });
 }
 
-export async function _delete(goalId: Goal["goalId"]): Promise<void> {
-  await fetchApi({
+export async function _delete(
+  goalId: Goal["goalId"],
+): Promise<FetchReturnType<null>> {
+  return await fetchApi({
     path: "/group/goal",
     method: "DELETE",
     schema: GoalDeleteRequestSchema,

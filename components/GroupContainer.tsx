@@ -1,19 +1,13 @@
-import {
-  StyleSheet,
-  StyleProp,
-  ViewStyle,
-  View,
-  Text,
-  Image,
-} from "react-native";
+import { StyleProp, ViewStyle, View, Text, Image } from "react-native";
 import { useEffect, useState } from "react";
 
 import { HR } from "./HR";
 import { IconSource } from "./ui/UniversalIcon";
 import { Container } from "./Container";
 import { ProgressBarIcon } from "./ProgressBar/ProgressBarIcon";
-import { defaultAske, getAske } from "@/lib/aske";
+import { defaultAske, getAske } from "@/lib/Aske";
 import { Group } from "@/lib/API/schemas/Group";
+import globalStyles from "@/constants/styles";
 
 export function GroupContainer({
   group,
@@ -39,17 +33,26 @@ export function GroupContainer({
 
   return (
     <Container style={style}>
-      <View style={styles.row}>
-        <View style={{ flexDirection: "row" }}>
-          <Image
-            source={image}
-            style={{ width: 32, height: 32, borderRadius: 100 }}
-          />
-          <Text style={[styles.text, { fontSize: 24, marginLeft: 10 }]}>
-            {group.groupName}
-          </Text>
-        </View>
-        <Text style={[styles.text, { fontSize: 16 }]}>{daysLeft}</Text>
+      <View style={[{ display: "flex" }, globalStyles.row]}>
+        <Image
+          source={image}
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 100,
+            position: "relative",
+          }}
+        />
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[globalStyles.title, { flexShrink: 1, marginHorizontal: 8 }]}
+        >
+          {group.groupName}
+        </Text>
+        <Text style={[globalStyles.bodyText, { marginRight: 20 }]}>
+          {daysLeft}
+        </Text>
       </View>
       <HR />
       <ProgressBarIcon
@@ -69,26 +72,3 @@ export function GroupContainer({
     </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  progress: {
-    flex: 1,
-  },
-  progressText: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-    fontSize: 16,
-    position: "absolute",
-    top: "50%",
-    transform: "translate(-50%, -50%)",
-  },
-});

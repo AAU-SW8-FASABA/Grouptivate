@@ -9,6 +9,7 @@ import {
 import { Metric } from "@/lib/API/schemas/Metric";
 import { metricMetadata } from "@/lib/MetricMetadata";
 import { prettyName } from "@/lib/PrettyName";
+import globalStyles from "@/constants/styles";
 
 export function GoalContainer({
   activity,
@@ -33,17 +34,29 @@ export function GoalContainer({
     <Container style={{ marginBottom: 8 }}>
       <View style={styles.row}>
         <View style={styles.box}>
-          <Text style={[styles.text, { fontSize: 24, marginRight: "auto" }]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[
+              globalStyles.title,
+              { textAlign: "center", marginRight: "auto" },
+            ]}
+          >
             {prettyName(activity)}
           </Text>
         </View>
         <View style={styles.box}>
-          <Text style={[styles.text, { fontSize: 16 }]}>
+          <Text style={[globalStyles.bodyText, { textAlign: "center" }]}>
             {progress} / {target} {mMeta.unit}
           </Text>
         </View>
         <View style={styles.box}>
-          <Text style={[styles.text, { fontSize: 16, marginLeft: "auto" }]}>
+          <Text
+            style={[
+              globalStyles.bodyText,
+              { textAlign: "center", marginLeft: "auto" },
+            ]}
+          >
             {daysLeftOfGoal}
           </Text>
         </View>
@@ -59,11 +72,6 @@ export function GoalContainer({
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-    textAlign: "center",
-  },
   row: {
     display: "flex",
     flexDirection: "row",

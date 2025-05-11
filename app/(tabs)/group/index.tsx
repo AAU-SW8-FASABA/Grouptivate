@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
+import { useCallback, useState } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
-import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { IconSource, UniversalIcon } from "@/components/ui/UniversalIcon";
 import { Back } from "@/components/Back";
@@ -9,11 +9,10 @@ import { Container } from "@/components/Container";
 import { ContainerWithBlueBox } from "@/components/ContainerWithBlueBox";
 import { ProgressBarPercentage } from "@/components/ProgressBar/ProgressBarPercentage";
 import { ProgressBarIcon } from "@/components/ProgressBar/ProgressBarIcon";
-import { ProgressBarTextIcon } from "@/components/ProgressBar/ProgressBarTextIcon";
 import { CollapsibleContainer } from "@/components/CollapsibleContainer";
 import { NameProgress } from "@/components/NameProgress";
 import globalStyles from "@/constants/styles";
-import { CustomScrollView } from "@/components/CusomScrollView";
+import { CustomScrollView } from "@/components/CustomScrollView";
 import type { Group as GroupType } from "@/lib/API/schemas/Group";
 import { Interval } from "@/lib/API/schemas/Interval";
 import { Goal } from "@/lib/API/schemas/Goal";
@@ -22,9 +21,9 @@ import {
   sportActivityMetadata,
   otherActivityMetadata,
 } from "@/lib/ActivityMetadata";
-import { getAske } from "@/lib/aske";
 import { getDaysLeftInInterval } from "@/lib/IntervalDates";
 import { useGroups } from "@/lib/states/groupsState";
+import MembersSection from "@/components/group/members";
 
 export default function Group() {
   const { id } = useLocalSearchParams();
@@ -32,21 +31,32 @@ export default function Group() {
   const router = useRouter();
   const { contextGroups } = useGroups();
   const [group, setGroup] = useState<GroupType | null>(null);
-  const theGroup = contextGroups.get(groupId);
-  const isFocused = useIsFocused();
 
-  useEffect(() => {
-    if (theGroup != null) {
-      setGroup(theGroup);
-    }
-  }, [theGroup, isFocused]);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const getGroupData = async () => {
+        const contextGroup = contextGroups.get(groupId);
+        if (contextGroup != null) {
+          setGroup(contextGroup);
+        }
+      };
+
+      getGroupData();
+
+      return () => {
+        isActive = false;
+      };
+    }, [contextGroups, groupId]),
+  );
 
   let groupGoalsProgress: Map<string, number> = new Map();
   let groupGoalsDone: boolean = false;
   let groupGoals: Goal[] = [];
   let userGoals: Map<string, Goal[]> = new Map();
 
-  function loadgroup() {
+  function loadGroup() {
     if (group) {
       groupGoals = group.goals.filter((goal) => {
         return goal.type === "group";
@@ -71,258 +81,176 @@ export default function Group() {
       });
     }
   }
-  loadgroup();
+  loadGroup();
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerTitle:
-            group && group.groupName && typeof group.groupName === "string"
-              ? group.groupName
-              : "Group Name",
-          headerLeft: () => <Back />,
-          headerRight: () => (
-            <TouchableOpacity
-              testID="settings-button"
-              style={{ marginRight: 15 }}
-              onPress={() =>
-                router.push({
-                  pathname: "/group/settings",
-                  params: { id: groupId },
-                })
-              }
-            >
-              <UniversalIcon
-                source={IconSource.FontAwesome6}
-                name={"gear"}
-                size={21}
-                color="white"
-              />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <CustomScrollView style={globalStyles.viewContainer}>
-        <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
-          <ContainerWithBlueBox
-            text1="Days Left"
-            text2={
-              group && group.interval !== Interval.Daily
-                ? Math.ceil(getDaysLeftInInterval(group.interval)).toString()
-                : "Today"
-            }
-          />
-          <ContainerWithBlueBox
-            text1="Streak"
-            text2={group ? group.streak + "🔥" : "🔥"}
-          />
-        </View>
-        <View>
-          {group && group.goals.length > 0 ? (
-            <Container style={{ marginTop: 8 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
+    group && (
+      <>
+        <Stack.Screen
+          options={{
+            headerTitle:
+              group.groupName && typeof group.groupName === "string"
+                ? group.groupName
+                : "Group Name",
+            headerLeft: () => <Back />,
+            headerRight: () => (
+              <TouchableOpacity
+                testID="settings-button"
+                style={{ marginRight: 15 }}
+                onPress={() =>
+                  router.push({
+                    pathname: "/group/settings",
+                    params: { id: groupId },
+                  })
+                }
               >
-                <Text style={[styles.text, { fontSize: 24 }]}>Progress</Text>
-                <Text style={[styles.text, { fontSize: 16 }]}>
-                  {Object.entries(group.users).reduce((count, [userId]) => {
-                    if (!groupGoalsDone) return count;
+                <UniversalIcon
+                  source={IconSource.FontAwesome6}
+                  name={"gear"}
+                  size={21}
+                  color="white"
+                />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        <CustomScrollView style={globalStyles.viewContainer}>
+          <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
+            <ContainerWithBlueBox
+              text1="Days Left"
+              text2={
+                group.interval !== Interval.Daily
+                  ? Math.ceil(getDaysLeftInInterval(group.interval)).toString()
+                  : "Today"
+              }
+            />
+            <ContainerWithBlueBox text1="Streak" text2={group.streak + "🔥"} />
+          </View>
+          <View>
+            {group.goals.length > 0 ? (
+              <Container style={{ marginTop: 8 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={globalStyles.title}>Progress</Text>
+                  <Text style={globalStyles.bodyText}>
+                    {Object.entries(group.users).reduce((count, [userId]) => {
+                      if (!groupGoalsDone) return count;
 
-                    const goals = userGoals.get(userId);
-                    const allGoalsDone = goals?.every(
-                      (goal) => goal.progress[userId] >= goal.target,
-                    );
+                      const goals = userGoals.get(userId);
+                      const allGoalsDone = goals?.every(
+                        (goal) => goal.progress[userId] >= goal.target,
+                      );
 
-                    return count + (allGoalsDone ? 1 : 0);
-                  }, 0)}
-                  {" /"} {Object.keys(group.users).length}
-                  {" members finished"}
-                </Text>
-              </View>
-              <View style={{ marginTop: 10 }}>
-                <ProgressBarPercentage
+                      return count + (allGoalsDone ? 1 : 0);
+                    }, 0)}
+                    {" /"} {Object.keys(group.users).length}
+                    {" members finished"}
+                  </Text>
+                </View>
+                <View style={{ marginTop: 10 }}>
+                  <ProgressBarPercentage
+                    progress={
+                      (group.goals.reduce(
+                        (acc, goal) =>
+                          acc +
+                          Object.values(goal.progress).reduce(
+                            (sum, add) => sum + add,
+                            0,
+                          ) /
+                            goal.target,
+                        0,
+                      ) /
+                        group.goals.length) *
+                      100
+                    }
+                  />
+                </View>
+              </Container>
+            ) : null}
+          </View>
+
+          <View style={globalStyles.section}>
+            <Text style={[globalStyles.sectionHeader]}>Group Goals</Text>
+            {groupGoals.map((goal) => (
+              <CollapsibleContainer
+                key={goal.goalId}
+                style={{ marginBottom: 8 }}
+                arrowStyle={styles.box}
+              >
+                <>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={[globalStyles.title, styles.box]}
+                  >
+                    {goal.title}
+                  </Text>
+                  <Text
+                    style={[
+                      globalStyles.bodyText,
+                      { textAlign: "center" },
+                      styles.box,
+                    ]}
+                  >
+                    {Object.entries(goal.progress).reduce(
+                      (sum, [key, val]) => sum + val,
+                      0,
+                    )}{" "}
+                    / {goal.target} {metricMetadata[goal.metric].unit}
+                  </Text>
+                </>
+                <ProgressBarIcon
                   progress={
-                    (group.goals.reduce(
-                      (acc, goal) =>
-                        acc +
-                        Object.values(goal.progress).reduce(
-                          (sum, add) => sum + add,
-                          0,
-                        ) /
-                          goal.target,
+                    (Object.entries(goal.progress).reduce(
+                      (sum, [key, val]) => sum + val,
                       0,
                     ) /
-                      group.goals!.length) *
+                      goal.target) *
                     100
                   }
+                  iconSource={
+                    {
+                      ...sportActivityMetadata,
+                      ...otherActivityMetadata,
+                    }[goal.activity].iconSource
+                  }
+                  icon={
+                    {
+                      ...sportActivityMetadata,
+                      ...otherActivityMetadata,
+                    }[goal.activity].icon
+                  }
                 />
-              </View>
-            </Container>
-          ) : null}
-        </View>
-
-        <View style={globalStyles.section}>
-          <Text style={[globalStyles.sectionHeader, { marginTop: 6 }]}>
-            Group Goals
-          </Text>
-          {group
-            ? groupGoals.map((goal) => (
-                <CollapsibleContainer key={goal.goalId}>
-                  <View>
-                    <View style={styles.row}>
-                      <View style={styles.box}>
-                        <Text
-                          style={[
-                            styles.text,
-                            { fontSize: 24, marginRight: "auto" },
-                          ]}
-                        >
-                          {goal.title}
-                        </Text>
-                      </View>
-                      <View style={styles.box}>
-                        <Text
-                          style={[
-                            styles.text,
-                            { fontSize: 16, textAlign: "center" },
-                          ]}
-                        >
-                          {Object.entries(goal.progress).reduce(
-                            (sum, [key, val]) => sum + val,
-                            0,
-                          )}{" "}
-                          / {goal.target} {metricMetadata[goal.metric].unit}
-                        </Text>
-                      </View>
-                      <View style={styles.box} />
-                    </View>
-                    <ProgressBarIcon
-                      progress={
-                        (Object.entries(goal.progress).reduce(
-                          (sum, [key, val]) => sum + val,
-                          0,
-                        ) /
-                          goal.target) *
-                        100
-                      }
-                      iconSource={
-                        { ...sportActivityMetadata, ...otherActivityMetadata }[
-                          goal.activity
-                        ].iconSource
-                      }
-                      icon={
-                        { ...sportActivityMetadata, ...otherActivityMetadata }[
-                          goal.activity
-                        ].icon
-                      }
+                <>
+                  {Object.entries(goal.progress).map(([userId, progress]) => (
+                    <NameProgress
+                      key={userId}
+                      name={group.users[userId]}
+                      progress={progress}
+                      target={goal.target / Object.entries(group.users).length}
                     />
-                  </View>
-                  <View style={[styles.row, { gap: 10, flexWrap: "wrap" }]}>
-                    {Object.entries(goal.progress).map(([userId, progress]) => (
-                      <NameProgress
-                        key={userId}
-                        name={group.users[userId]}
-                        progress={progress}
-                        target={goal.target}
-                      />
-                    ))}
-                  </View>
-                </CollapsibleContainer>
-              ))
-            : ""}
-        </View>
-
-        <View style={globalStyles.section}>
-          <Text style={globalStyles.sectionHeader}>Members</Text>
-          {group
-            ? Object.entries(group.users).map(([userId, name]) => (
-                <View key={userId}>
-                  <CollapsibleContainer>
-                    <View style={styles.row}>
-                      <View style={styles.row}>
-                        <Image
-                          source={getAske({ userId, name })}
-                          style={{ width: 32, height: 32, borderRadius: 100 }}
-                        />
-                        <Text
-                          numberOfLines={1}
-                          style={[
-                            styles.text,
-                            { fontSize: 22, marginLeft: 10 },
-                          ]}
-                        >
-                          {name}
-                        </Text>
-                      </View>
-                      <View style={{ width: "40%", marginRight: 30 }}>
-                        <ProgressBarPercentage
-                          progress={
-                            userGoals.get(userId)?.length
-                              ? (userGoals
-                                  .get(userId)!
-                                  .reduce(
-                                    (acc, a) =>
-                                      acc + a.progress[userId] / a.target,
-                                    0,
-                                  ) /
-                                  userGoals.get(userId)!.length) *
-                                100
-                              : 0
-                          }
-                          target={100}
-                        />
-                      </View>
-                    </View>
-                    <View>
-                      {userGoals.get(userId)?.map((activity) => (
-                        <ProgressBarTextIcon
-                          key={activity.goalId}
-                          progress={activity.progress[userId]}
-                          target={activity.target}
-                          unit={metricMetadata[activity.metric].unit}
-                          iconSource={
-                            {
-                              ...sportActivityMetadata,
-                              ...otherActivityMetadata,
-                            }[activity.activity].iconSource
-                          }
-                          icon={
-                            {
-                              ...sportActivityMetadata,
-                              ...otherActivityMetadata,
-                            }[activity.activity].icon
-                          }
-                        />
-                      ))}
-                    </View>
-                  </CollapsibleContainer>
-                </View>
-              ))
-            : ""}
-        </View>
-      </CustomScrollView>
-    </>
+                  ))}
+                </>
+              </CollapsibleContainer>
+            ))}
+          </View>
+          <MembersSection
+            group={group}
+            userGoalsMap={userGoals}
+          ></MembersSection>
+        </CustomScrollView>
+      </>
+    )
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
   box: {
-    display: "flex",
-    justifyContent: "center",
     flex: 1,
   },
 });

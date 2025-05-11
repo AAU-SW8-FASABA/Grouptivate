@@ -1,4 +1,4 @@
-import { fetchApi } from "../fetch";
+import { fetchApi, FetchReturnType } from "../fetch";
 import { User } from "../../API/schemas/User";
 import {
   Invite,
@@ -10,8 +10,8 @@ import { Group } from "../../API/schemas/Group";
 export async function create(
   groupId: Group["groupId"],
   inviteeName: User["name"],
-): Promise<void> {
-  await fetchApi({
+): Promise<FetchReturnType<null>> {
+  return await fetchApi({
     path: "/group/invite",
     method: "POST",
     schema: InviteCreateRequestSchema,
@@ -24,7 +24,7 @@ export async function create(
 }
 
 export async function get(): Promise<
-  Omit<Invite, "groupId" | "inviteeName">[]
+  FetchReturnType<Omit<Invite, "groupId" | "inviteeName">[]>
 > {
   const invites = await fetchApi({
     path: "/group/invite",
@@ -33,5 +33,11 @@ export async function get(): Promise<
     searchParams: {},
     requestBody: undefined,
   });
-  return invites;
+
+  if (invites.error) return invites;
+
+  return {
+    data: invites.data,
+    error: invites.error,
+  };
 }

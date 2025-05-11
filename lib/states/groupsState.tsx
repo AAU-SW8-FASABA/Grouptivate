@@ -1,23 +1,26 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Group } from "../API/schemas/Group";
 
+export type ContextGroups = Map<string, Group>;
+
 // Define the initial user state
-export const initialGroup: Map<string, Group> = new Map();
+export const initialGroups: ContextGroups = new Map();
 
 type groupsContextType = {
-  contextGroups: Map<string, Group>;
-  setGroups: (groups: Map<string, Group>) => void;
+  contextGroups: ContextGroups;
+  setContextGroups: (groups: ContextGroups) => void;
 };
 
 export const GroupsContext = createContext<groupsContextType>({
-  contextGroups: initialGroup,
-  setGroups: () => {},
+  contextGroups: initialGroups,
+  setContextGroups: () => {},
 });
 
-export const GroupsProvide = ({ children }: { children: ReactNode }) => {
-  const [contextGroups, setGroups] = useState<Map<string, Group>>(initialGroup);
+export const GroupsProvider = ({ children }: { children: ReactNode }) => {
+  const [contextGroups, setContextGroups] =
+    useState<ContextGroups>(initialGroups);
   return (
-    <GroupsContext.Provider value={{ contextGroups, setGroups }}>
+    <GroupsContext.Provider value={{ contextGroups, setContextGroups }}>
       {children}
     </GroupsContext.Provider>
   );

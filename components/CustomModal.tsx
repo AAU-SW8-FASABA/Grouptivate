@@ -1,15 +1,12 @@
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { PropsWithChildren } from "react";
 import { GoalType } from "@/lib/API/schemas/Goal";
+import globalStyles from "@/constants/styles";
 
 export enum modalMode {
   Create = "create",
   Delete = "delete",
 }
-// export enum GoalCreationType {
-//   GroupGoal = "groupGoal",
-//   IndividualGoal = "individualGoal",
-// }
 
 export function CustomModal({
   children,
@@ -100,9 +97,7 @@ export function CustomModal({
 
 const styles = StyleSheet.create({
   text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-    fontSize: 20,
+    ...globalStyles.smallTitle,
     textAlign: "center",
   },
   row: {

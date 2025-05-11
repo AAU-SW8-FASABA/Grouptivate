@@ -11,7 +11,7 @@ import globalStyles from "@/constants/styles";
 import { login as loginApi } from "@/lib/server/login";
 import { useUser } from "@/lib/states/userState";
 import { get as getUser } from "@/lib/server/user";
-import { User } from "@/lib/API/schemas/User";
+import { showAlert } from "@/lib/Alert";
 
 export default function Signin() {
   const router = useRouter();
@@ -21,35 +21,37 @@ export default function Signin() {
 
   async function login() {
     // TODO: Input Validation
-    const success = await loginApi(username, password);
-    if (!success) {
-      // TODO: Handle error
-      console.log("Error signing in");
+
+    const response = await loginApi(username, password);
+    if (response.error) {
+      showAlert(response);
       return;
     }
-    let theUser: User = await getUser();
-    setUser(theUser);
+
+    const userResponse = await getUser();
+    if (userResponse.error) {
+      showAlert(userResponse);
+      return;
+    }
+
+    setUser(userResponse.data);
     router.push("/(tabs)");
   }
   return (
     <>
       <View style={styles.header}>
-        <Text style={[styles.text, { fontSize: 40, color: "black" }]}>
-          Log in
-        </Text>
+        <Text style={[globalStyles.textStyle, { fontSize: 40 }]}>Log in</Text>
         <Text
           style={[
-            styles.text,
-            { fontSize: 20, color: "black", textAlign: "center" },
+            globalStyles.smallTitle,
+            { color: "black", textAlign: "center" },
           ]}
         >
           Please enter username and password
         </Text>
       </View>
       <View style={styles.inputView}>
-        <Text style={[styles.text, { fontSize: 20, color: "black" }]}>
-          Username
-        </Text>
+        <Text style={globalStyles.smallTitle}>Username</Text>
         <TextInput
           placeholder="Username"
           autoCapitalize="none"
@@ -59,9 +61,7 @@ export default function Signin() {
           onChangeText={(text) => setUsername(text)}
           style={globalStyles.inputField}
         />
-        <Text
-          style={[styles.text, { fontSize: 20, color: "black", marginTop: 10 }]}
-        >
+        <Text style={[globalStyles.smallTitle, { marginTop: 10 }]}>
           Password
         </Text>
         <TextInput
@@ -82,7 +82,7 @@ export default function Signin() {
         >
           <Text
             testID="login-button"
-            style={[styles.text, { fontSize: 20, color: "white" }]}
+            style={[globalStyles.smallTitle, { color: "white" }]}
           >
             Log in
           </Text>
@@ -91,10 +91,7 @@ export default function Signin() {
           style={[styles.button, { backgroundColor: "#D9D9D9" }]}
           onPress={() => router.back()}
         >
-          <Text
-            testID="back-button"
-            style={[styles.text, { fontSize: 20, color: "black" }]}
-          >
+          <Text testID="back-button" style={globalStyles.smallTitle}>
             Back
           </Text>
         </TouchableOpacity>
@@ -104,10 +101,6 @@ export default function Signin() {
 }
 
 const styles = StyleSheet.create({
-  text: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-  },
   header: {
     alignItems: "center",
     marginTop: 175,

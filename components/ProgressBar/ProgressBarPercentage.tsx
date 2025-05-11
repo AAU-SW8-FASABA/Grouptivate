@@ -1,4 +1,4 @@
-import { primaryColor } from "@/constants/styles";
+import globalStyles, { primaryColor } from "@/constants/styles";
 import { StyleSheet, View, Text } from "react-native";
 import { Bar } from "react-native-progress";
 
@@ -25,6 +25,7 @@ export function ProgressBarPercentage({
       ></Bar>
       <Text
         style={[
+          globalStyles.bodyText,
           styles.progressText,
           isRightAligned
             ? {
@@ -51,9 +52,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   progressText: {
-    fontFamily: "Roboto",
-    fontWeight: 500,
-    fontSize: 16,
     position: "absolute",
     paddingHorizontal: 4,
     paddingVertical: 4,
